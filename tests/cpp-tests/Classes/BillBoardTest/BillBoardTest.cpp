@@ -29,49 +29,86 @@
 #include <algorithm>
 #include "../testResource.h"
 
-enum
+USING_NS_CC;
+USING_NS_CC_EXT;
+using namespace cocos2d::ui;
+
+
+BillBoardTests::BillBoardTests()
 {
-    IDC_NEXT = 100,
-    IDC_BACK,
-    IDC_RESTART
-};
+    ADD_TEST_CASE(BillBoardRotationTest);
+    ADD_TEST_CASE(BillBoardTest);
+}
 
-static int sceneIdx = -1;
-
-
-static std::function<Layer*()> createFunctions[] =
+//------------------------------------------------------------------
+//
+// Billboard Rotation Test
+//
+//------------------------------------------------------------------
+BillBoardRotationTest::BillBoardRotationTest()
 {
-    CL(BillBoardTest)
-};
-
-#define MAX_LAYER    (sizeof(createFunctions) / sizeof(createFunctions[0]))
-
-static Layer* nextSpriteTestAction()
-{
-    sceneIdx++;
-    sceneIdx = sceneIdx % MAX_LAYER;
+    auto root = Sprite3D::create();
+    root->setNormalizedPosition(Vec2(.5,.25));
+    addChild(root);
     
-    auto layer = (createFunctions[sceneIdx])();
-    return layer;
-}
-
-static Layer* backSpriteTestAction()
-{
-    sceneIdx--;
-    int total = MAX_LAYER;
-    if( sceneIdx < 0 )
-        sceneIdx += total;
+    auto model = Sprite3D::create("Sprite3DTest/orc.c3b");
+    model->setScale(5);
+    model->setRotation3D(Vec3(0,180,0));
+    root->addChild(model);
     
-    auto layer = (createFunctions[sceneIdx])();
-    return layer;
+    auto bill = BillBoard::create();
+    bill->setPosition(0, 120);
+    root->addChild(bill);
+    
+    auto sp = Sprite::create("Images/SpookyPeas.png");
+    sp->setScale(2);
+    bill->addChild(sp);
+    
+    auto lbl = Label::create();
+    lbl->setPosition(0, 30);
+    lbl->setString("+100");
+    bill->addChild(lbl);
+    
+    auto r = RotateBy::create(10, Vec3(0,360,0));
+    auto rp = RepeatForever::create(r);
+    root->runAction(rp);
+    
+    auto jump = JumpBy::create(1, Vec2(0, 0), 30, 1);
+    auto scale = ScaleBy::create(2.f, 2.f, 2.f, 0.1f);
+    auto seq = Sequence::create(jump,scale, NULL);
+    
+    auto rot = RotateBy::create(2, Vec3(-90, 0, 0));
+    auto act = Spawn::create(seq, rot,NULL);
+    
+    auto scale2 = scale->reverse();
+    auto rot2 = rot->reverse();
+    auto act2 = Spawn::create(scale2, rot2, NULL);
+    
+    auto seq2 = Sequence::create(act, act2, NULL);
+    auto repeat = RepeatForever::create(seq2);
+    model->runAction(repeat);
 }
 
-static Layer* restartSpriteTestAction()
+BillBoardRotationTest::~BillBoardRotationTest()
 {
-    auto layer = (createFunctions[sceneIdx])();
-    return layer;
+    
 }
 
+std::string BillBoardRotationTest::title() const
+{
+    return "Rotation Test";
+}
+
+std::string BillBoardRotationTest::subtitle() const
+{
+    return "All the sprites should still facing camera";
+}
+
+//------------------------------------------------------------------
+//
+// Billboard Rendering Test
+//
+//------------------------------------------------------------------
 BillBoardTest::BillBoardTest()
 :  _camera(nullptr)
 {
@@ -238,6 +275,7 @@ void BillBoardTest::addNewAniBillBoradWithCoords(Vec3 p)
 void BillBoardTest::update(float dt)
 {
 }
+
 void BillBoardTest::onTouchesMoved(const std::vector<Touch*>& touches, Event* event)
 {
     if(touches.size()==1)
@@ -261,16 +299,10 @@ void BillBoardTest::onTouchesMoved(const std::vector<Touch*>& touches, Event* ev
         _camera->setPosition3D(cameraPos);      
     }
 }
+
 void BillBoardTest::rotateCameraCallback(Ref* sender,float value)
 {
     Vec3  rotation3D= _camera->getRotation3D();
     rotation3D.y+= value;
     _camera->setRotation3D(rotation3D);
-}
-
-void BillBoardTestScene::runThisTest()
-{
-    auto layer = nextSpriteTestAction();
-    addChild(layer);
-    Director::getInstance()->replaceScene(this);
 }

@@ -2,7 +2,7 @@
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2013 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2015 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -47,6 +47,8 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "renderer/ccGLStateCache.h"
 #include "renderer/CCRenderer.h"
+#include "renderer/CCRenderState.h"
+#include "renderer/CCFrameBuffer.h"
 #include "2d/CCCamera.h"
 #include "base/CCUserDefault.h"
 #include "base/ccFPSImages.h"
@@ -59,14 +61,9 @@ THE SOFTWARE.
 #include "base/CCConfiguration.h"
 #include "base/CCAsyncTaskPool.h"
 #include "platform/CCApplication.h"
-//#include "platform/CCGLViewImpl.h"
 
 #if CC_ENABLE_SCRIPT_BINDING
-#include "CCScriptSupport.h"
-#endif
-
-#if CC_USE_PHYSICS
-#include "physics/CCPhysicsWorld.h"
+#include "base/CCScriptSupport.h"
 #endif
 
 /**
@@ -92,7 +89,9 @@ extern const char* cocos2dVersion(void);
 const char *Director::EVENT_PROJECTION_CHANGED = "director_projection_changed";
 const char *Director::EVENT_AFTER_DRAW = "director_after_draw";
 const char *Director::EVENT_AFTER_VISIT = "director_after_visit";
+const char *Director::EVENT_BEFORE_UPDATE = "director_before_update";
 const char *Director::EVENT_AFTER_UPDATE = "director_after_update";
+const char *Director::EVENT_RESET = "director_reset";
 
 Director* Director::getInstance()
 {
@@ -107,6 +106,7 @@ Director* Director::getInstance()
 }
 
 Director::Director()
+: _isStatusLabelUpdated(true)
 {
 }
 
@@ -127,7 +127,7 @@ bool Director::init(void)
     _frameRate = 0.0f;
     _FPSLabel = _drawnBatchesLabel = _drawnVerticesLabel = nullptr;
     _totalFrames = 0;
-    _lastUpdate = new struct timeval;
+    _lastUpdate = new (std::nothrow) struct timeval;
     _secondsPerFrame = 1.0f;
 
     // paused ?
@@ -142,8 +142,11 @@ bool Director::init(void)
     _winSizeInPoints = Size::ZERO;
 
     _openGLView = nullptr;
-
+    _defaultFBO = nullptr;
+    
     _contentScaleFactor = 1.0f;
+
+    _console = new (std::nothrow) Console;
 
     // scheduler
     _scheduler = new (std::nothrow) Scheduler();
@@ -156,19 +159,19 @@ bool Director::init(void)
     _eventAfterDraw->setUserData(this);
     _eventAfterVisit = new (std::nothrow) EventCustom(EVENT_AFTER_VISIT);
     _eventAfterVisit->setUserData(this);
+    _eventBeforeUpdate = new (std::nothrow) EventCustom(EVENT_BEFORE_UPDATE);
+    _eventBeforeUpdate->setUserData(this);
     _eventAfterUpdate = new (std::nothrow) EventCustom(EVENT_AFTER_UPDATE);
     _eventAfterUpdate->setUserData(this);
     _eventProjectionChanged = new (std::nothrow) EventCustom(EVENT_PROJECTION_CHANGED);
     _eventProjectionChanged->setUserData(this);
-
-
+    _eventResetDirector = new (std::nothrow) EventCustom(EVENT_RESET);
     //init TextureCache
     initTextureCache();
     initMatrixStack();
 
     _renderer = new (std::nothrow) Renderer;
-
-    _console = new (std::nothrow) Console;
+    RenderState::initialize();
 
     return true;
 }
@@ -185,11 +188,14 @@ Director::~Director(void)
     CC_SAFE_RELEASE(_notificationNode);
     CC_SAFE_RELEASE(_scheduler);
     CC_SAFE_RELEASE(_actionManager);
+    CC_SAFE_DELETE(_defaultFBO);
     
+    delete _eventBeforeUpdate;
     delete _eventAfterUpdate;
     delete _eventAfterDraw;
     delete _eventAfterVisit;
     delete _eventProjectionChanged;
+    delete _eventResetDirector;
 
     delete _renderer;
 
@@ -248,10 +254,16 @@ void Director::setGLDefaultValues()
     CCASSERT(_openGLView, "opengl view should not be null");
 
     setAlphaBlending(true);
-    // FIXME: Fix me, should enable/disable depth test according the depth format as cocos2d-iphone did
-    // [self setDepthTest: view_.depthFormat];
     setDepthTest(false);
     setProjection(_projection);
+
+    // Everything should be drawn within `Scene::render()`.
+    // Otherwise it might not render correctly since the GL state might not be the correct one
+    // so the FPS should be part of Scene. But until we move them there, this little hack is to
+    // set the default glViewPort(), so that when `Scene::render()` exits, the viewport is the correct
+    // one for the FPS
+    auto vp = Camera::getDefaultViewport();
+    glViewport(vp._left, vp._bottom, vp._width, vp._height);
 }
 
 // Draw the Scene
@@ -268,12 +280,13 @@ void Director::drawScene()
     //tick before glClear: issue #533
     if (! _paused)
     {
+        _eventDispatcher->dispatchEvent(_eventBeforeUpdate);
         _scheduler->update(_deltaTime);
         _eventDispatcher->dispatchEvent(_eventAfterUpdate);
     }
 
     _renderer->clear();
-
+    experimental::FrameBuffer::clearAllFBOs();
     /* to avoid flickr, nextScene MUST be here: after tick and before draw.
      * FIXME: Which bug is this one. It seems that it can't be reproduced with v0.9
      */
@@ -286,18 +299,14 @@ void Director::drawScene()
     
     if (_runningScene)
     {
-#if CC_USE_PHYSICS
-        auto physicsWorld = _runningScene->getPhysicsWorld();
-        if (physicsWorld && physicsWorld->isAutoStep())
-        {
-            physicsWorld->update(_deltaTime, false);
-        }
+#if (CC_USE_PHYSICS || (CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION) || CC_USE_NAVMESH)
+        _runningScene->stepPhysicsAndNavigation(_deltaTime);
 #endif
         //clear draw stats
         _renderer->clearDrawStats();
         
         //render the scene
-        _runningScene->render(_renderer);
+        _openGLView->renderScene(_runningScene, _renderer);
         
         _eventDispatcher->dispatchEvent(_eventAfterVisit);
     }
@@ -388,7 +397,7 @@ void Director::setOpenGLView(GLView *openGLView)
         // set size
         _winSizeInPoints = _openGLView->getDesignResolutionSize();
 
-        createStatsLabel();
+        _isStatusLabelUpdated = true;
 
         if (_openGLView)
         {
@@ -403,6 +412,9 @@ void Director::setOpenGLView(GLView *openGLView)
         {
             _eventDispatcher->setEnabled(true);
         }
+        
+        _defaultFBO = experimental::FrameBuffer::getOrCreateDefaultFBO(_openGLView);
+        _defaultFBO->retain();
     }
 }
 
@@ -413,11 +425,7 @@ TextureCache* Director::getTextureCache() const
 
 void Director::initTextureCache()
 {
-#ifdef EMSCRIPTEN
-    _textureCache = new (std::nothrow) TextureCacheEmscripten();
-#else
     _textureCache = new (std::nothrow) TextureCache();
-#endif // EMSCRIPTEN
 }
 
 void Director::destroyTextureCache()
@@ -445,7 +453,7 @@ void Director::setNextDeltaTimeZero(bool nextDeltaTimeZero)
 //
 // FIXME TODO
 // Matrix code MUST NOT be part of the Director
-// MUST BE moved outide.
+// MUST BE moved outside.
 // Why the Director must have this code ?
 //
 void Director::initMatrixStack()
@@ -575,7 +583,7 @@ void Director::pushMatrix(MATRIX_STACK_TYPE type)
     }
 }
 
-const Mat4& Director::getMatrix(MATRIX_STACK_TYPE type)
+const Mat4& Director::getMatrix(MATRIX_STACK_TYPE type) const
 {
     if(type == MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW)
     {
@@ -604,16 +612,9 @@ void Director::setProjection(Projection projection)
     {
         case Projection::_2D:
         {
-            loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WP8
-            if(getOpenGLView() != nullptr)
-            {
-                multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, getOpenGLView()->getOrientationMatrix());
-            }
-#endif
             Mat4 orthoMatrix;
             Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024, 1024, &orthoMatrix);
-            multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, orthoMatrix);
+            loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, orthoMatrix);
             loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
             break;
         }
@@ -624,25 +625,14 @@ void Director::setProjection(Projection projection)
 
             Mat4 matrixPerspective, matrixLookup;
 
-            loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-            
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WP8
-            //if needed, we need to add a rotation for Landscape orientations on Windows Phone 8 since it is always in Portrait Mode
-            GLView* view = getOpenGLView();
-            if(getOpenGLView() != nullptr)
-            {
-                multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, getOpenGLView()->getOrientationMatrix());
-            }
-#endif
             // issue #1334
             Mat4::createPerspective(60, (GLfloat)size.width/size.height, 10, zeye+size.height/2, &matrixPerspective);
 
-            multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, matrixPerspective);
-
             Vec3 eye(size.width/2, size.height/2, zeye), center(size.width/2, size.height/2, 0.0f), up(0.0f, 1.0f, 0.0f);
             Mat4::createLookAt(eye, center, up, &matrixLookup);
-            multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, matrixLookup);
-            
+            Mat4 proj3d = matrixPerspective * matrixLookup;
+
+            loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, proj3d);
             loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
             break;
         }
@@ -707,6 +697,9 @@ void Director::setDepthTest(bool on)
 void Director::setClearColor(const Color4F& clearColor)
 {
     _renderer->setClearColor(clearColor);
+    auto defaultFBO = experimental::FrameBuffer::getOrCreateDefaultFBO(_openGLView);
+    
+    if(defaultFBO) defaultFBO->setClearColor(clearColor);
 }
 
 static void GLToClipTransform(Mat4 *transformOut)
@@ -714,15 +707,9 @@ static void GLToClipTransform(Mat4 *transformOut)
     if(nullptr == transformOut) return;
     
     Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+    CCASSERT(nullptr != director, "Director is null when setting matrix stack");
 
     auto projection = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WP8
-    //if needed, we need to undo the rotation for Landscape orientation in order to get the correct positions
-    projection = Director::getInstance()->getOpenGLView()->getReverseOrientationMatrix() * projection;
-#endif
-
     auto modelview = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     *transformOut = projection * modelview;
 }
@@ -842,10 +829,18 @@ void Director::replaceScene(Scene *scene)
         _nextScene = nullptr;
     }
 
-    ssize_t index = _scenesStack.size();
+    ssize_t index = _scenesStack.size() - 1;
 
     _sendCleanupToScene = true;
-    _scenesStack.replace(index - 1, scene);
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
+    {
+        sEngine->retainScriptObject(this, scene);
+        sEngine->releaseScriptObject(this, _scenesStack.at(index));
+    }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    _scenesStack.replace(index, scene);
 
     _nextScene = scene;
 }
@@ -856,6 +851,13 @@ void Director::pushScene(Scene *scene)
 
     _sendCleanupToScene = false;
 
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
+    {
+        sEngine->retainScriptObject(this, scene);
+    }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.pushBack(scene);
     _nextScene = scene;
 }
@@ -863,7 +865,14 @@ void Director::pushScene(Scene *scene)
 void Director::popScene(void)
 {
     CCASSERT(_runningScene != nullptr, "running scene should not null");
-
+    
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
+    {
+        sEngine->releaseScriptObject(this, _scenesStack.back());
+    }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.popBack();
     ssize_t c = _scenesStack.size();
 
@@ -899,9 +908,16 @@ void Director::popToSceneStackLevel(int level)
     if (level >= c)
         return;
 
-    auto fisrtOnStackScene = _scenesStack.back();
-    if (fisrtOnStackScene == _runningScene)
+    auto firstOnStackScene = _scenesStack.back();
+    if (firstOnStackScene == _runningScene)
     {
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+        auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (sEngine)
+        {
+            sEngine->releaseScriptObject(this, _scenesStack.back());
+        }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _scenesStack.popBack();
         --c;
     }
@@ -917,6 +933,13 @@ void Director::popToSceneStackLevel(int level)
         }
 
         current->cleanup();
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+        auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (sEngine)
+        {
+            sEngine->releaseScriptObject(this, _scenesStack.back());
+        }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _scenesStack.popBack();
         --c;
     }
@@ -939,6 +962,28 @@ void Director::restart()
 
 void Director::reset()
 {
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    
+    if (_runningScene)
+    {
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+        if (sEngine)
+        {
+            sEngine->releaseScriptObject(this, _runningScene);
+        }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+        _runningScene->onExit();
+        _runningScene->cleanup();
+        _runningScene->release();
+    }
+    
+    _runningScene = nullptr;
+    _nextScene = nullptr;
+
+    _eventDispatcher->dispatchEvent(_eventResetDirector);
+    
     // cleanup scheduler
     getScheduler()->unscheduleAll();
     
@@ -948,28 +993,30 @@ void Director::reset()
         _eventDispatcher->removeAllEventListeners();
     }
     
-    if (_runningScene)
-    {
-        _runningScene->onExit();
-        _runningScene->cleanup();
-        _runningScene->release();
-    }
-    
-    _runningScene = nullptr;
-    _nextScene = nullptr;
-    
     // remove all objects, but don't release it.
     // runWithScene might be executed after 'end'.
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    if (sEngine)
+    {
+        for (const auto &scene : _scenesStack)
+        {
+            if (scene)
+                sEngine->releaseScriptObject(this, scene);
+        }
+    }
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.clear();
     
     stopAnimation();
     
+    CC_SAFE_RELEASE_NULL(_notificationNode);
     CC_SAFE_RELEASE_NULL(_FPSLabel);
     CC_SAFE_RELEASE_NULL(_drawnBatchesLabel);
     CC_SAFE_RELEASE_NULL(_drawnVerticesLabel);
     
     // purge bitmap cache
     FontFNT::purgeCachedData();
+    FontAtlasCache::purgeCachedData();
     
     FontFreeType::shutdownFreeType();
     
@@ -995,12 +1042,14 @@ void Director::reset()
     GLProgramCache::destroyInstance();
     GLProgramStateCache::destroyInstance();
     FileUtils::destroyInstance();
-    AsyncTaskPool::destoryInstance();
+    AsyncTaskPool::destroyInstance();
     
     // cocos2d-x specific data structures
     UserDefault::destroyInstance();
     
     GL::invalidateStateCache();
+
+    RenderState::finalize();
     
     destroyTextureCache();
 }
@@ -1026,6 +1075,9 @@ void Director::restartDirector()
 {
     reset();
     
+    // RenderState need to be reinitialized
+    RenderState::initialize();
+
     // Texture cache need to be reinitialized
     initTextureCache();
     
@@ -1034,10 +1086,13 @@ void Director::restartDirector()
     
     // release the objects
     PoolManager::getInstance()->getCurrentPool()->clear();
+
+    // Restart animation
+    startAnimation();
     
     // Real restart in script level
 #if CC_ENABLE_SCRIPT_BINDING
-    ScriptEvent scriptEvent(kRestartGame, NULL);
+    ScriptEvent scriptEvent(kRestartGame, nullptr);
     ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
 #endif
 }
@@ -1112,6 +1167,12 @@ void Director::resume()
 // updates the FPS every frame
 void Director::showStats()
 {
+    if (_isStatusLabelUpdated)
+    {
+        createStatsLabel();
+        _isStatusLabelUpdated = false;
+    }
+
     static unsigned long prevCalls = 0;
     static unsigned long prevVerts = 0;
     static float prevDeltaTime  = 0.016f; // 60FPS
@@ -1257,14 +1318,24 @@ void Director::setContentScaleFactor(float scaleFactor)
     if (scaleFactor != _contentScaleFactor)
     {
         _contentScaleFactor = scaleFactor;
-        createStatsLabel();
+        _isStatusLabelUpdated = true;
     }
 }
 
 void Director::setNotificationNode(Node *node)
 {
-    CC_SAFE_RELEASE(_notificationNode);
-    _notificationNode = node;
+	if (_notificationNode != nullptr){
+		_notificationNode->onExitTransitionDidStart();
+		_notificationNode->onExit();
+		_notificationNode->cleanup();
+	}
+	CC_SAFE_RELEASE(_notificationNode);
+
+	_notificationNode = node;
+	if (node == nullptr)
+		return;
+	_notificationNode->onEnter();
+	_notificationNode->onEnterTransitionDidFinish();
     CC_SAFE_RETAIN(_notificationNode);
 }
 
@@ -1314,9 +1385,9 @@ void DisplayLinkDirector::startAnimation()
 
     _invalid = false;
 
-#ifndef WP8_SHADER_COMPILER
+    _cocos2d_thread_id = std::this_thread::get_id();
+
     Application::getInstance()->setAnimationInterval(_animationInterval);
-#endif
 
     // fix issue #3509, skip one fps to avoid incorrect time calculation.
     setNextDeltaTimeZero(true);
@@ -1348,7 +1419,7 @@ void DisplayLinkDirector::stopAnimation()
     _invalid = true;
 }
 
-void DisplayLinkDirector::setAnimationInterval(double interval)
+void DisplayLinkDirector::setAnimationInterval(float interval)
 {
     _animationInterval = interval;
     if (! _invalid)

@@ -20,12 +20,14 @@
 -- @param self
 -- @param #ccs.Bone bone
 -- @param #string parentName
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
 -- @function [parent=#Armature] setAnimation 
 -- @param self
 -- @param #ccs.ArmatureAnimation animation
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
@@ -46,11 +48,13 @@
 -- @function [parent=#Armature] setVersion 
 -- @param self
 -- @param #float version
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- Set contentsize and Calculate anchor point.
 -- @function [parent=#Armature] updateOffsetPoint 
 -- @param self
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
@@ -66,6 +70,7 @@
 -- @param self
 -- @param #ccs.Bone bone
 -- @param #bool recursion
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
@@ -74,9 +79,8 @@
 -- @return BatchNode#BatchNode ret (return value: ccs.BatchNode)
         
 --------------------------------
--- @overload self, string         
--- @overload self         
 -- @overload self, string, ccs.Bone         
+-- @overload self, string         
 -- @function [parent=#Armature] init
 -- @param self
 -- @param #string name
@@ -88,12 +92,14 @@
 -- @function [parent=#Armature] setParentBone 
 -- @param self
 -- @param #ccs.Bone parentBone
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
 -- @function [parent=#Armature] setBatchNode 
 -- @param self
 -- @param #ccs.BatchNode batchNode
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- js NA<br>
@@ -107,6 +113,7 @@
 -- @function [parent=#Armature] setArmatureData 
 -- @param self
 -- @param #ccs.ArmatureData armatureData
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- Add a Bone to this Armature,<br>
@@ -116,6 +123,7 @@
 -- @param self
 -- @param #ccs.Bone bone
 -- @param #string parentName
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
@@ -147,6 +155,7 @@
 -- @function [parent=#Armature] setBlendFunc 
 -- @param self
 -- @param #cc.BlendFunc blendFunc
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- Get Armature's bone dictionary<br>
@@ -170,6 +179,7 @@
 -- @function [parent=#Armature] setAnchorPoint 
 -- @param self
 -- @param #vec2_table point
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
@@ -178,6 +188,7 @@
 -- @param #cc.Renderer renderer
 -- @param #mat4_table transform
 -- @param #unsigned int flags
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 --------------------------------
 -- 
@@ -190,6 +201,13 @@
 -- @function [parent=#Armature] update 
 -- @param self
 -- @param #float dt
+-- @return Armature#Armature self (return value: ccs.Armature)
+        
+--------------------------------
+-- Init the empty armature
+-- @function [parent=#Armature] init 
+-- @param self
+-- @return bool#bool ret (return value: bool)
         
 --------------------------------
 -- 
@@ -207,5 +225,6 @@
 -- js ctor
 -- @function [parent=#Armature] Armature 
 -- @param self
+-- @return Armature#Armature self (return value: ccs.Armature)
         
 return nil

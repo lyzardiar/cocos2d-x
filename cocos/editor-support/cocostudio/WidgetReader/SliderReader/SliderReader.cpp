@@ -1,11 +1,14 @@
 
 
-#include "SliderReader.h"
+#include "editor-support/cocostudio/WidgetReader/SliderReader/SliderReader.h"
 
 #include "ui/UISlider.h"
-#include "cocostudio/CocoLoader.h"
-#include "cocostudio/CSParseBinary_generated.h"
-#include "cocostudio/FlatBuffersSerialize.h"
+#include "2d/CCSpriteFrameCache.h"
+#include "platform/CCFileUtils.h"
+
+#include "editor-support/cocostudio/CocoLoader.h"
+#include "editor-support/cocostudio/CSParseBinary_generated.h"
+#include "editor-support/cocostudio/FlatBuffersSerialize.h"
 
 #include "tinyxml2.h"
 #include "flatbuffers/flatbuffers.h"
@@ -46,6 +49,11 @@ namespace cocostudio
             instanceSliderReader = new (std::nothrow) SliderReader();
         }
         return instanceSliderReader;
+    }
+    
+    void SliderReader::destroyInstance()
+    {
+        CC_SAFE_DELETE(instanceSliderReader);
     }
     
     void SliderReader::setPropsFromBinary(cocos2d::ui::Widget *widget, CocoLoader *cocoLoader, stExpCocoNode* cocoNode)
@@ -461,7 +469,7 @@ namespace cocostudio
         auto options = (SliderOptions*)sliderOptions;
         
         int percent = options->percent();
-        slider->setPercent(percent);
+        //slider->setPercent(percent);
         
         bool imageFileExist = false;
         std::string imageErrorFilePath = "";
@@ -520,12 +528,12 @@ namespace cocostudio
         {
             slider->loadBarTexture(imageFileName, (Widget::TextureResType)imageFileNameType);
         }
-        else
-        {
-            auto label = Label::create();
-            label->setString(__String::createWithFormat("%s missed", imageErrorFilePath.c_str())->getCString());
-            slider->addChild(label);
-        }
+        //else
+        //{
+        //    auto label = Label::create();
+        //    label->setString(__String::createWithFormat("%s missed", imageErrorFilePath.c_str())->getCString());
+        //    slider->addChild(label);
+        //}
         
         //loading normal slider ball texture
         bool normalFileExist = false;
@@ -585,12 +593,12 @@ namespace cocostudio
         {
             slider->loadSlidBallTextureNormal(normalFileName, (Widget::TextureResType)normalType);
         }
-        else
-        {
-            auto label = Label::create();
-            label->setString(__String::createWithFormat("%s missed", normalErrorFilePath.c_str())->getCString());
-            slider->addChild(label);
-        }
+        //else
+        //{
+        //    auto label = Label::create();
+        //    label->setString(__String::createWithFormat("%s missed", normalErrorFilePath.c_str())->getCString());
+        //    slider->addChild(label);
+        //}
         
         //loading slider ball press texture
         bool pressedFileExist = false;
@@ -650,12 +658,12 @@ namespace cocostudio
         {
             slider->loadSlidBallTexturePressed(pressedFileName, (Widget::TextureResType)pressedType);
         }
-        else
-        {
-            auto label = Label::create();
-            label->setString(__String::createWithFormat("%s missed", pressedErrorFilePath.c_str())->getCString());
-            slider->addChild(label);
-        }
+        //else
+        //{
+        //    auto label = Label::create();
+        //    label->setString(__String::createWithFormat("%s missed", pressedErrorFilePath.c_str())->getCString());
+        //    slider->addChild(label);
+        //}
         
         //loading silder ball disable texture
         bool disabledFileExist = false;
@@ -715,12 +723,12 @@ namespace cocostudio
         {
             slider->loadSlidBallTextureDisabled(disabledFileName, (Widget::TextureResType)disabledType);
         }
-        else
-        {
-            auto label = Label::create();
-            label->setString(__String::createWithFormat("%s missed", disabledErrorFilePath.c_str())->getCString());
-            slider->addChild(label);
-        }
+        //else
+        //{
+        //    auto label = Label::create();
+        //    label->setString(__String::createWithFormat("%s missed", disabledErrorFilePath.c_str())->getCString());
+        //    slider->addChild(label);
+        //}
         
         //load slider progress texture
         bool progressFileExist = false;
@@ -780,20 +788,20 @@ namespace cocostudio
         {
             slider->loadProgressBarTexture(progressBarFileName, (Widget::TextureResType)progressBarType);
         }
-        else
-        {
-            auto label = Label::create();
-            label->setString(__String::createWithFormat("%s missed", progressErrorFilePath.c_str())->getCString());
-            slider->addChild(label);
-        }
+        //else
+        //{
+        //    auto label = Label::create();
+        //    label->setString(__String::createWithFormat("%s missed", progressErrorFilePath.c_str())->getCString());
+        //    slider->addChild(label);
+        //}
         
-        bool displaystate = options->displaystate();
+        bool displaystate = options->displaystate() != 0;
         slider->setBright(displaystate);
         slider->setEnabled(displaystate);
         
         auto widgetReader = WidgetReader::getInstance();
         widgetReader->setPropsWithFlatBuffers(node, (Table*)options->widgetOptions());
-        
+        slider->setPercent(percent);
     }
     
     Node* SliderReader::createNodeWithFlatBuffers(const flatbuffers::Table *sliderOptions)

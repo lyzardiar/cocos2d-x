@@ -1,12 +1,14 @@
 
 
-#include "PageViewReader.h"
+#include "editor-support/cocostudio/WidgetReader/PageViewReader/PageViewReader.h"
 
 #include "ui/UIPageView.h"
 #include "ui/UILayout.h"
-#include "cocostudio/CocoLoader.h"
-#include "cocostudio/CSParseBinary_generated.h"
-#include "cocostudio/FlatBuffersSerialize.h"
+#include "platform/CCFileUtils.h"
+#include "2d/CCSpriteFrameCache.h"
+#include "editor-support/cocostudio/CocoLoader.h"
+#include "editor-support/cocostudio/CSParseBinary_generated.h"
+#include "editor-support/cocostudio/FlatBuffersSerialize.h"
 
 #include "tinyxml2.h"
 #include "flatbuffers/flatbuffers.h"
@@ -38,6 +40,11 @@ namespace cocostudio
             instancePageViewReader = new (std::nothrow) PageViewReader();
         }
         return instancePageViewReader;
+    }
+    
+    void PageViewReader::destroyInstance()
+    {
+        CC_SAFE_DELETE(instancePageViewReader);
     }
     
     void PageViewReader::setPropsFromBinary(cocos2d::ui::Widget *widget, CocoLoader *cocoLoader, stExpCocoNode *cocoNode)
@@ -311,10 +318,10 @@ namespace cocostudio
         PageView* pageView = static_cast<PageView*>(node);
         auto options = (PageViewOptions*)pageViewOptions;
         
-        bool clipEnabled = options->clipEnabled();
+        bool clipEnabled = options->clipEnabled() != 0;
         pageView->setClippingEnabled(clipEnabled);
         
-        bool backGroundScale9Enabled = options->backGroundScale9Enabled();
+        bool backGroundScale9Enabled = options->backGroundScale9Enabled() != 0;
         pageView->setBackGroundImageScale9Enabled(backGroundScale9Enabled);
         
         
@@ -397,12 +404,6 @@ namespace cocostudio
             if (fileExist)
             {
                 pageView->setBackGroundImage(imageFileName, (Widget::TextureResType)imageFileNameType);
-            }
-            else
-            {
-                auto label = Label::create();
-                label->setString(__String::createWithFormat("%s missed", errorFilePath.c_str())->getCString());
-                pageView->addChild(label);
             }
         }
         

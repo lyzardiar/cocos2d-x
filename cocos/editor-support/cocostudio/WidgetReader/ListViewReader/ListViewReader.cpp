@@ -1,11 +1,13 @@
 
 
-#include "ListViewReader.h"
+#include "editor-support/cocostudio/WidgetReader/ListViewReader/ListViewReader.h"
 
 #include "ui/UIListView.h"
-#include "cocostudio/CocoLoader.h"
-#include "cocostudio/CSParseBinary_generated.h"
-#include "cocostudio/FlatBuffersSerialize.h"
+#include "platform/CCFileUtils.h"
+#include "2d/CCSpriteFrameCache.h"
+#include "editor-support/cocostudio/CocoLoader.h"
+#include "editor-support/cocostudio/CSParseBinary_generated.h"
+#include "editor-support/cocostudio/FlatBuffersSerialize.h"
 
 #include "tinyxml2.h"
 #include "flatbuffers/flatbuffers.h"
@@ -40,6 +42,11 @@ namespace cocostudio
             instanceListViewReader = new (std::nothrow) ListViewReader();
         }
         return instanceListViewReader;
+    }
+    
+    void ListViewReader::destroyInstance()
+    {
+        CC_SAFE_DELETE(instanceListViewReader);
     }
     
     void ListViewReader::setPropsFromBinary(cocos2d::ui::Widget *widget, CocoLoader *cocoLoader, stExpCocoNode* cocoNode)
@@ -398,10 +405,10 @@ namespace cocostudio
         ListView* listView = static_cast<ListView*>(node);
         auto options = (ListViewOptions*)listViewOptions;
         
-        bool clipEnabled = options->clipEnabled();
+        bool clipEnabled = options->clipEnabled() != 0;
         listView->setClippingEnabled(clipEnabled);
         
-        bool backGroundScale9Enabled = options->backGroundScale9Enabled();
+        bool backGroundScale9Enabled = options->backGroundScale9Enabled() != 0;
         listView->setBackGroundImageScale9Enabled(backGroundScale9Enabled);
         
         
@@ -485,12 +492,6 @@ namespace cocostudio
             {
                 listView->setBackGroundImage(imageFileName, (Widget::TextureResType)imageFileNameType);
             }
-            else
-            {
-                auto label = Label::create();
-                label->setString(__String::createWithFormat("%s missed", errorFilePath.c_str())->getCString());
-                listView->addChild(label);
-            }
         }
         
         auto widgetOptions = options->widgetOptions();
@@ -506,7 +507,7 @@ namespace cocostudio
         listView->setInnerContainerSize(innerSize);
         //         int direction = options->direction();
         //         listView->setDirection((ScrollView::Direction)direction);
-        bool bounceEnabled = options->bounceEnabled();
+        bool bounceEnabled = options->bounceEnabled() != 0;
         listView->setBounceEnabled(bounceEnabled);
         
         //         int gravityValue = options->gravity();

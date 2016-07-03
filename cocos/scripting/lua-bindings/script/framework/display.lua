@@ -185,31 +185,31 @@ display.CENTER_TOP    = cc.p(0.5, 1)
 display.CENTER_BOTTOM = cc.p(0.5, 0)
 
 display.SCENE_TRANSITIONS = {
-    CROSSFADE       = cc.TransitionCrossFade,
+    CROSSFADE       = {cc.TransitionCrossFade},
     FADE            = {cc.TransitionFade, cc.c3b(0, 0, 0)},
-    FADEBL          = cc.TransitionFadeBL,
-    FADEDOWN        = cc.TransitionFadeDown,
-    FADETR          = cc.TransitionFadeTR,
-    FADEUP          = cc.TransitionFadeUp,
+    FADEBL          = {cc.TransitionFadeBL},
+    FADEDOWN        = {cc.TransitionFadeDown},
+    FADETR          = {cc.TransitionFadeTR},
+    FADEUP          = {cc.TransitionFadeUp},
     FLIPANGULAR     = {cc.TransitionFlipAngular, cc.TRANSITION_ORIENTATION_LEFT_OVER},
     FLIPX           = {cc.TransitionFlipX, cc.TRANSITION_ORIENTATION_LEFT_OVER},
     FLIPY           = {cc.TransitionFlipY, cc.TRANSITION_ORIENTATION_UP_OVER},
-    JUMPZOOM        = cc.TransitionJumpZoom,
-    MOVEINB         = cc.TransitionMoveInB,
-    MOVEINL         = cc.TransitionMoveInL,
-    MOVEINR         = cc.TransitionMoveInR,
-    MOVEINT         = cc.TransitionMoveInT,
+    JUMPZOOM        = {cc.TransitionJumpZoom},
+    MOVEINB         = {cc.TransitionMoveInB},
+    MOVEINL         = {cc.TransitionMoveInL},
+    MOVEINR         = {cc.TransitionMoveInR},
+    MOVEINT         = {cc.TransitionMoveInT},
     PAGETURN        = {cc.TransitionPageTurn, false},
-    ROTOZOOM        = cc.TransitionRotoZoom,
-    SHRINKGROW      = cc.TransitionShrinkGrow,
-    SLIDEINB        = cc.TransitionSlideInB,
-    SLIDEINL        = cc.TransitionSlideInL,
-    SLIDEINR        = cc.TransitionSlideInR,
-    SLIDEINT        = cc.TransitionSlideInT,
-    SPLITCOLS       = cc.TransitionSplitCols,
-    SPLITROWS       = cc.TransitionSplitRows,
-    TURNOFFTILES    = cc.TransitionTurnOffTiles,
-    ZOOMFLIPANGULAR = cc.TransitionZoomFlipAngular,
+    ROTOZOOM        = {cc.TransitionRotoZoom},
+    SHRINKGROW      = {cc.TransitionShrinkGrow},
+    SLIDEINB        = {cc.TransitionSlideInB},
+    SLIDEINL        = {cc.TransitionSlideInL},
+    SLIDEINR        = {cc.TransitionSlideInR},
+    SLIDEINT        = {cc.TransitionSlideInT},
+    SPLITCOLS       = {cc.TransitionSplitCols},
+    SPLITROWS       = {cc.TransitionSplitRows},
+    TURNOFFTILES    = {cc.TransitionTurnOffTiles},
+    ZOOMFLIPANGULAR = {cc.TransitionZoomFlipAngular},
     ZOOMFLIPX       = {cc.TransitionZoomFlipX, cc.TRANSITION_ORIENTATION_LEFT_OVER},
     ZOOMFLIPY       = {cc.TransitionZoomFlipY, cc.TRANSITION_ORIENTATION_UP_OVER},
 }
@@ -252,12 +252,13 @@ function display.wrapScene(scene, transition, time, more)
 
     if display.SCENE_TRANSITIONS[key] then
         local t = display.SCENE_TRANSITIONS[key]
+        local cls = t[1]
         time = time or 0.2
         more = more or t[2]
-        if type(t) == "table" then
-            scene = t[1]:create(time, scene, more)
+        if more ~= nil then
+            scene = cls:create(time, scene, more)
         else
-            scene = t:create(time, scene)
+            scene = cls:create(time, scene)
         end
     else
         error(string.format("display.wrapScene() - invalid transition %s", tostring(transition)))
@@ -412,12 +413,12 @@ end
 function display.newSpriteFrame(source, ...)
     local frame
     if type(source) == "string" then
-        if string.byte(souce) == 35 then -- first char is #
-            souce = string.sub(souce, 2)
+        if string.byte(source) == 35 then -- first char is #
+            source = string.sub(source, 2)
         end
-        frame = spriteFrameCache:getSpriteFrame(souce)
+        frame = spriteFrameCache:getSpriteFrame(source)
         if not frame then
-            error(string.format("display.newSpriteFrame() - invalid frame name \"%s\"", tostring(souce)), 0)
+            error(string.format("display.newSpriteFrame() - invalid frame name \"%s\"", tostring(source)), 0)
         end
     elseif tolua.type(source) == "cc.Texture2D" then
         frame = cc.SpriteFrame:createWithTexture(source, ...)
