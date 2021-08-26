@@ -158,6 +158,11 @@ if(BUILD_JS_LIBS)
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/js-bindings ${ENGINE_BINARY_PATH}/cocos/js-bindings)
 endif()
 
+## emscripten bindings lib
+if(BUILD_EM_LIBS)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/em-bindings ${ENGINE_BINARY_PATH}/cocos/em-bindings)
+endif()
+
 if(XCODE OR VS)
     cocos_mark_code_files("cocos2d")
 endif()
