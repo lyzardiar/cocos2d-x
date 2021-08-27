@@ -144,11 +144,11 @@ Editor.prototype = {
 
 	//
 
-	addNode: function ( object, parent, index ) {
+	addNode: function ( node, parent, index ) {
 
 		var scope = this;
-
-		object.traverse( function ( child ) {
+		/* TODO: 
+		node.traverse( function ( child ) {
 
 			if ( child.geometry !== undefined ) scope.addGeometry( child.geometry );
 			if ( child.material !== undefined ) scope.addMaterial( child.material );
@@ -157,19 +157,14 @@ Editor.prototype = {
 			scope.addHelper( child );
 
 		} );
-
+		*/
 		if ( parent === undefined ) {
-
-			this.scene.add( object );
-
+			this.scene.addChild( node );
 		} else {
-
-			parent.children.splice( index, 0, object );
-			object.parent = parent;
-
+			this.parent.addChild( node );
 		}
 
-		this.signals.nodeAdded.dispatch( object );
+		this.signals.nodeAdded.dispatch( node );
 		this.signals.sceneGraphChanged.dispatch();
 
 	},
