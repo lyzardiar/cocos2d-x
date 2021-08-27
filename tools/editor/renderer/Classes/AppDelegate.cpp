@@ -133,7 +133,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 //    glview->setVR(vrImpl);
 
     // Turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
 
     // Set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
@@ -143,8 +143,10 @@ bool AppDelegate::applicationDidFinishLaunching()
     scene->setName("Scene");
     scene->getDefaultCamera()->setName("Camera");
 
-    // Run
-    director->runWithScene(scene);
+    // Push scene but do not render
+    director->pushScene(scene);
+    director->startAnimation();
+    director->stopAnimation();
 
     return true;
 }

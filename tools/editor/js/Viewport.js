@@ -746,10 +746,13 @@ function Viewport( editor ) {
 	var endTime = 0;
 
 	function render() {
-// TODO: renderer not ready here
-
+		if (!window.cc) {
+			return;
+		}
+		
 		startTime = performance.now();
-/*
+
+/* TODO: control render
 		// Adding/removing grid to scene so materials with depthWrite false
 		// don't render under the grid.
 
@@ -769,6 +772,9 @@ function Viewport( editor ) {
 		endTime = performance.now();
 		editor.signals.sceneRendered.dispatch( endTime - startTime );
 */
+		cc.director.drawScene()
+		endTime = performance.now();
+		editor.signals.sceneRendered.dispatch( endTime - startTime );
 	}
 
 	return container;

@@ -72,13 +72,16 @@ void Node_setHeight(Node& node, const val& height) {
 }
 
 EMSCRIPTEN_BINDINGS(my_class_example) {
-  class_<cocos2d::Director>("cc.Director")
-    .class_function("getInstance", &cocos2d::Director::getInstance, allow_raw_pointers())
-    .function("getRunningScene", &cocos2d::Director::getRunningScene, allow_raw_pointers())
+  class_<Director>("cc.Director")
+    .class_function("getInstance", &Director::getInstance, allow_raw_pointers())
+    .function("getRunningScene", &Director::getRunningScene, allow_raw_pointers())
+    .function("getRenderer", &Director::getRenderer, allow_raw_pointers())
+    .function("drawScene", &Director::drawScene, allow_raw_pointers())
     ;
 
-  class_<EmscriptenGUIReader>("ccs.GUIReader")
-    .class_function("getInstance", &EmscriptenGUIReader::getInstance, allow_raw_pointers())
+  class_<EmscriptenGUIReader>("cc.Renderer")
+    .function("getDrawnBatches", &Renderer::getDrawnBatches, allow_raw_pointers())
+    .function("getDrawnVertices", &Renderer::getDrawnVertices, allow_raw_pointers())
     ;
 
   class_<Node>("cc.Node")

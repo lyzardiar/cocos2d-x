@@ -325,8 +325,7 @@ function Strings( config ) {
 			'toolbar/scale': 'Scale',
 			'toolbar/local': 'Local',
 
-			'viewport/info/objects': 'Objects',
-			'viewport/info/vertices': 'Vertices',
+			'viewport/info/drawcalls': 'Drawcalls',
 			'viewport/info/triangles': 'Triangles',
 			'viewport/info/frametime': 'Frametime'
 
