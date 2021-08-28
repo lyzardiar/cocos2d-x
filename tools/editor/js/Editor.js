@@ -200,13 +200,13 @@ Editor.prototype = {
 
 	},
 
-	removeNode: function ( object ) {
+	removeNode: function ( node ) {
 
-		if ( object.parent === null ) return; // avoid deleting the camera or scene
+		if ( node.parent === null ) return; // avoid deleting the camera or scene
 
 		var scope = this;
-
-		object.traverse( function ( child ) {
+		/* TODO:  remove cached camera
+		node.traverse( function ( child ) {
 
 			scope.removeCamera( child );
 			scope.removeHelper( child );
@@ -214,10 +214,10 @@ Editor.prototype = {
 			if ( child.material !== undefined ) scope.removeMaterial( child.material );
 
 		} );
+		*/
+		node.getParent().removeChild(node, true);
 
-		object.parent.remove( object );
-
-		this.signals.nodeRemoved.dispatch( object );
+		this.signals.nodeRemoved.dispatch( node );
 		this.signals.sceneGraphChanged.dispatch();
 
 	},

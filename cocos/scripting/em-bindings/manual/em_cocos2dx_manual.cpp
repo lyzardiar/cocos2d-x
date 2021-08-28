@@ -87,6 +87,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
   class_<Node>("cc.Node")
     .constructor(&Node::create, allow_raw_pointers())
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
+    .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
     .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)

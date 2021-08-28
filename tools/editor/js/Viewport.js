@@ -490,13 +490,13 @@ function Viewport( editor ) {
 			transformControls.detach();
 
 		}
-
+		/* TODO: remove object cache
 		object.traverse( function ( child ) {
 
 			objects.splice( objects.indexOf( child ), 1 );
 
 		} );
-
+		*/
 	} );
 
 	signals.helperAdded.add( function ( object ) {
