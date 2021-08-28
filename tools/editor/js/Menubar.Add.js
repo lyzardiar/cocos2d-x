@@ -70,7 +70,7 @@ function MenubarAdd( editor ) {
 	//
 
 	options.add( new UIHorizontalRule() );
-
+	/*
 	// AmbientLight
 
 	var option = new UIRow();
@@ -207,7 +207,7 @@ function MenubarAdd( editor ) {
 
 	} );
 	options.add( option );
-
+	*/
 	return container;
 
 }
