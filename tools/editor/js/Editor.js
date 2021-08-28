@@ -159,7 +159,7 @@ Editor.prototype = {
 		} );
 		*/
 		if ( parent === undefined ) {
-			this.scene.addChild( node );
+			cc.director.getRunningScene().addChild( node );
 		} else {
 			this.parent.addChild( node );
 		}

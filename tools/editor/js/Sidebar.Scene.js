@@ -492,9 +492,9 @@ function SidebarScene( editor ) {
 		if ( object !== null && object.parent !== null ) {
 
 			let needsRefresh = false;
-			let parent = object.parent;
-
-			while ( parent !== editor.scene ) {
+			let parent = object.getParent();
+			
+			while ( parent.getParent() ) {
 
 				if ( nodeStates.get( parent ) !== true ) {
 
@@ -503,7 +503,7 @@ function SidebarScene( editor ) {
 
 				}
 
-				parent = parent.parent;
+				parent = parent.getParent();
 
 			}
 

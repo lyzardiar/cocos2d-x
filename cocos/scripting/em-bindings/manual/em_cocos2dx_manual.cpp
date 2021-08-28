@@ -79,13 +79,15 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("drawScene", &Director::drawScene, allow_raw_pointers())
     ;
 
-  class_<EmscriptenGUIReader>("cc.Renderer")
+  class_<Renderer>("cc.Renderer")
     .function("getDrawnBatches", &Renderer::getDrawnBatches, allow_raw_pointers())
     .function("getDrawnVertices", &Renderer::getDrawnVertices, allow_raw_pointers())
     ;
 
   class_<Node>("cc.Node")
     .constructor(&Node::create, allow_raw_pointers())
+    .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
+    .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)
     .property<val>("anchorX", std::bind(&Node_getAnchorX, _1), std::bind(&Node_setAnchorX, _1, _2))

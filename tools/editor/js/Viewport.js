@@ -448,13 +448,14 @@ function Viewport( editor ) {
 	} );
 
 	signals.nodeAdded.add( function ( object ) {
-
+		// TODO: no traverse
+		/*
 		object.traverse( function ( child ) {
 
 			objects.push( child );
 
 		} );
-
+		*/
 	} );
 
 	signals.nodeChanged.add( function ( object ) {
