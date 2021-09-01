@@ -93,10 +93,16 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property("skewX", &Node::getSkewX, &Node::setSkewX)
     .property("skewY", &Node::getSkewY, &Node::setSkewY)
     .property("name", &Node::getName, &Node::setName)
+    .property("cascadeColorEnabled", &Node::isCascadeColorEnabled, &Node::setCascadeColorEnabled)
+    .property("opacity", &Node::getOpacity, &Node::setOpacity)
     .property<val>("children", std::bind(&Node_getChildren, _1))
     .function("getNodeToParentAffineTransform", select_overload<AffineTransform() const>(&Node::getNodeToParentAffineTransform), allow_raw_pointers())
     ;
 
+  class_<Sprite, base<Node>>("cc.Sprite")
+    .constructor(select_overload<Sprite*()>(&Sprite::create), allow_raw_pointers())
+    .function("setTexture", select_overload<void(const std::string &)>(&Sprite::setTexture), allow_raw_pointers())
+    ;
   class_<Scene, base<Node>>("cc.Scene")
     .constructor(&Scene::create, allow_raw_pointers())
     ;
