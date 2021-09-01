@@ -776,8 +776,6 @@ function Viewport( editor ) {
 
 		}
 
-		endTime = performance.now();
-		editor.signals.sceneRendered.dispatch( endTime - startTime );
 */
 		if ( showSceneHelpers === true ) {
 			scene.addChild(sceneHelpers);
