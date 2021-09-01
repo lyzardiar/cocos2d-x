@@ -78,6 +78,8 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
     .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
     .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
+    .function("retain", &Node::retain, allow_raw_pointers())
+    .function("release", &Node::release, allow_raw_pointers())
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)
     .property<val>("anchorX", std::bind(&Node_getAnchorX, _1), std::bind(&Node_setAnchorX, _1, _2))
@@ -92,6 +94,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property("skewY", &Node::getSkewY, &Node::setSkewY)
     .property("name", &Node::getName, &Node::setName)
     .property<val>("children", std::bind(&Node_getChildren, _1))
+    .function("getNodeToParentAffineTransform", select_overload<AffineTransform() const>(&Node::getNodeToParentAffineTransform), allow_raw_pointers())
     ;
 
   class_<Scene, base<Node>>("cc.Scene")
@@ -108,9 +111,18 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .field("b", &Color4F::b)
     .field("a", &Color4F::a)
     ;
-
+  value_object<AffineTransform>("cc.AffineTransform")
+    .field("a", &AffineTransform::a)
+    .field("b", &AffineTransform::b)
+    .field("c", &AffineTransform::c)
+    .field("d", &AffineTransform::d)
+    .field("tx", &AffineTransform::tx)
+    .field("ty", &AffineTransform::ty)
+    ;
+  emscripten::function("cc.PointApplyAffineTransform", &PointApplyAffineTransform, allow_raw_pointers());
   class_<DrawNode, base<Node>>("cc.DrawNode")
     .constructor(&DrawNode::create, allow_raw_pointers())
-    .function("drawSegment", &DrawNode::drawSegment, allow_raw_pointers())
+    .function("clear", &DrawNode::clear, allow_raw_pointers())
+    .function("drawLine", &DrawNode::drawLine, allow_raw_pointers())
     ;
 }

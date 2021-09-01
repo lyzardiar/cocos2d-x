@@ -113,6 +113,7 @@ function Editor() {
 
 	this.signals.emscriptenRuntimeCreated.add(() => {
 		this.sceneHelpers = new cc.Node()
+		this.sceneHelpers.retain()
 	} );
 
 }

@@ -34,7 +34,7 @@ function Viewport( editor ) {
 
 	var camera = editor.camera;
 	var scene = editor.scene;
-	var sceneHelpers = editor.sceneHelpers;
+	
 	var showSceneHelpers = true;
 
 	var objects = [];
@@ -56,21 +56,16 @@ function Viewport( editor ) {
 
 	var viewHelper = new ViewHelper( camera, container );
 	
-
 	//
+	var sceneHelpers = null;
+	var selectionBox = null;
 	this.signals.emscriptenRuntimeCreated.add(() => {
-		var box = new cc.DrawNode();
-		drawNode.drawSegment(cc.p(0, s.height / 2), cc.p(s.width, s.height / 2), 2);
-		drawNode.drawSegment(cc.p(s.width / 2, 0), cc.p(s.width / 2, s.height), 2);
+		selectionBox = new cc.DrawNode()
+		selectionBox.visible = false;
+		sceneHelpers = editor.sceneHelpers
+		sceneHelpers.add( selectionBox );
 	} );
 	
-	
-	var selectionBox = new THREE.BoxHelper();
-	selectionBox.material.depthTest = false;
-	selectionBox.material.transparent = true;
-	selectionBox.visible = false;
-	sceneHelpers.add( selectionBox );
-
 	var objectPositionOnDown = null;
 	var objectRotationOnDown = null;
 	var objectScaleOnDown = null;
@@ -414,15 +409,22 @@ function Viewport( editor ) {
 		// transformControls.detach(); // TODO: for controls
 
 		if ( node !== null && node !== scene && node !== camera ) {
+			
 
-			box.setFromObject( node );
-
-			if ( box.isEmpty() === false ) {
-
-				selectionBox.setFromObject( node );
-				selectionBox.visible = true;
-
-			}
+			var left = bottom = 0;
+			var top = node.height
+			var right = node.width
+			var transform = node.nodeToParentAffineTransform
+			var topLeft = cc.PointApplyAffineTransform(cc.p(left, top), transform);
+			var topRight = cc.PointApplyAffineTransform(cc.p(right, top), transform);
+			var bottomLeft = cc.PointApplyAffineTransform(cc.p(left, bottom), transform);
+			var bottomRight = cc.PointApplyAffineTransform(cc.p(right, bottom), transform);
+			selectionBox.clear()
+			selectionBox.drawLine(topLeft, topRight)
+			selectionBox.drawLine(bottomLeft, bottomRight)
+			selectionBox.drawLine(topLeft, bottomLeft)
+			selectionBox.drawLine(topRight, bottomRight)
+			selectionBox.visible = true;
 
 			// transformControls.attach( node ); // TODO: for controls
 			
@@ -777,7 +779,14 @@ function Viewport( editor ) {
 		endTime = performance.now();
 		editor.signals.sceneRendered.dispatch( endTime - startTime );
 */
+		if ( showSceneHelpers === true ) {
+			scene.addChild(sceneHelpers);
+		}
 		cc.director.drawScene()
+		if ( showSceneHelpers === true ) {
+			scene.removeChild(sceneHelpers);
+		}
+		
 		endTime = performance.now();
 		editor.signals.sceneRendered.dispatch( endTime - startTime );
 	}
