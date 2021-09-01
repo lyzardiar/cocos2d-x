@@ -73,13 +73,16 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("getDrawnVertices", &Renderer::getDrawnVertices, allow_raw_pointers())
     ;
 
-  class_<Node>("cc.Node")
+  class_<Ref>("cc.Ref")
+    .function("retain", &Node::retain, allow_raw_pointers())
+    .function("release", &Node::release, allow_raw_pointers())
+    ;
+
+  class_<Node, base<Ref>>("cc.Node")
     .constructor(&Node::create, allow_raw_pointers())
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
     .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
     .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
-    .function("retain", &Node::retain, allow_raw_pointers())
-    .function("release", &Node::release, allow_raw_pointers())
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)
     .property<val>("anchorX", std::bind(&Node_getAnchorX, _1), std::bind(&Node_setAnchorX, _1, _2))

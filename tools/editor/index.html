@@ -265,6 +265,9 @@
 						if (key.startsWith('cc$')) {
 							cc[key.substring(3)] = Module[key]
 						}
+						if (key.startsWith('cc.')) {
+							cc[key.substring(3)] = Module[key]
+						}
 					}
 					cc.director = cc.Director.getInstance();
 					cc.p = (x, y) => {return {x: x, y: y}}

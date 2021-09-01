@@ -59,11 +59,11 @@ function Viewport( editor ) {
 	//
 	var sceneHelpers = null;
 	var selectionBox = null;
-	this.signals.emscriptenRuntimeCreated.add(() => {
-		selectionBox = new cc.DrawNode()
+	editor.signals.rendererCreated.add(() => {
+		selectionBox = new cc.DrawNode(1)
 		selectionBox.visible = false;
 		sceneHelpers = editor.sceneHelpers
-		sceneHelpers.add( selectionBox );
+		sceneHelpers.addChild( selectionBox );
 	} );
 	
 	var objectPositionOnDown = null;
@@ -150,8 +150,8 @@ function Viewport( editor ) {
 		controls.enabled = true;
 
 	} );
-
-	sceneHelpers.add( transformControls );
+	// TODO: controls
+	// sceneHelpers.add( transformControls );
 
 	// object picking
 
@@ -411,19 +411,20 @@ function Viewport( editor ) {
 		if ( node !== null && node !== scene && node !== camera ) {
 			
 
-			var left = bottom = 0;
+			var left = 0;
+			var bottom = 0;
 			var top = node.height
 			var right = node.width
-			var transform = node.nodeToParentAffineTransform
+			var transform = node.getNodeToParentAffineTransform()
 			var topLeft = cc.PointApplyAffineTransform(cc.p(left, top), transform);
 			var topRight = cc.PointApplyAffineTransform(cc.p(right, top), transform);
 			var bottomLeft = cc.PointApplyAffineTransform(cc.p(left, bottom), transform);
 			var bottomRight = cc.PointApplyAffineTransform(cc.p(right, bottom), transform);
 			selectionBox.clear()
-			selectionBox.drawLine(topLeft, topRight)
-			selectionBox.drawLine(bottomLeft, bottomRight)
-			selectionBox.drawLine(topLeft, bottomLeft)
-			selectionBox.drawLine(topRight, bottomRight)
+			selectionBox.drawLine(topLeft, topRight, cc.color(0, 1, 0, 1))
+			selectionBox.drawLine(bottomLeft, bottomRight, cc.color(0, 1, 0, 1))
+			selectionBox.drawLine(topLeft, bottomLeft, cc.color(0, 1, 0, 1))
+			selectionBox.drawLine(topRight, bottomRight, cc.color(0, 1, 0, 1))
 			selectionBox.visible = true;
 
 			// transformControls.attach( node ); // TODO: for controls
@@ -777,12 +778,13 @@ function Viewport( editor ) {
 		}
 
 */
-		if ( showSceneHelpers === true ) {
+		var scene = cc.director.getRunningScene()
+		if (scene && showSceneHelpers === true ) {
 			scene.addChild(sceneHelpers);
 		}
 		cc.director.drawScene()
-		if ( showSceneHelpers === true ) {
-			scene.removeChild(sceneHelpers);
+		if (scene && showSceneHelpers === true ) {
+			scene.removeChild(sceneHelpers, false);
 		}
 		
 		endTime = performance.now();
