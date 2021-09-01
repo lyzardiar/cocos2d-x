@@ -58,9 +58,13 @@ function Viewport( editor ) {
 	
 
 	//
-
-	var box = new THREE.Box3();
-
+	this.signals.emscriptenRuntimeCreated.add(() => {
+		var box = new cc.DrawNode();
+		drawNode.drawSegment(cc.p(0, s.height / 2), cc.p(s.width, s.height / 2), 2);
+		drawNode.drawSegment(cc.p(s.width / 2, 0), cc.p(s.width / 2, s.height), 2);
+	} );
+	
+	
 	var selectionBox = new THREE.BoxHelper();
 	selectionBox.material.depthTest = false;
 	selectionBox.material.transparent = true;
@@ -404,28 +408,28 @@ function Viewport( editor ) {
 
 	} );
 
-	signals.nodeSelected.add( function ( object ) {
-		/* TODO, select indicator
+	signals.nodeSelected.add( function ( node ) {
+		
 		selectionBox.visible = false;
-		transformControls.detach();
+		// transformControls.detach(); // TODO: for controls
 
-		if ( object !== null && object !== scene && object !== camera ) {
+		if ( node !== null && node !== scene && node !== camera ) {
 
-			box.setFromObject( object );
+			box.setFromObject( node );
 
 			if ( box.isEmpty() === false ) {
 
-				selectionBox.setFromObject( object );
+				selectionBox.setFromObject( node );
 				selectionBox.visible = true;
 
 			}
 
-			transformControls.attach( object );
+			// transformControls.attach( node ); // TODO: for controls
 			
 		}
 
 		render();
-		*/
+		
 
 	} );
 

@@ -76,8 +76,9 @@ function Editor() {
 
 		viewportCameraChanged: new Signal(),
 
-		animationStopped: new Signal()
+		animationStopped: new Signal(),
 
+		emscriptenRuntimeCreated:  new Signal()
 	};
 
 	this.config = new Config();
@@ -110,7 +111,9 @@ function Editor() {
 	this.cameras = {};
 	this.viewportCamera = null;
 
-	
+	this.signals.emscriptenRuntimeCreated.add(() => {
+		this.sceneHelpers = new cc.Node()
+	} );
 
 }
 

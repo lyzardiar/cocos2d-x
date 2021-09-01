@@ -8,21 +8,10 @@
 #include <functional>
 #include <emscripten/bind.h>
 
-#include "editor-support/cocostudio/CCSGUIReader.h"
-
 using namespace emscripten;
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
-
-// wrap GUIReader since it has private/protected destructor
-class EmscriptenGUIReader{
-public:
-  static EmscriptenGUIReader* getInstance() {
-    static EmscriptenGUIReader reader;
-    return &reader;
-    };
-};
 
 val Node_getChildren(const Node& node) {
     Vector<Node*> children = node.getChildren();
@@ -107,5 +96,21 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
 
   class_<Scene, base<Node>>("cc.Scene")
     .constructor(&Scene::create, allow_raw_pointers())
+    ;
+
+  value_object<Vec2>("cc.Vec2")
+    .field("x", &Vec2::x)
+    .field("y", &Vec2::y)
+    ;
+  value_object<Color4F>("cc.Color4F")
+    .field("r", &Color4F::r)
+    .field("g", &Color4F::g)
+    .field("b", &Color4F::b)
+    .field("a", &Color4F::a)
+    ;
+
+  class_<DrawNode, base<Node>>("cc.DrawNode")
+    .constructor(&DrawNode::create, allow_raw_pointers())
+    .function("drawSegment", &DrawNode::drawSegment, allow_raw_pointers())
     ;
 }
