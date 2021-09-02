@@ -297,7 +297,7 @@ public:
      *
      * @return The gravity.
      */
-    virtual const Vec2& getGravity();
+    virtual const Vec2& getGravity() const;
     /** Sets the gravity.
      *
      * @param g The gravity.
