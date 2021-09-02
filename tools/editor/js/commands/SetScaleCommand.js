@@ -10,7 +10,7 @@ import { Vector3 } from '../../../build/three.module.js';
  */
 class SetScaleCommand extends Command {
 
-	constructor( editor, object, newScale, optionalOldScale ) {
+	constructor( editor, node, newScale, optionalOldScale ) {
 
 		super( editor );
 
@@ -18,43 +18,40 @@ class SetScaleCommand extends Command {
 		this.name = 'Set Scale';
 		this.updatable = true;
 
-		this.object = object;
+		this.node = node;
 
-		if ( object !== undefined && newScale !== undefined ) {
+		if ( node !== undefined && newScale !== undefined ) {
 
-			this.oldScale = object.scale.clone();
-			this.newScale = newScale.clone();
+			this.oldScale = {x: node.scaleX, y: node.scaleY}
+			this.newScale = Object.assign({}, newScale)
 
 		}
 
 		if ( optionalOldScale !== undefined ) {
 
-			this.oldScale = optionalOldScale.clone();
+			this.oldScale = Object.assign({}, optionalOldScale)
 
 		}
 
 	}
 
 	execute() {
-
-		this.object.scale.copy( this.newScale );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.scaleX = this.newScale.x
+		this.node.scaleY = this.newScale.y
+		this.editor.signals.nodeChanged.dispatch( this.node );
 
 	}
 
 	undo() {
 
-		this.object.scale.copy( this.oldScale );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.scaleX = this.oldScale.x
+		this.node.scaleY = this.oldScale.y
+		this.editor.signals.nodeChanged.dispatch( this.node );
 
 	}
 
 	update( command ) {
-
-		this.newScale.copy( command.newScale );
-
+		Object.assign(this.newScale, command.newScale)
 	}
 
 	toJSON() {

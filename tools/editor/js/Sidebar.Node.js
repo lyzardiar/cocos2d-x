@@ -111,22 +111,19 @@ function SidebarNode( editor ) {
 	var objectPositionRow = new UIRow();
 	var objectPositionX = new UINumber().setPrecision( 3 ).setWidth( '50px' ).onChange( update );
 	var objectPositionY = new UINumber().setPrecision( 3 ).setWidth( '50px' ).onChange( update );
-	var objectPositionZ = new UINumber().setPrecision( 3 ).setWidth( '50px' ).onChange( update );
 
 	objectPositionRow.add( new UIText( strings.getKey( 'sidebar/object/position' ) ).setWidth( '90px' ) );
-	objectPositionRow.add( objectPositionX, objectPositionY, objectPositionZ );
+	objectPositionRow.add( objectPositionX, objectPositionY);
 
 	container.add( objectPositionRow );
 
 	// rotation
 
 	var objectRotationRow = new UIRow();
-	var objectRotationX = new UINumber().setStep( 10 ).setNudge( 0.1 ).setUnit( '°' ).setWidth( '50px' ).onChange( update );
-	var objectRotationY = new UINumber().setStep( 10 ).setNudge( 0.1 ).setUnit( '°' ).setWidth( '50px' ).onChange( update );
-	var objectRotationZ = new UINumber().setStep( 10 ).setNudge( 0.1 ).setUnit( '°' ).setWidth( '50px' ).onChange( update );
-
+	var objectRotation = new UINumber().setStep( 10 ).setNudge( 0.1 ).setUnit( '°' ).setWidth( '50px' ).onChange( update );
+	
 	objectRotationRow.add( new UIText( strings.getKey( 'sidebar/object/rotation' ) ).setWidth( '90px' ) );
-	objectRotationRow.add( objectRotationX, objectRotationY, objectRotationZ );
+	objectRotationRow.add( objectRotation );
 
 	container.add( objectRotationRow );
 
@@ -135,10 +132,9 @@ function SidebarNode( editor ) {
 	var objectScaleRow = new UIRow();
 	var objectScaleX = new UINumber( 1 ).setPrecision( 3 ).setWidth( '50px' ).onChange( update );
 	var objectScaleY = new UINumber( 1 ).setPrecision( 3 ).setWidth( '50px' ).onChange( update );
-	var objectScaleZ = new UINumber( 1 ).setPrecision( 3 ).setWidth( '50px' ).onChange( update );
 
 	objectScaleRow.add( new UIText( strings.getKey( 'sidebar/object/scale' ) ).setWidth( '90px' ) );
-	objectScaleRow.add( objectScaleX, objectScaleY, objectScaleZ );
+	objectScaleRow.add( objectScaleX, objectScaleY );
 
 	container.add( objectScaleRow );
 
@@ -402,20 +398,18 @@ function SidebarNode( editor ) {
 
 			}
 			
-			var newRotation = objectRotationX.getValue()
+			var newRotation = objectRotation.getValue()
 			if ( Math.abs(object.rotation - newRotation) >= 0.01 ) {
 
 				editor.execute( new SetRotationCommand( editor, object, newRotation ) );
 
 			}
-			/* TODO: impl one by one
-			var newScale = new THREE.Vector3( objectScaleX.getValue(), objectScaleY.getValue(), objectScaleZ.getValue() );
-			if ( object.scale.distanceTo( newScale ) >= 0.01 ) {
-
+		
+			var newScale = {x: objectScaleX.getValue(), y: objectScaleY.getValue()};
+			if ( Math.hypot(object.scaleX - newScale.x, object.scaleY - newScale.y) >= 0.01 ) {
 				editor.execute( new SetScaleCommand( editor, object, newScale ) );
-
 			}
-
+				/* TODO: impl one by one
 			if ( object.fov !== undefined && Math.abs( object.fov - objectFov.getValue() ) >= 0.01 ) {
 
 				editor.execute( new SetValueCommand( editor, object, 'fov', objectFov.getValue() ) );
@@ -709,15 +703,11 @@ function SidebarNode( editor ) {
 
 		objectPositionX.setValue( object.position.x );
 		objectPositionY.setValue( object.position.y );
-		objectPositionZ.setValue( 0 );
 
-		objectRotationX.setValue( object.rotation );
-		objectRotationY.setValue( 0  );
-		objectRotationZ.setValue( 0  );
+		objectRotation.setValue( object.rotation );
 
 		objectScaleX.setValue( object.scaleX );
 		objectScaleY.setValue( object.scaleY );
-		objectScaleZ.setValue( 1 );
 
 		if ( object.fov !== undefined ) {
 
