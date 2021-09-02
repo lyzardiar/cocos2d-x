@@ -511,7 +511,7 @@ public:
      * The Label's max line width be used for force line breaks if the value not equal zero.
      */
     void setMaxLineWidth(float maxLineWidth);
-    float getMaxLineWidth() { return _maxLineWidth; }
+    float getMaxLineWidth() const { return _maxLineWidth; }
     /**
      * Change font size of label type BMFONT
      * Note: This function only scale the BMFONT letter to mimic the font size change effect.

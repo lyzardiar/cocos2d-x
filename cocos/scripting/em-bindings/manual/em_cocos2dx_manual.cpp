@@ -110,10 +110,14 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property("flippedY", &Sprite::isFlippedY, &Sprite::setFlippedY)
     .property("blendFunc", &Sprite::getBlendFunc, &Sprite::setBlendFunc)
     ;
-  class_<Scene, base<Node>>("cc.Scene")
-    .constructor(&Scene::create, allow_raw_pointers())
+  class_<Label, base<Node>>("cc.Label")
+    .constructor(select_overload<Label*()>(&Label::create), allow_raw_pointers())
+    .property("ttfConfig", &Label::getTTFConfig, &Label::setTTFConfig)
+    .property("string", &Label::getString, &Label::setString)
+    .property("horizontalAlignment", &Label::getHorizontalAlignment, &Label::setHorizontalAlignment)
+    .property("verticalAlignment", &Label::getVerticalAlignment, &Label::setVerticalAlignment)
+    .property("maxLineWidth", &Label::getMaxLineWidth, &Label::setMaxLineWidth)
     ;
-
   value_object<Vec2>("cc.Vec2")
     .field("x", &Vec2::x)
     .field("y", &Vec2::y)
@@ -140,6 +144,18 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
   value_object<BlendFunc>("cc.BlendFunc")
     .field("src", &BlendFunc::src)
     .field("dst", &BlendFunc::dst)
+    ;
+  value_object<TTFConfig>("cc.TTFConfig")
+    .field("fontFilePath", &TTFConfig::fontFilePath)
+    .field("fontSize", &TTFConfig::fontSize)
+    .field("glyphs", &TTFConfig::glyphs)
+    // .field("customGlyphs", &TTFConfig::customGlyphs)
+    .field("distanceFieldEnabled", &TTFConfig::distanceFieldEnabled)
+    .field("outlineSize", &TTFConfig::outlineSize)
+    .field("italics", &TTFConfig::italics)
+    .field("bold", &TTFConfig::bold)
+    .field("underline", &TTFConfig::underline)
+    .field("strikethrough", &TTFConfig::strikethrough)
     ;
   emscripten::function("cc.PointApplyAffineTransform", &PointApplyAffineTransform, allow_raw_pointers());
   class_<DrawNode, base<Node>>("cc.DrawNode")
