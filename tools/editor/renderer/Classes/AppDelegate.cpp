@@ -28,6 +28,7 @@
 #include <string>
 
 #include "AppMacros.h"
+#include <emscripten.h>
 
 //Uncomment the following line to use localize manager
 //#include "editor-support/cocostudio/LocalizationManager.h"
@@ -148,6 +149,10 @@ bool AppDelegate::applicationDidFinishLaunching()
     director->startAnimation();
     director->stopAnimation();
 
+    // Tell editor it is ready
+    EM_ASM({
+        Module.onCocosInitialized();
+    });
     return true;
 }
 

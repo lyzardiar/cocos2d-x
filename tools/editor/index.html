@@ -273,16 +273,11 @@
 					window.cc = cc;
 
 					editor.signals.emscriptenRuntimeCreated.dispatch();
-					
-					var timer = setInterval(function(){ 
-						if(cc.director.getRunningScene()) {
-							editor.signals.rendererCreated.dispatch( Module );
-							editor.signals.rendererUpdated.dispatch();
-							editor.signals.sceneGraphChanged.dispatch()
-							clearInterval(timer)
-						}
-					}, 100);
-					
+				},
+				onCocosInitialized: function() {
+					editor.signals.rendererCreated.dispatch( Module );
+					editor.signals.rendererUpdated.dispatch();
+					editor.signals.sceneGraphChanged.dispatch()
 				}
 			};
 			Module.setStatus('Downloading...');
