@@ -10,7 +10,7 @@ import { Euler } from '../../../build/three.module.js';
  */
 class SetRotationCommand extends Command {
 
-	constructor( editor, object, newRotation, optionalOldRotation ) {
+	constructor( editor, node, newRotation, optionalOldRotation ) {
 
 		super( editor );
 
@@ -18,18 +18,18 @@ class SetRotationCommand extends Command {
 		this.name = 'Set Rotation';
 		this.updatable = true;
 
-		this.object = object;
+		this.node = node;
 
-		if ( object !== undefined && newRotation !== undefined ) {
+		if ( node !== undefined && newRotation !== undefined ) {
 
-			this.oldRotation = object.rotation.clone();
-			this.newRotation = newRotation.clone();
+			this.oldRotation = node.rotation;
+			this.newRotation = newRotation;
 
 		}
 
 		if ( optionalOldRotation !== undefined ) {
 
-			this.oldRotation = optionalOldRotation.clone();
+			this.oldRotation = optionalOldRotation;
 
 		}
 
@@ -37,23 +37,21 @@ class SetRotationCommand extends Command {
 
 	execute() {
 
-		this.object.rotation.copy( this.newRotation );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.rotation = this.newRotation
+		this.editor.signals.nodeChanged.dispatch( this.node );
 
 	}
 
 	undo() {
 
-		this.object.rotation.copy( this.oldRotation );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.rotation = this.oldRotation;
+		this.editor.signals.nodeChanged.dispatch( this.node );
 
 	}
 
 	update( command ) {
 
-		this.newRotation.copy( command.newRotation );
+		this.newRotation = command.newRotation
 
 	}
 

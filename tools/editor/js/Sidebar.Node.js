@@ -395,20 +395,20 @@ function SidebarNode( editor ) {
 
 		if ( object !== null ) {
 
-			var newPosition = {x: objectPositionX.getValue(), y: objectPositionY.getValue(), z: objectPositionZ.getValue() };
-			if ( true /*object.position.distanceTo( newPosition ) >= 0.01*/ ) {
+			var newPosition = {x: objectPositionX.getValue(), y: objectPositionY.getValue() };
+			if ( Math.hypot(object.position.x - newPosition.x, object.position.y - newPosition.y)  >= 0.01 ) {
 
 				editor.execute( new SetPositionCommand( editor, object, newPosition ) );
 
 			}
-			/* TODO: impl one by one
-			var newRotation = new THREE.Euler( objectRotationX.getValue() * THREE.MathUtils.DEG2RAD, objectRotationY.getValue() * THREE.MathUtils.DEG2RAD, objectRotationZ.getValue() * THREE.MathUtils.DEG2RAD );
-			if ( object.rotation.toVector3().distanceTo( newRotation.toVector3() ) >= 0.01 ) {
+			
+			var newRotation = objectRotationX.getValue()
+			if ( Math.abs(object.rotation - newRotation) >= 0.01 ) {
 
 				editor.execute( new SetRotationCommand( editor, object, newRotation ) );
 
 			}
-
+			/* TODO: impl one by one
 			var newScale = new THREE.Vector3( objectScaleX.getValue(), objectScaleY.getValue(), objectScaleZ.getValue() );
 			if ( object.scale.distanceTo( newScale ) >= 0.01 ) {
 
@@ -707,13 +707,13 @@ function SidebarNode( editor ) {
 		objectUUID.setValue( object.uuid );
 		objectName.setValue( object.name );
 
-		objectPositionX.setValue( object.x );
-		objectPositionY.setValue( object.y );
+		objectPositionX.setValue( object.position.x );
+		objectPositionY.setValue( object.position.y );
 		objectPositionZ.setValue( 0 );
 
-		objectRotationX.setValue( 0 * THREE.MathUtils.RAD2DEG );
-		objectRotationY.setValue( 0 * THREE.MathUtils.RAD2DEG );
-		objectRotationZ.setValue( 0 * THREE.MathUtils.RAD2DEG );
+		objectRotationX.setValue( object.rotation );
+		objectRotationY.setValue( 0  );
+		objectRotationZ.setValue( 0  );
 
 		objectScaleX.setValue( object.scaleX );
 		objectScaleY.setValue( object.scaleY );
