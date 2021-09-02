@@ -10,7 +10,7 @@ import { Vector3 } from '../../../build/three.module.js';
  */
 class SetPositionCommand extends Command {
 
-	constructor( editor, object, newPosition, optionalOldPosition ) {
+	constructor( editor, node, newPosition, optionalOldPosition ) {
 
 		super( editor );
 
@@ -18,18 +18,17 @@ class SetPositionCommand extends Command {
 		this.name = 'Set Position';
 		this.updatable = true;
 
-		this.object = object;
+		this.node = node;
 
-		if ( object !== undefined && newPosition !== undefined ) {
+		if ( node !== undefined && newPosition !== undefined ) {
 
-			this.oldPosition = object.position.clone();
-			this.newPosition = newPosition.clone();
-
+			this.oldPosition = Object.assign({}, node.position);
+			this.newPosition = Object.assign({}, newPosition);
 		}
 
 		if ( optionalOldPosition !== undefined ) {
 
-			this.oldPosition = optionalOldPosition.clone();
+			this.oldPosition = Object.assign({}, optionalOldPosition);
 
 		}
 
@@ -37,24 +36,20 @@ class SetPositionCommand extends Command {
 
 	execute() {
 
-		this.object.position.copy( this.newPosition );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.position = this.newPosition
+		this.editor.signals.nodeChanged.dispatch( this.node );
 
 	}
 
 	undo() {
 
-		this.object.position.copy( this.oldPosition );
-		this.object.updateMatrixWorld( true );
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.position = this.oldPosition
+		this.editor.signals.nodeChanged.dispatch( this.node );
 
 	}
 
 	update( command ) {
-
-		this.newPosition.copy( command.newPosition );
-
+		this.newPosition = Object.assign(this.newPosition, command.newPosition);
 	}
 
 	toJSON() {

@@ -395,13 +395,13 @@ function SidebarNode( editor ) {
 
 		if ( object !== null ) {
 
-			var newPosition = new THREE.Vector3( objectPositionX.getValue(), objectPositionY.getValue(), objectPositionZ.getValue() );
-			if ( object.position.distanceTo( newPosition ) >= 0.01 ) {
+			var newPosition = {x: objectPositionX.getValue(), y: objectPositionY.getValue(), z: objectPositionZ.getValue() };
+			if ( true /*object.position.distanceTo( newPosition ) >= 0.01*/ ) {
 
 				editor.execute( new SetPositionCommand( editor, object, newPosition ) );
 
 			}
-
+			/* TODO: impl one by one
 			var newRotation = new THREE.Euler( objectRotationX.getValue() * THREE.MathUtils.DEG2RAD, objectRotationY.getValue() * THREE.MathUtils.DEG2RAD, objectRotationZ.getValue() * THREE.MathUtils.DEG2RAD );
 			if ( object.rotation.toVector3().distanceTo( newRotation.toVector3() ) >= 0.01 ) {
 
@@ -567,7 +567,10 @@ function SidebarNode( editor ) {
 				}
 
 			}
+			*/
 
+			// TODO: doesn't work
+			/*
 			try {
 
 				var userData = JSON.parse( objectUserData.getValue() );
@@ -582,7 +585,7 @@ function SidebarNode( editor ) {
 				console.warn( exception );
 
 			}
-
+			*/
 		}
 
 	}
@@ -765,8 +768,8 @@ function SidebarNode( editor ) {
 		}
 
 		if ( object.color !== undefined ) {
-
-			objectColor.setHexValue( object.color.getHexString() );
+			// TODO: 
+			// objectColor.setHexValue( object.color.getHexString() );
 
 		}
 

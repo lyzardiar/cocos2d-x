@@ -83,8 +83,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
     .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
     .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
-    .property("x", &Node::getPositionX, &Node::setPositionX)
-    .property("y", &Node::getPositionY, &Node::setPositionY)
+    .property("position", select_overload<const Vec2&() const>(&Node::getPosition), select_overload<void(const Vec2 &)>(&Node::setPosition))
     .property<val>("anchorX", std::bind(&Node_getAnchorX, _1), std::bind(&Node_setAnchorX, _1, _2))
     .property<val>("anchorY", std::bind(&Node_getAnchorY, _1), std::bind(&Node_setAnchorY, _1, _2))
     .property<val>("width", std::bind(&Node_getWidth, _1), std::bind(&Node_setWidth, _1, _2))
@@ -102,7 +101,9 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property<val>("children", std::bind(&Node_getChildren, _1))
     .function("getNodeToParentAffineTransform", select_overload<AffineTransform() const>(&Node::getNodeToParentAffineTransform), allow_raw_pointers())
     ;
-
+  class_<Scene, base<Node>>("cc.Scene")
+    .constructor(&Scene::create, allow_raw_pointers())
+    ;
   class_<Sprite, base<Node>>("cc.Sprite")
     .constructor(select_overload<Sprite*()>(&Sprite::create), allow_raw_pointers())
     .function("setTexture", select_overload<void(const std::string &)>(&Sprite::setTexture), allow_raw_pointers())
@@ -172,10 +173,10 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .field("b", &Color4F::b)
     .field("a", &Color4F::a)
     ;
-  value_object<Color4F>("cc.Color3B")
-    .field("r", &Color4F::r)
-    .field("g", &Color4F::g)
-    .field("b", &Color4F::b)
+  value_object<Color3B>("cc.Color3B")
+    .field("r", &Color3B::r)
+    .field("g", &Color3B::g)
+    .field("b", &Color3B::b)
     ;
   value_object<AffineTransform>("cc.AffineTransform")
     .field("a", &AffineTransform::a)

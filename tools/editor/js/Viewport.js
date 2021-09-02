@@ -465,23 +465,40 @@ function Viewport( editor ) {
 		*/
 	} );
 
-	signals.nodeChanged.add( function ( object ) {
+	signals.nodeChanged.add( function ( node ) {
 
-		if ( editor.selected === object ) {
+		if ( editor.selected === node ) {
+			// TODO: for test only
+			node.width = 100
+			node.height = 100
+			
+			// TODO: add function for this
+			var left = 0;
+			var bottom = 0;
+			var top = node.height
+			var right = node.width
+			var transform = node.getNodeToParentAffineTransform()
+			var topLeft = cc.PointApplyAffineTransform({x: left, y: top}, transform);
+			var topRight = cc.PointApplyAffineTransform({x: right, y: top}, transform);
+			var bottomLeft = cc.PointApplyAffineTransform({x: left, y: bottom}, transform);
+			var bottomRight = cc.PointApplyAffineTransform({x: right, y: bottom}, transform);
+			selectionBox.clear()
+			selectionBox.drawLine(topLeft, topRight, {r: 0, g: 1, b: 0, a: 1})
+			selectionBox.drawLine(bottomLeft, bottomRight, {r: 0, g: 1, b: 0, a: 1})
+			selectionBox.drawLine(topLeft, bottomLeft, {r: 0, g: 1, b: 0, a: 1})
+			selectionBox.drawLine(topRight, bottomRight, {r: 0, g: 1, b: 0, a: 1})
+			
+		}
 
-			selectionBox.setFromObject( object );
+		if ( node.isPerspectiveCamera ) {
+
+			node.updateProjectionMatrix();
 
 		}
 
-		if ( object.isPerspectiveCamera ) {
+		if ( editor.helpers[ node.id ] !== undefined ) {
 
-			object.updateProjectionMatrix();
-
-		}
-
-		if ( editor.helpers[ object.id ] !== undefined ) {
-
-			editor.helpers[ object.id ].update();
+			editor.helpers[ node.id ].update();
 
 		}
 
