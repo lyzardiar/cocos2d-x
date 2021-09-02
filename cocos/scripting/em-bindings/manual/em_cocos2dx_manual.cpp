@@ -91,6 +91,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property<val>("height", std::bind(&Node_getHeight, _1), std::bind(&Node_setHeight, _1, _2))
     .property("scaleX", &Node::getScaleX, &Node::setScaleX)
     .property("scaleY", &Node::getScaleY, &Node::setScaleY)
+    .property("color", &Node::getColor, &Node::setColor)
     .property("visible", &Node::isVisible, &Node::setVisible)
     .property("rotation", &Node::getRotation, &Node::setRotation)
     .property("skewX", &Node::getSkewX, &Node::setSkewX)
@@ -105,6 +106,9 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
   class_<Sprite, base<Node>>("cc.Sprite")
     .constructor(select_overload<Sprite*()>(&Sprite::create), allow_raw_pointers())
     .function("setTexture", select_overload<void(const std::string &)>(&Sprite::setTexture), allow_raw_pointers())
+    .property("flippedX", &Sprite::isFlippedX, &Sprite::setFlippedX)
+    .property("flippedY", &Sprite::isFlippedY, &Sprite::setFlippedY)
+    .property("blendFunc", &Sprite::getBlendFunc, &Sprite::setBlendFunc)
     ;
   class_<Scene, base<Node>>("cc.Scene")
     .constructor(&Scene::create, allow_raw_pointers())
@@ -120,6 +124,11 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .field("b", &Color4F::b)
     .field("a", &Color4F::a)
     ;
+  value_object<Color4F>("cc.Color3B")
+    .field("r", &Color4F::r)
+    .field("g", &Color4F::g)
+    .field("b", &Color4F::b)
+    ;
   value_object<AffineTransform>("cc.AffineTransform")
     .field("a", &AffineTransform::a)
     .field("b", &AffineTransform::b)
@@ -127,6 +136,10 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .field("d", &AffineTransform::d)
     .field("tx", &AffineTransform::tx)
     .field("ty", &AffineTransform::ty)
+    ;
+  value_object<BlendFunc>("cc.BlendFunc")
+    .field("src", &BlendFunc::src)
+    .field("dst", &BlendFunc::dst)
     ;
   emscripten::function("cc.PointApplyAffineTransform", &PointApplyAffineTransform, allow_raw_pointers());
   class_<DrawNode, base<Node>>("cc.DrawNode")
