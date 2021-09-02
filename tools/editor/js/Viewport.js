@@ -416,15 +416,15 @@ function Viewport( editor ) {
 			var top = node.height
 			var right = node.width
 			var transform = node.getNodeToParentAffineTransform()
-			var topLeft = cc.PointApplyAffineTransform(cc.p(left, top), transform);
-			var topRight = cc.PointApplyAffineTransform(cc.p(right, top), transform);
-			var bottomLeft = cc.PointApplyAffineTransform(cc.p(left, bottom), transform);
-			var bottomRight = cc.PointApplyAffineTransform(cc.p(right, bottom), transform);
+			var topLeft = cc.PointApplyAffineTransform({x: left, y: top}, transform);
+			var topRight = cc.PointApplyAffineTransform({x: right, y: top}, transform);
+			var bottomLeft = cc.PointApplyAffineTransform({x: left, y: bottom}, transform);
+			var bottomRight = cc.PointApplyAffineTransform({x: right, y: bottom}, transform);
 			selectionBox.clear()
-			selectionBox.drawLine(topLeft, topRight, cc.color(0, 1, 0, 1))
-			selectionBox.drawLine(bottomLeft, bottomRight, cc.color(0, 1, 0, 1))
-			selectionBox.drawLine(topLeft, bottomLeft, cc.color(0, 1, 0, 1))
-			selectionBox.drawLine(topRight, bottomRight, cc.color(0, 1, 0, 1))
+			selectionBox.drawLine(topLeft, topRight, {r: 0, g: 1, b: 0, a: 1})
+			selectionBox.drawLine(bottomLeft, bottomRight, {r: 0, g: 1, b: 0, a: 1})
+			selectionBox.drawLine(topLeft, bottomLeft, {r: 0, g: 1, b: 0, a: 1})
+			selectionBox.drawLine(topRight, bottomRight, {r: 0, g: 1, b: 0, a: 1})
 			selectionBox.visible = true;
 
 			// transformControls.attach( node ); // TODO: for controls

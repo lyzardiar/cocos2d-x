@@ -270,8 +270,6 @@
 						}
 					}
 					cc.director = cc.Director.getInstance();
-					cc.p = (x, y) => {return {x: x, y: y}}
-					cc.color = (r, g, b, a) => {return {r: r, g: g, b: b, a: a}}
 					window.cc = cc;
 
 					editor.signals.emscriptenRuntimeCreated.dispatch();
