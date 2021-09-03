@@ -164,5 +164,8 @@ if(EMSCRIPTEN)
     set(EMSCRIPTEN_LINK_FLAGS "-lidbfs.js -s INITIAL_MEMORY=512MB --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/index.html --use-preload-cache")
     
     string(APPEND EMSCRIPTEN_LINK_FLAGS " --bind")
+
+    # for electron load wasm
+    string(APPEND EMSCRIPTEN_LINK_FLAGS " -s ENVIRONMENT=web")
     set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
 endif()
