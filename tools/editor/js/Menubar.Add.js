@@ -34,6 +34,19 @@ function MenubarAdd( editor ) {
 	} );
 	options.add( option );
 
+	var option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/sprite' ) );
+	option.onClick( function () {
+
+		var sprite = new cc.Sprite();
+		sprite.name = 'Sprite';
+
+		editor.execute( new AddNodeCommand( editor, sprite ) );
+
+	} );
+	options.add( option );
+
 	//
 
 	options.add( new UIHorizontalRule() );
