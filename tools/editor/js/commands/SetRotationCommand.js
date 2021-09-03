@@ -1,5 +1,5 @@
 import { Command } from '../Command.js';
-import { Euler } from '../../../build/three.module.js';
+import { Euler } from '../libs/three.module.js';
 
 /**
  * @param editor Editor

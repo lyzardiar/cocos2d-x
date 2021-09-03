@@ -1,4 +1,4 @@
-import * as THREE from '../../build/three.module.js';
+import * as THREE from './libs/three.module.js';
 
 import { AddNodeCommand } from './commands/AddNodeCommand.js';
 import { SetSceneCommand } from './commands/SetSceneCommand.js';
