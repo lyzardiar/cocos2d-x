@@ -5,7 +5,7 @@ import { MoveNodeCommand } from '../commands/MoveNodeCommand.js';
 
 class UITexture extends UISpan {
 
-	constructor( mapping ) {
+	constructor(  ) {
 
 		super();
 
@@ -49,26 +49,15 @@ class UITexture extends UISpan {
 			if ( file.type.match( 'image.*' ) ) {
 
 				reader.addEventListener( 'load', function ( event ) {
-
-					const image = document.createElement( 'img' );
-					image.addEventListener( 'load', function () {
-
-						const texture = new THREE.Texture( this, mapping );
-						texture.sourceFile = file.name;
-						texture.format = file.type === 'image/jpeg' ? THREE.RGBFormat : THREE.RGBAFormat;
-						texture.needsUpdate = true;
-
-						scope.setValue( texture );
-
-						if ( scope.onChangeCallback ) scope.onChangeCallback( texture );
-
-					}, false );
-
-					image.src = event.target.result;
-
+					var result = event.target.result
+					FS.writeFile('/tmpf', new Int8Array(result));
+					var image = cc.Image.createWithImageFile('/tmpf')
+					var texture = cc.Texture2D.createWithImage(image)
+					scope.setValue(texture)
+					if ( scope.onChangeCallback ) scope.onChangeCallback( texture );
 				}, false );
 
-				reader.readAsDataURL( file );
+				reader.readAsArrayBuffer( file );
 
 			}
 

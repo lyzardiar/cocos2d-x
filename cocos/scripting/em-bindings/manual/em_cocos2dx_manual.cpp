@@ -60,6 +60,28 @@ void Node_setHeight(Node& node, const val& height) {
     node.setContentSize(Size(node.getContentSize().width, height.as<float>()));
 }
 
+Image* Image_createWithImageFile(const std::string& path) {
+    Image *ret = new (std::nothrow) Image();
+    if (ret && ret->initWithImageFile(path))
+    {
+        ret->autorelease();
+        return ret;
+    }
+    CC_SAFE_DELETE(ret);
+    return nullptr;
+}
+
+Texture2D* Texture2D_createWithImage(Image * image) {
+    Texture2D *ret = new (std::nothrow) Texture2D();
+    if (ret && ret->initWithImage(image))
+    {
+        ret->autorelease();
+        return ret;
+    }
+    CC_SAFE_DELETE(ret);
+    return nullptr;
+}
+
 EMSCRIPTEN_BINDINGS(my_class_example) {
   class_<Director>("cc.Director")
     .class_function("getInstance", &Director::getInstance, allow_raw_pointers())
@@ -106,7 +128,10 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     ;
   class_<Sprite, base<Node>>("cc.Sprite")
     .constructor(select_overload<Sprite*()>(&Sprite::create), allow_raw_pointers())
-    .function("setTexture", select_overload<void(const std::string &)>(&Sprite::setTexture), allow_raw_pointers())
+    .function("setTexture", select_overload<void(Texture2D *)>(&Sprite::setTexture), allow_raw_pointers())
+    .function("getTexture", &Sprite::getTexture, allow_raw_pointers())
+    .function("setTextureRect", select_overload<void(const Rect&)>(&Sprite::setTextureRect), allow_raw_pointers())
+    .function("getTextureRect", &Sprite::getTextureRect, allow_raw_pointers())
     .property("flippedX", &Sprite::isFlippedX, &Sprite::setFlippedX)
     .property("flippedY", &Sprite::isFlippedY, &Sprite::setFlippedY)
     .property("blendFunc", &Sprite::getBlendFunc, &Sprite::setBlendFunc)
@@ -163,9 +188,17 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property("totalParticles", &ParticleSystem::getTotalParticles, &ParticleSystem::setTotalParticles)
     .property("positionType", &ParticleSystem::getPositionType, &ParticleSystem::setPositionType)
     ;
+  value_object<Rect>("cc.Rect")
+    .field("origin", &Rect::origin)
+    .field("size", &Rect::size)
+    ;
   value_object<Vec2>("cc.Vec2")
     .field("x", &Vec2::x)
     .field("y", &Vec2::y)
+    ;
+  value_object<Size>("cc.Size")
+    .field("width", &Size::width)
+    .field("height", &Size::height)
     ;
   value_object<Color4F>("cc.Color4F")
     .field("r", &Color4F::r)
@@ -207,5 +240,12 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .constructor(&DrawNode::create, allow_raw_pointers())
     .function("clear", &DrawNode::clear, allow_raw_pointers())
     .function("drawLine", &DrawNode::drawLine, allow_raw_pointers())
+    ;
+  class_<Image, base<Ref>>("cc.Image")
+    .class_function("createWithImageFile", &Image_createWithImageFile, allow_raw_pointers())
+    ;
+  class_<Texture2D, base<Ref>>("cc.Texture2D")
+    .class_function("createWithImage", &Texture2D_createWithImage, allow_raw_pointers())
+    .function("getContentSize", &Texture2D::getContentSize, allow_raw_pointers())
     ;
 }

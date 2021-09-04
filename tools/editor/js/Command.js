@@ -36,6 +36,8 @@ class Command {
 
 	}
 
+	dispose() {}
+
 }
 
 export { Command };

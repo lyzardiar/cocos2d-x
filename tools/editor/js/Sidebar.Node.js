@@ -1,7 +1,7 @@
 import * as THREE from './libs/three.module.js';
 
 import { UIPanel, UIRow, UIInput, UIButton, UIColor, UICheckbox, UIInteger, UITextArea, UIText, UINumber } from './libs/ui.js';
-import { UIBoolean } from './libs/ui.three.js';
+import { UIBoolean, UITexture } from './libs/ui.three.js';
 
 import { SetUuidCommand } from './commands/SetUuidCommand.js';
 import { SetValueCommand } from './commands/SetValueCommand.js';
@@ -9,6 +9,7 @@ import { SetPositionCommand } from './commands/SetPositionCommand.js';
 import { SetRotationCommand } from './commands/SetRotationCommand.js';
 import { SetScaleCommand } from './commands/SetScaleCommand.js';
 import { SetColorCommand } from './commands/SetColorCommand.js';
+import { SetTextureCommand } from './commands/SetTextureCommand.js';
 
 function SidebarNode( editor ) {
 
@@ -354,7 +355,12 @@ function SidebarNode( editor ) {
 	objectRenderOrderRow.add( objectRenderOrder );
 
 	container.add( objectRenderOrderRow );
-
+	// texture
+	var nodeTextureRow = new UIRow();
+	nodeTextureRow.add( new UIText( strings.getKey( 'sidebar/node/texture' ) ).setWidth( '90px' ) );
+	var nodeTexture = new UITexture().onChange( update );
+	nodeTextureRow.add( nodeTexture );
+	container.add( nodeTextureRow );
 	// user data
 
 	var objectUserDataRow = new UIRow();
@@ -409,6 +415,12 @@ function SidebarNode( editor ) {
 			if ( Math.hypot(object.scaleX - newScale.x, object.scaleY - newScale.y) >= 0.01 ) {
 				editor.execute( new SetScaleCommand( editor, object, newScale ) );
 			}
+
+			var newTexture = nodeTexture.getValue()
+			if ( object.getTexture() !== newTexture ) {
+				editor.execute( new SetTextureCommand(editor, object, newTexture) );
+			}
+			
 				/* TODO: impl one by one
 			if ( object.fov !== undefined && Math.abs( object.fov - objectFov.getValue() ) >= 0.01 ) {
 
@@ -603,6 +615,7 @@ function SidebarNode( editor ) {
 			'decay': objectDecayRow,
 			'castShadow': objectShadowRow,
 			'receiveShadow': objectReceiveShadow,
+			'texture': nodeTextureRow,
 			'shadow': [ objectShadowBiasRow, objectShadowNormalBiasRow, objectShadowRadiusRow ]
 		};
 
@@ -637,6 +650,11 @@ function SidebarNode( editor ) {
 		if ( object.isAmbientLight || object.isHemisphereLight ) {
 
 			objectShadowRow.setDisplay( 'none' );
+
+		}
+		if ( object.$$.ptrType.name === 'cc.Sprite*' ) {
+
+			nodeTextureRow.setDisplay( '' );
 
 		}
 
@@ -825,6 +843,10 @@ function SidebarNode( editor ) {
 
 			console.log( error );
 
+		}
+		
+		if ( object.$$.ptrType.name === 'cc.Sprite*' ) {
+			nodeTexture.setValue(object.getTexture())
 		}
 
 		objectUserData.setBorderColor( 'transparent' );
