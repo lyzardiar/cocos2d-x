@@ -468,10 +468,7 @@ function Viewport( editor ) {
 	signals.nodeChanged.add( function ( node ) {
 
 		if ( editor.selected === node ) {
-			// TODO: for test only
-			node.width = 100
-			node.height = 100
-			
+		
 			// TODO: add function for this
 			var left = 0;
 			var bottom = 0;

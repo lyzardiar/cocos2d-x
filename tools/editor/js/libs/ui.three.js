@@ -50,6 +50,7 @@ class UITexture extends UISpan {
 
 				reader.addEventListener( 'load', function ( event ) {
 					var result = event.target.result
+					// TODO: writePath based on project path
 					FS.writeFile('/tmpf', new Int8Array(result));
 					var image = cc.Image.createWithImageFile('/tmpf')
 					var texture = cc.Texture2D.createWithImage(image)
