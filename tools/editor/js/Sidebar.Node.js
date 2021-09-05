@@ -417,7 +417,8 @@ function SidebarNode( editor ) {
 			}
 
 			var newTexture = nodeTexture.getValue()
-			if ( object.getTexture() !== newTexture ) {
+			// TODO: better check texture in decent way
+			if ( object.getTexture && object.getTexture() !== newTexture ) {
 				editor.execute( new SetTextureCommand(editor, object, newTexture) );
 			}
 			

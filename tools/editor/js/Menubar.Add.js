@@ -49,6 +49,19 @@ function MenubarAdd( editor ) {
 
 	//
 
+	var option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/label' ) );
+	option.onClick( function () {
+
+		var label = new cc.Label();
+		label.name = 'Label';
+
+		editor.execute( new AddNodeCommand( editor, label ) );
+
+	} );
+	options.add( option );
+
 	options.add( new UIHorizontalRule() );
 
 	/*
