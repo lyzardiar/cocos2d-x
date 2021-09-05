@@ -139,16 +139,6 @@ bool AppDelegate::applicationDidFinishLaunching()
     // Set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 
-    // Create a scene. it's an autorelease object
-    auto scene = Scene::create();
-    scene->setName("Scene");
-    scene->getDefaultCamera()->setName("Camera");
-
-    // Push scene but do not render
-    director->pushScene(scene);
-    director->startAnimation();
-    director->stopAnimation();
-
     // Tell editor it is ready
     EM_ASM({
         Module.onCocosInitialized();

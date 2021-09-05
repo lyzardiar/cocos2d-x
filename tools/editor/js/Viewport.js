@@ -32,8 +32,22 @@ function Viewport( editor ) {
 	var renderer = null;
 	var pmremGenerator = null;
 
-	var camera = editor.camera;
-	var scene = editor.scene;
+	var camera = null;
+	var scene = null;
+	var viewHelper = null;
+
+	signals.rendererCreated.add(() => {
+		this.scene = editor.scene
+		this.camera = this.scene.getDefaultCamera()
+
+		this.viewHelper = new ViewHelper( this.camera, container );
+		var controls = new EditorControls( camera, container.dom );
+		controls.addEventListener( 'change', function () {
+			signals.cameraChanged.dispatch( camera );
+			signals.refreshSidebarObject3D.dispatch( camera );
+		} );
+		this.viewHelper.controls = controls;
+	} );
 	
 	var showSceneHelpers = true;
 
@@ -54,7 +68,7 @@ function Viewport( editor ) {
 	grid2.material.vertexColors = false;
 	grid.add( grid2 );
 
-	var viewHelper = new ViewHelper( camera, container );
+	
 	
 	//
 	var sceneHelpers = null;
@@ -293,14 +307,7 @@ function Viewport( editor ) {
 	// controls need to be added *after* main logic,
 	// otherwise controls.enabled doesn't work.
 
-	var controls = new EditorControls( camera, container.dom );
-	controls.addEventListener( 'change', function () {
-
-		signals.cameraChanged.dispatch( camera );
-		signals.refreshSidebarObject3D.dispatch( camera );
-
-	} );
-	viewHelper.controls = controls;
+	
 
 	// signals
 
@@ -330,7 +337,7 @@ function Viewport( editor ) {
 	} );
 
 	signals.rendererUpdated.add( function () {
-
+		/* TODO: 
 		scene.traverse( function ( child ) {
 
 			if ( child.material !== undefined ) {
@@ -340,7 +347,7 @@ function Viewport( editor ) {
 			}
 
 		} );
-
+		*/
 		render();
 
 	} );

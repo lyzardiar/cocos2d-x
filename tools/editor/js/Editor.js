@@ -76,9 +76,7 @@ function Editor() {
 
 		viewportCameraChanged: new Signal(),
 
-		animationStopped: new Signal(),
-
-		emscriptenRuntimeCreated:  new Signal()
+		animationStopped: new Signal()
 	};
 
 	this.config = new Config();
@@ -111,11 +109,18 @@ function Editor() {
 	this.cameras = {};
 	this.viewportCamera = null;
 
-	this.signals.emscriptenRuntimeCreated.add(() => {
+	this.signals.rendererCreated.add(() => {
+		this.scene = new cc.Scene()
+		this.scene.name = "Scene";
+		this.scene.getDefaultCamera().name = "Camera";
+		cc.director.pushScene(this.scene)
+		cc.director.startAnimation();
+		cc.director.stopAnimation();
+		this.camera = this.scene.getDefaultCamera()
+
 		this.sceneHelpers = new cc.Node()
 		this.sceneHelpers.retain()
 	} );
-
 }
 
 Editor.prototype = {
@@ -556,7 +561,7 @@ Editor.prototype = {
 			return null
 		}
 
-    var scene = cc.director.getRunningScene()
+		var scene = cc.director.getRunningScene()
 		if (scene.$$.ptr === ptr) {
 				this.select(scene);
 		} else {
@@ -689,7 +694,7 @@ Editor.prototype = {
 				toneMapping: this.config.getKey( 'project/renderer/toneMapping' ),
 				toneMappingExposure: this.config.getKey( 'project/renderer/toneMappingExposure' )
 			},
-			scene: this.scene.toJSON(),
+			// scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON()
 

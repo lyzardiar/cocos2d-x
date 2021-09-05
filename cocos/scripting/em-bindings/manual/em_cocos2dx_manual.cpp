@@ -88,6 +88,9 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("getRunningScene", &Director::getRunningScene, allow_raw_pointers())
     .function("getRenderer", &Director::getRenderer, allow_raw_pointers())
     .function("drawScene", &Director::drawScene, allow_raw_pointers())
+    .function("pushScene", &Director::pushScene, allow_raw_pointers())
+    .function("startAnimation", &Director::startAnimation, allow_raw_pointers())
+    .function("stopAnimation", &Director::stopAnimation, allow_raw_pointers())
     ;
 
   class_<Renderer>("cc.Renderer")
@@ -125,6 +128,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     ;
   class_<Scene, base<Node>>("cc.Scene")
     .constructor(&Scene::create, allow_raw_pointers())
+    .function("getDefaultCamera", &Scene::getDefaultCamera, allow_raw_pointers())
     ;
   class_<Sprite, base<Node>>("cc.Sprite")
     .constructor(select_overload<Sprite*()>(&Sprite::create), allow_raw_pointers())
@@ -248,4 +252,5 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .class_function("createWithImage", &Texture2D_createWithImage, allow_raw_pointers())
     .function("getContentSize", &Texture2D::getContentSize, allow_raw_pointers())
     ;
+  class_<Camera, base<Node>>("cc.Camera");
 }
