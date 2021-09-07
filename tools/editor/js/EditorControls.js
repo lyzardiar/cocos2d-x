@@ -1,11 +1,11 @@
 import * as THREE from './libs/three.module.js';
 
-function EditorControls( object, domElement ) {
+function EditorControls( node, domElement ) {
 
 	// API
 
 	this.enabled = true;
-	this.center = new THREE.Vector3();
+	this.center = {x: 0, y: 0};
 	this.panSpeed = 0.002;
 	this.zoomSpeed = 0.1;
 	this.rotationSpeed = 0.005;
@@ -13,8 +13,8 @@ function EditorControls( object, domElement ) {
 	// internals
 
 	var scope = this;
-	var vector = new THREE.Vector3();
-	var delta = new THREE.Vector3();
+	var vector = {x: 0, y: 0, z: 0};
+	var delta = {x: 0, y: 0, z: 0};
 	var box = new THREE.Box3();
 
 	var STATE = { NONE: - 1, ROTATE: 0, ZOOM: 1, PAN: 2 };
@@ -22,8 +22,8 @@ function EditorControls( object, domElement ) {
 
 	var center = this.center;
 	var normalMatrix = new THREE.Matrix3();
-	var pointer = new THREE.Vector2();
-	var pointerOld = new THREE.Vector2();
+	var pointer = {x: 0, y: 0};
+	var pointerOld = {x: 0, y: 0};
 	var spherical = new THREE.Spherical();
 	var sphere = new THREE.Sphere();
 
@@ -33,42 +33,32 @@ function EditorControls( object, domElement ) {
 
 	this.focus = function ( target ) {
 
-		var distance;
+		var distance = 0.1
 
-		box.setFromObject( target );
+		var box = target.getBoundingBox()
+		center.x = box.origin.x + box.size.width / 2
+		center.y = box.origin.y + box.size.height / 2
+		
+		
 
-		if ( box.isEmpty() === false ) {
-
-			box.getCenter( center );
-			distance = box.getBoundingSphere( sphere ).radius;
-
-		} else {
-
-			// Focusing on an Group, AmbientLight, etc
-
-			center.setFromMatrixPosition( target.matrixWorld );
-			distance = 0.1;
-
-		}
-
-		delta.set( 0, 0, 1 );
-		delta.applyQuaternion( object.quaternion );
-		delta.multiplyScalar( distance * 4 );
-
-		object.position.copy( center ).add( delta );
+		// delta.set( 0, 0, 1 );
+		// delta.applyQuaternion( node.quaternion );
+		// delta.multiplyScalar( distance * 4 );
+		// TODO: missing distance
+		node.position = center
 
 		scope.dispatchEvent( changeEvent );
 
 	};
 
 	this.pan = function ( delta ) {
-
-		var distance = object.position.distanceTo( center );
+		
+		var distance = Math.hypot(node.position.x - center.x, node.position.y - center.y)
 
 		delta.multiplyScalar( distance * scope.panSpeed );
-		delta.applyMatrix3( normalMatrix.getNormalMatrix( object.matrix ) );
+		delta.applyMatrix3( normalMatrix.getNormalMatrix( node.matrix ) );
 
-		object.position.add( delta );
+		node.position.add( delta );
 		center.add( delta );
 
 		scope.dispatchEvent( changeEvent );
@@ -77,15 +67,15 @@ function EditorControls( object, domElement ) {
 
 	this.zoom = function ( delta ) {
 
-		var distance = object.position.distanceTo( center );
+		var distance = node.position.distanceTo( center );
 
 		delta.multiplyScalar( distance * scope.zoomSpeed );
 
 		if ( delta.length() > distance ) return;
 
-		delta.applyMatrix3( normalMatrix.getNormalMatrix( object.matrix ) );
+		delta.applyMatrix3( normalMatrix.getNormalMatrix( node.matrix ) );
 
-		object.position.add( delta );
+		node.position.add( delta );
 
 		scope.dispatchEvent( changeEvent );
 
@@ -93,7 +83,7 @@ function EditorControls( object, domElement ) {
 
 	this.rotate = function ( delta ) {
 
-		vector.copy( object.position ).sub( center );
+		vector.copy( node.position ).sub( center );
 
 		spherical.setFromVector3( vector );
 
@@ -104,9 +94,9 @@ function EditorControls( object, domElement ) {
 
 		vector.setFromSpherical( spherical );
 
-		object.position.copy( center ).add( vector );
+		node.position.copy( center ).add( vector );
 
-		object.lookAt( center );
+		node.lookAt( center );
 
 		scope.dispatchEvent( changeEvent );
 

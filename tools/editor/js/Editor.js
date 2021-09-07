@@ -168,7 +168,7 @@ Editor.prototype = {
 		} );
 		*/
 		if ( parent === undefined ) {
-			cc.director.getRunningScene().addChild( node );
+			this.scene.addChild( node );
 		} else {
 			this.parent.addChild( node );
 		}
@@ -545,27 +545,11 @@ Editor.prototype = {
 	},
 
 	selectByPtr: function ( ptr ) {
-		var getNodeByPtr = function ( node ) {
-			var children = node.children;
-			for(var i = 0; i < children.length; i++) {
-					if (children[i].$$.ptr === ptr) {
-							return children[i]
-					} else {
-							var ret = getNodeByPtr(children[i])
-							if (ret) {
-									return ret;
-							}
-					}
-			}
-
-			return null
-		}
-
 		var scene = cc.director.getRunningScene()
 		if (scene.$$.ptr === ptr) {
 				this.select(scene);
 		} else {
-				this.select(getNodeByPtr(scene));
+				this.select(this.getNodeByPtr(scene));
 		}
 	},
 
@@ -601,10 +585,28 @@ Editor.prototype = {
 
 	},
 
-	focusById: function ( id ) {
+	focusByPtr: function ( ptr ) {
+		this.focus( this.getNodeByPtr( ptr ) );
+	},
 
-		this.focus( this.scene.getObjectById( id ) );
+	getNodeByPtr: function ( ptr ) {
+		var doGetNodeByPtr = function ( node ) {
+			var children = node.children;
+			for(var i = 0; i < children.length; i++) {
+					if (children[i].$$.ptr === ptr) {
+							return children[i]
+					} else {
+							var ret = doGetNodeByPtr(children[i])
+							if (ret) {
+									return ret;
+							}
+					}
+			}
 
+			return null
+		}
+
+		return doGetNodeByPtr(this.scene)
 	},
 
 	clear: function () {

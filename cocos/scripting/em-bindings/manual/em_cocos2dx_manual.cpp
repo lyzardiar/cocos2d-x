@@ -125,6 +125,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .property("opacity", &Node::getOpacity, &Node::setOpacity)
     .property<val>("children", std::bind(&Node_getChildren, _1))
     .function("getNodeToParentAffineTransform", select_overload<AffineTransform() const>(&Node::getNodeToParentAffineTransform), allow_raw_pointers())
+    .function("getBoundingBox", &Node::getBoundingBox, allow_raw_pointers())
     ;
   class_<Scene, base<Node>>("cc.Scene")
     .constructor(&Scene::create, allow_raw_pointers())

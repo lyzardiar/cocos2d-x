@@ -35,16 +35,16 @@ function Viewport( editor ) {
 	var camera = null;
 	var scene = null;
 	var viewHelper = null;
-
+	var controls = null;
 	signals.rendererCreated.add(() => {
 		this.scene = editor.scene
 		this.camera = this.scene.getDefaultCamera()
 
 		this.viewHelper = new ViewHelper( this.camera, container );
-		var controls = new EditorControls( camera, container.dom );
+		controls = new EditorControls( this.camera, container.dom );
 		controls.addEventListener( 'change', function () {
-			signals.cameraChanged.dispatch( camera );
-			signals.refreshSidebarObject3D.dispatch( camera );
+			signals.cameraChanged.dispatch( this.camera );
+			signals.refreshSidebarObject3D.dispatch( this.camera );
 		} );
 		this.viewHelper.controls = controls;
 	} );
