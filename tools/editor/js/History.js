@@ -79,7 +79,9 @@ History.prototype = {
 		this.lastCmdTime = new Date();
 
 		// clearing all the redo-commands
-
+		for ( var i = 0; i < this.redos.length; i ++ ) {
+			this.redos[i].dispose && this.redos[i].dispose()
+		}
 		this.redos = [];
 		this.editor.signals.historyChanged.dispatch( cmd );
 
@@ -230,6 +232,12 @@ History.prototype = {
 
 	clear: function () {
 
+		for ( var i = 0; i < this.undos.length; i ++ ) {
+			this.undos[i].dispose && this.undos[i].dispose()
+		}
+		for ( var i = 0; i < this.redos.length; i ++ ) {
+			this.redos[i].dispose && this.redos[i].dispose()
+		}
 		this.undos = [];
 		this.redos = [];
 		this.idCounter = 0;
