@@ -56,9 +56,9 @@ class SetPositionCommand extends Command {
 
 		const output = super.toJSON( this );
 
-		output.objectUuid = this.object.uuid;
-		output.oldPosition = this.oldPosition.toArray();
-		output.newPosition = this.newPosition.toArray();
+		output.nodeUuid = this.node.uuid;
+		output.oldPosition = Object.assign({}, command.oldPosition);
+		output.newPosition = Object.assign({}, command.newPosition);
 
 		return output;
 
@@ -68,9 +68,9 @@ class SetPositionCommand extends Command {
 
 		super.fromJSON( json );
 
-		this.object = this.editor.objectByUuid( json.objectUuid );
-		this.oldPosition = new Vector3().fromArray( json.oldPosition );
-		this.newPosition = new Vector3().fromArray( json.newPosition );
+		this.node = this.editor.nodeByUuid( json.nodeUuid );
+		this.oldPosition = json.oldPosition
+		this.newPosition = json.newPosition
 
 	}
 
