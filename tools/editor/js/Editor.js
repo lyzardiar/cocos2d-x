@@ -549,7 +549,7 @@ Editor.prototype = {
 		if (scene.$$.ptr === ptr) {
 				this.select(scene);
 		} else {
-				this.select(this.getNodeByPtr(scene));
+				this.select(this.getNodeByPtr(ptr));
 		}
 	},
 
@@ -575,11 +575,11 @@ Editor.prototype = {
 
 	},
 
-	focus: function ( object ) {
+	focus: function ( node ) {
 
-		if ( object !== undefined ) {
+		if ( node !== undefined ) {
 
-			this.signals.nodeFocused.dispatch( object );
+			this.signals.nodeFocused.dispatch( node );
 
 		}
 
