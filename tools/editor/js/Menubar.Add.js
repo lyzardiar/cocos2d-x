@@ -28,7 +28,7 @@ function MenubarAdd( editor ) {
 
 		var mesh = new cc.Node();
 		mesh.name = 'Node';
-
+		label.uuid = THREE.MathUtils.generateUUID()
 		editor.execute( new AddNodeCommand( editor, mesh ) );
 
 	} );
@@ -41,7 +41,7 @@ function MenubarAdd( editor ) {
 
 		var sprite = new cc.Sprite();
 		sprite.name = 'Sprite';
-
+		label.uuid = THREE.MathUtils.generateUUID()
 		editor.execute( new AddNodeCommand( editor, sprite ) );
 
 	} );
@@ -56,7 +56,7 @@ function MenubarAdd( editor ) {
 
 		var label = new cc.Label();
 		label.name = 'Label';
-
+		label.uuid = THREE.MathUtils.generateUUID()
 		editor.execute( new AddNodeCommand( editor, label ) );
 
 	} );
