@@ -2,38 +2,38 @@ import { Command } from '../Command.js';
 
 /**
  * @param editor Editor
- * @param object THREE.Object3D
+ * @param node cc.Node
  * @param newUuid string
  * @constructor
  */
 class SetUuidCommand extends Command {
 
-	constructor( editor, object, newUuid ) {
+	constructor( editor, node, newUuid ) {
 
 		super( editor );
 
 		this.type = 'SetUuidCommand';
 		this.name = 'Update UUID';
 
-		this.object = object;
+		this.node = node;
 
-		this.oldUuid = ( object !== undefined ) ? object.uuid : undefined;
+		this.oldUuid = node ? node.uuid : undefined;
 		this.newUuid = newUuid;
 
 	}
 
 	execute() {
 
-		this.object.uuid = this.newUuid;
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.uuid = this.newUuid;
+		this.editor.signals.nodeChanged.dispatch( this.node );
 		this.editor.signals.sceneGraphChanged.dispatch();
 
 	}
 
 	undo() {
 
-		this.object.uuid = this.oldUuid;
-		this.editor.signals.nodeChanged.dispatch( this.object );
+		this.node.uuid = this.oldUuid;
+		this.editor.signals.nodeChanged.dispatch( this.node );
 		this.editor.signals.sceneGraphChanged.dispatch();
 
 	}
@@ -55,11 +55,11 @@ class SetUuidCommand extends Command {
 
 		this.oldUuid = json.oldUuid;
 		this.newUuid = json.newUuid;
-		this.object = this.editor.objectByUuid( json.oldUuid );
+		this.node = this.editor.nodeByUuid( json.oldUuid );
 
-		if ( this.object === undefined ) {
+		if ( !this.node ) {
 
-			this.object = this.editor.objectByUuid( json.newUuid );
+			this.node = this.editor.nodeByUuid( json.newUuid );
 
 		}
 
