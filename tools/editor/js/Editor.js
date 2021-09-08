@@ -703,9 +703,27 @@ Editor.prototype = {
 	},
 
 	nodeByUuid: function ( uuid ) {
-		// TODO: how about uuid?
-		// return this.scene.getObjectByProperty( 'uuid', uuid, true );
-		return null;
+		if (!uuid) {
+			return null
+		}
+
+		var getNodeByUuid = function ( node ) {
+			var children = node.children;
+			for(var i = 0; i < children.length; i++) {
+				if (children[i].uuid === uuid) {
+					return children[i]
+				} else {
+					var ret = getNodeByUuid(children[i])
+					if (ret) {
+						return ret;
+					}
+				}
+			}
+
+			return null
+		}
+
+		return getNodeByUuid(cc.director.getRunningScene())
 	},
 
 	execute: function ( cmd, optionalName ) {
