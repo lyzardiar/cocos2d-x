@@ -549,7 +549,7 @@ Editor.prototype = {
 		if (scene.$$.ptr === ptr) {
 				this.select(scene);
 		} else {
-				this.select(this.getNodeByPtr(ptr));
+				this.select(this.nodeByPtr(ptr));
 		}
 	},
 
@@ -586,17 +586,17 @@ Editor.prototype = {
 	},
 
 	focusByPtr: function ( ptr ) {
-		this.focus( this.getNodeByPtr( ptr ) );
+		this.focus( this.nodeByPtr( ptr ) );
 	},
 
-	getNodeByPtr: function ( ptr ) {
-		var doGetNodeByPtr = function ( node ) {
+	nodeByPtr: function ( ptr ) {
+		var getNodeByPtr = function ( node ) {
 			var children = node.children;
 			for(var i = 0; i < children.length; i++) {
 					if (children[i].$$.ptr === ptr) {
 							return children[i]
 					} else {
-							var ret = doGetNodeByPtr(children[i])
+							var ret = getNodeByPtr(children[i])
 							if (ret) {
 									return ret;
 							}
@@ -606,7 +606,7 @@ Editor.prototype = {
 			return null
 		}
 
-		return doGetNodeByPtr(this.scene)
+		return getNodeByPtr(this.scene)
 	},
 
 	clear: function () {

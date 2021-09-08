@@ -7,7 +7,7 @@ function EditorControls( node, domElement ) {
 	this.enabled = true;
 	this.center = {x: 0, y: 0};
 	this.panSpeed = 0.002;
-	this.zoomSpeed = 0.1;
+	this.zoomSpeed = 10;
 	this.rotationSpeed = 0.005;
 
 	// internals
@@ -66,16 +66,9 @@ function EditorControls( node, domElement ) {
 	};
 
 	this.zoom = function ( delta ) {
-
-		var distance = node.position.distanceTo( center );
-
-		delta.multiplyScalar( distance * scope.zoomSpeed );
-
-		if ( delta.length() > distance ) return;
-
-		delta.applyMatrix3( normalMatrix.getNormalMatrix( node.matrix ) );
-
-		node.position.add( delta );
+		
+		// TODO: always scale from center of canvas
+		node.positionZ += (delta.z * scope.zoomSpeed)
 
 		scope.dispatchEvent( changeEvent );
 
@@ -217,9 +210,10 @@ function EditorControls( node, domElement ) {
 		if ( scope.enabled === false ) return;
 
 		event.preventDefault();
-
+		
 		// Normalize deltaY due to https://bugzilla.mozilla.org/show_bug.cgi?id=1392460
-		scope.zoom( delta.set( 0, 0, event.deltaY > 0 ? 1 : - 1 ) );
+		delta.z = event.deltaY > 0 ? 1 : - 1
+		scope.zoom( delta );
 
 	}
 

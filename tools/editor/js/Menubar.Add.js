@@ -26,10 +26,10 @@ function MenubarAdd( editor ) {
 	option.setTextContent( strings.getKey( 'menubar/add/node' ) );
 	option.onClick( function () {
 
-		var mesh = new cc.Node();
-		mesh.name = 'Node';
-		label.uuid = THREE.MathUtils.generateUUID()
-		editor.execute( new AddNodeCommand( editor, mesh ) );
+		var node = new cc.Node();
+		node.name = 'Node';
+		node.uuid = THREE.MathUtils.generateUUID()
+		editor.execute( new AddNodeCommand( editor, node ) );
 
 	} );
 	options.add( option );
@@ -41,7 +41,7 @@ function MenubarAdd( editor ) {
 
 		var sprite = new cc.Sprite();
 		sprite.name = 'Sprite';
-		label.uuid = THREE.MathUtils.generateUUID()
+		sprite.uuid = THREE.MathUtils.generateUUID()
 		editor.execute( new AddNodeCommand( editor, sprite ) );
 
 	} );

@@ -109,6 +109,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
     .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
     .property("position", select_overload<const Vec2&() const>(&Node::getPosition), select_overload<void(const Vec2 &)>(&Node::setPosition))
+    .property("positionZ", &Node::getPositionZ, &Node::setPositionZ)
     .property<val>("anchorX", std::bind(&Node_getAnchorX, _1), std::bind(&Node_setAnchorX, _1, _2))
     .property<val>("anchorY", std::bind(&Node_getAnchorY, _1), std::bind(&Node_setAnchorY, _1, _2))
     .property<val>("width", std::bind(&Node_getWidth, _1), std::bind(&Node_setWidth, _1, _2))
