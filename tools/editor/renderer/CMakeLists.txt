@@ -35,8 +35,7 @@ endif()
 if(NOT DEFINED BUILD_ENGINE_DONE)
     set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
     set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
-    set(BUILD_EM_LIBS ON)
-
+    
     include(CocosBuildSet)
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 endif()
@@ -55,9 +54,11 @@ endif()
 list(APPEND GAME_HEADER
      Classes/AppMacros.h
      Classes/AppDelegate.h
+     Classes/em_bindings.hpp
      )
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
+     Classes/em_bindings.cpp
      )
 
 if(ANDROID)
@@ -127,7 +128,7 @@ else()
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
 
-target_link_libraries(${APP_NAME} -Wl,--whole-archive emcocos2d -Wl,--no-whole-archive)
+target_link_libraries(${APP_NAME} cocos2d)
 
 target_include_directories(${APP_NAME} PRIVATE Classes)
 
