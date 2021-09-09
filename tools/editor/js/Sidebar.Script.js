@@ -1,7 +1,7 @@
 import { UIPanel, UIBreak, UIText, UIButton, UIRow, UIInput } from './libs/ui.js';
 
 import { AddScriptCommand } from './commands/AddScriptCommand.js';
-import { SetScriptValueCommand } from './commands/SetScriptValueCommand.js';
+// import { SetScriptValueCommand } from './commands/SetScriptValueCommand.js';
 import { RemoveScriptCommand } from './commands/RemoveScriptCommand.js';
 
 function SidebarScript( editor ) {

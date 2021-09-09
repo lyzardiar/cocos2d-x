@@ -86,12 +86,17 @@ function Editor() {
 
 	this.loader = new Loader( this );
 
-	this.camera = null;
+	this.scene = new cc.Scene()
+	this.scene.name = "Scene";
+	cc.director.pushScene(this.scene)
+	cc.director.startAnimation();
+	cc.director.stopAnimation();
 
-	this.scene = new THREE.Scene();
-	this.scene.name = 'Scene';
-
-	this.sceneHelpers = new THREE.Scene();
+	this.camera = this.scene.getDefaultCamera()
+	this.camera.name = "Camera";
+	
+	this.sceneHelpers = new cc.Node()
+	this.sceneHelpers.retain()
 
 	this.object = {};
 	this.geometries = {};
@@ -109,18 +114,6 @@ function Editor() {
 	this.cameras = {};
 	this.viewportCamera = null;
 
-	this.signals.rendererCreated.add(() => {
-		this.scene = new cc.Scene()
-		this.scene.name = "Scene";
-		this.scene.getDefaultCamera().name = "Camera";
-		cc.director.pushScene(this.scene)
-		cc.director.startAnimation();
-		cc.director.stopAnimation();
-		this.camera = this.scene.getDefaultCamera()
-
-		this.sceneHelpers = new cc.Node()
-		this.sceneHelpers.retain()
-	} );
 }
 
 Editor.prototype = {

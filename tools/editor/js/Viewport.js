@@ -71,14 +71,11 @@ function Viewport( editor ) {
 	
 	
 	//
-	var sceneHelpers = null;
-	var selectionBox = null;
-	editor.signals.rendererCreated.add(() => {
-		selectionBox = new cc.DrawNode(1)
-		selectionBox.visible = false;
-		sceneHelpers = editor.sceneHelpers
-		sceneHelpers.addChild( selectionBox );
-	} );
+	var sceneHelpers = editor.sceneHelpers
+	var selectionBox = new cc.DrawNode(1)
+	selectionBox.visible = false;
+	sceneHelpers.addChild( selectionBox );
+	
 	
 	var objectPositionOnDown = null;
 	var objectRotationOnDown = null;
@@ -89,8 +86,8 @@ function Viewport( editor ) {
 
 		var object = transformControls.object;
 
-		if ( object !== undefined ) {
-
+		if ( object ) {
+			/* TODO what are these
 			selectionBox.setFromObject( object );
 
 			var helper = editor.helpers[ object.id ];
@@ -100,7 +97,7 @@ function Viewport( editor ) {
 				helper.update();
 
 			}
-
+			*/
 			signals.refreshSidebarObject3D.dispatch( object );
 
 		}

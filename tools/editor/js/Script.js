@@ -1,7 +1,7 @@
 import { UIElement, UIPanel, UIText } from './libs/ui.js';
 
-import { SetScriptValueCommand } from './commands/SetScriptValueCommand.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
+// import { SetScriptValueCommand } from './commands/SetScriptValueCommand.js';
+// import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
 
 function Script( editor ) {
 

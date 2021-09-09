@@ -34,12 +34,13 @@
 
 		<script type="module">
 
-			function initializeEditor() {
+			async function onCocosInitialized() {
 				const { default: THREE } = await import('./js/libs/three.module.js');
 				const { Editor } = await import('./js/Editor.js');
 				const { Viewport } = await import('./js/Viewport.js');
 				const { Toolbar } = await import('./js/Toolbar.js');
 				const { Script } = await import('./js/Script.js');
+				// const { Player } = await import( './js/Player.js' );
 				const { Sidebar } = await import('./js/Sidebar.js');
 				const { Menubar } = await import('./js/Menubar.js');
 				const { Resizer } = await import('./js/Resizer.js');
@@ -70,8 +71,8 @@
 				var script = new Script( editor );
 				document.body.appendChild( script.dom );
 
-				var player = new Player( editor );
-				document.body.appendChild( player.dom );
+				// var player = new Player( editor );
+				// document.body.appendChild( player.dom );
 
 				var sidebar = new Sidebar( editor );
 				document.body.appendChild( sidebar.dom );
@@ -216,21 +217,20 @@
 					}
 
 				}
-
+				editor.signals.rendererCreated.dispatch( Module );
+				editor.signals.rendererUpdated.dispatch();
+				editor.signals.sceneGraphChanged.dispatch()
 			}
 
 			
 			
 			// Renderer
-			var canvas = document.createElement('CANVAS');
-			// var dom = resources.get('dom');
-			// dom.appendChild(canvas);
 			window.Module = {
 			  preRun: [],
 			  postRun: [],
 			  print: console.log,
 			  printErr: console.error,
-			  canvas: canvas,
+			  canvas: document.createElement('CANVAS'),
 			  setStatus: function (text) {console.log('[Status]', text)},
 			  totalDependencies: 0,
 			  monitorRunDependencies: function (left) {
@@ -264,13 +264,9 @@
 					}
 					cc.director = cc.Director.getInstance();
 					window.cc = cc;
-					initializeEditor()
+					
 				},
-				onCocosInitialized: function() {
-					editor.signals.rendererCreated.dispatch( Module );
-					editor.signals.rendererUpdated.dispatch();
-					editor.signals.sceneGraphChanged.dispatch()
-				}
+				onCocosInitialized
 			};
 			Module.setStatus('Downloading...');
 			window.onerror = function () {
