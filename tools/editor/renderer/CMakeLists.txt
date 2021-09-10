@@ -55,10 +55,12 @@ list(APPEND GAME_HEADER
      Classes/AppMacros.h
      Classes/AppDelegate.h
      Classes/em_bindings.hpp
+     Classes/MeshHelper.h
      )
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
      Classes/em_bindings.cpp
+     Classes/MeshHelper.cpp
      )
 
 if(ANDROID)

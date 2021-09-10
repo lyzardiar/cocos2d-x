@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <emscripten/bind.h>
+#include "MeshHelper.h"
 
 using namespace emscripten;
 using namespace std;
@@ -255,4 +256,12 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .function("getContentSize", &Texture2D::getContentSize, allow_raw_pointers())
     ;
   class_<Camera, base<Node>>("cc.Camera");
+  class_<Sprite3D, base<Node>>("cc.Sprite3D")
+    .class_function("create", select_overload<Sprite3D*()>(&Sprite3D::create), allow_raw_pointers())
+    .function("addMesh", &Sprite3D::addMesh, allow_raw_pointers())
+    ;
+  class_<Mesh, base<Ref>>("cc.Mesh");
+  class_<MeshHelper>("cc.MeshHelper")
+    .class_function("createBox", &MeshHelper::createBox, allow_raw_pointers())
+    ;
 }

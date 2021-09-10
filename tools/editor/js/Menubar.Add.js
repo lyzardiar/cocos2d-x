@@ -47,6 +47,19 @@ function MenubarAdd( editor ) {
 	} );
 	options.add( option );
 
+	
+	var option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/sprite3d' ) );
+	option.onClick( function () {
+
+		var sprite = cc.MeshHelper.createBox(1,1,1,1,1,1)
+		sprite.name = 'Sprite3D';
+		sprite.uuid = THREE.MathUtils.generateUUID()
+		editor.execute( new AddNodeCommand( editor, sprite ) );
+
+	} );
+	options.add( option );
 	//
 
 	var option = new UIRow();
