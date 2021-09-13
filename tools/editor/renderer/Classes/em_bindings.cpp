@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <emscripten/bind.h>
-#include "MeshHelper.h"
 
 using namespace emscripten;
 using namespace std;
@@ -83,6 +82,68 @@ Texture2D* Texture2D_createWithImage(Image * image) {
     return nullptr;
 }
 
+Mesh* Mesh_create(const val& positionsVal, const val& normalsVal, const val& texsVal, const val& indicesVal) {
+  std::vector<float> positions;
+  std::vector<float> normals;
+  std::vector<float> texs;
+  std::vector<unsigned short> indices;
+
+  unsigned length;
+  length = positionsVal["length"].as<unsigned>();
+  for (unsigned i = 0; i < length; i++) {
+      positions.push_back(positionsVal[i].as<float>());
+  }
+
+  length = normalsVal["length"].as<unsigned>();
+  for (unsigned i = 0; i < length; i++) {
+      normals.push_back(normalsVal[i].as<float>());
+  }
+
+  length = texsVal["length"].as<unsigned>();
+  for (unsigned i = 0; i < length; i++) {
+      texs.push_back(texsVal[i].as<float>());
+  }
+
+  length = indicesVal["length"].as<unsigned>();
+  for (unsigned i = 0; i < length; i++) {
+      indices.push_back(indicesVal[i].as<unsigned short>());
+  }
+
+  return Mesh::create(positions, normals, texs, indices);
+}
+
+val Node_getNodeToWorldTransform(const Node& node) {
+    Mat4 mat = node.getNodeToWorldTransform();
+    auto out = val::array();
+    out.set(0, val(mat.m[0]));
+    out.set(1, val(mat.m[1]));
+    out.set(2, val(mat.m[2]));
+    out.set(3, val(mat.m[3]));
+    out.set(4, val(mat.m[4]));
+    out.set(5, val(mat.m[5]));
+    out.set(6, val(mat.m[6]));
+    out.set(7, val(mat.m[7]));
+    out.set(8, val(mat.m[8]));
+    out.set(9, val(mat.m[9]));
+    out.set(10, val(mat.m[10]));
+    out.set(11, val(mat.m[11]));
+    out.set(12, val(mat.m[12]));
+    out.set(13, val(mat.m[13]));
+    out.set(14, val(mat.m[14]));
+    out.set(15, val(mat.m[15]));
+    return out;
+}
+
+void Node_removeChild( Node& parent, Node * node) {
+  parent.removeChild(node);
+}
+
+namespace emscripten {
+    namespace internal {
+        template<> void raw_destructor<Material>(Material* ptr) { /* do nothing */ }
+    }
+}
+
 EMSCRIPTEN_BINDINGS(my_class_example) {
   class_<Director>("cc.Director")
     .class_function("getInstance", &Director::getInstance, allow_raw_pointers())
@@ -107,8 +168,10 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
   class_<Node, base<Ref>>("cc.Node")
     .constructor(&Node::create, allow_raw_pointers())
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
-    .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
+    // .function("removeChild", select_overload<void(Node*, bool)>(&Node::removeChild), allow_raw_pointers())
+    .function<val>("removeChild", std::bind(&Node::removeChild, _1, _2, _3))
     .function("getParent", select_overload<Node*()>(&Node::getParent), allow_raw_pointers())
+    .function("getNodeToWorldTransform", &Node_getNodeToWorldTransform, allow_raw_pointers())
     .property("position", select_overload<const Vec2&() const>(&Node::getPosition), select_overload<void(const Vec2 &)>(&Node::setPosition))
     .property("positionZ", &Node::getPositionZ, &Node::setPositionZ)
     .property<val>("anchorX", std::bind(&Node_getAnchorX, _1), std::bind(&Node_setAnchorX, _1, _2))
@@ -260,8 +323,24 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
     .class_function("create", select_overload<Sprite3D*()>(&Sprite3D::create), allow_raw_pointers())
     .function("addMesh", &Sprite3D::addMesh, allow_raw_pointers())
     ;
-  class_<Mesh, base<Ref>>("cc.Mesh");
-  class_<MeshHelper>("cc.MeshHelper")
-    .class_function("createBox", &MeshHelper::createBox, allow_raw_pointers())
+  class_<Mesh, base<Ref>>("cc.Mesh")
+    .class_function("create", &Mesh_create, allow_raw_pointers())
+    .function("setMaterial", &Mesh::setMaterial, allow_raw_pointers())
+    ;
+  class_<Material, base<Ref>>("cc.Material")
+    .function("clone", &Material::clone, allow_raw_pointers())
+    ;
+  enum_<Sprite3DMaterial::MaterialType>("cc.MaterialType")
+        .value("UNLIT", Sprite3DMaterial::MaterialType::UNLIT)
+        .value("UNLIT_NOTEX", Sprite3DMaterial::MaterialType::UNLIT_NOTEX)
+        .value("VERTEX_LIT", Sprite3DMaterial::MaterialType::VERTEX_LIT)
+        .value("DIFFUSE", Sprite3DMaterial::MaterialType::DIFFUSE)
+        .value("DIFFUSE_NOTEX", Sprite3DMaterial::MaterialType::DIFFUSE_NOTEX)
+        .value("BUMPED_DIFFUSE", Sprite3DMaterial::MaterialType::BUMPED_DIFFUSE)
+        .value("CUSTOM", Sprite3DMaterial::MaterialType::CUSTOM)
+        ;
+
+  class_<Sprite3DMaterial, base<Material>>("cc.Sprite3DMaterial")
+    .class_function("createBuiltInMaterial", select_overload<Sprite3DMaterial*(Sprite3DMaterial::MaterialType, bool)>(&Sprite3DMaterial::createBuiltInMaterial), allow_raw_pointers())
     ;
 }
