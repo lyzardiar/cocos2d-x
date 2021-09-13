@@ -1,4 +1,4 @@
-#include "scripting/js-embind-bindings/manual/jsb_embind_cocos2dx_manual.hpp"
+#include "scripting/js-embind-bindings/manual/js_embind_cocos2dx_manual.hpp"
 #include "cocos2d.h"
 #include "audio/include/SimpleAudioEngine.h"
 #include "2d/CCProtectedNode.h"
@@ -71,10 +71,6 @@ Image* Image_createWithImageFile(const std::string& path) {
     return nullptr;
 }
 
-template<typename RT, typename RV> RT returnAs() {
-  return RV;
-}
-
 Texture2D* Texture2D_createWithImage(Image * image) {
     Texture2D *ret = new (std::nothrow) Texture2D();
     if (ret && ret->initWithImage(image))
@@ -86,47 +82,107 @@ Texture2D* Texture2D_createWithImage(Image * image) {
     return nullptr;
 }
 
+template<typename T, bool R>
+bool js_embind_getBool(const T& obj) {
+  return R;
+}
+
+template<typename T>
+bool js_embind_ctor(const T& obj) {
+  return true;
+}
+
+template<typename T>
+T* js_embind_constructor() {
+  T *obj = new (std::nothrow) T();
+  return obj;
+}
+
 EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
   class_<Ref>("cc.Ref")
     .function("retain", &Node::retain, allow_raw_pointers())
     .function("release", &Node::release, allow_raw_pointers())
     ;
+
+  
+  class_<GLProgram, base<Ref>>("cc.GLProgram")
+    .constructor(&js_embind_constructor<GLProgram>, allow_raw_pointers())
+    .function("getFragmentShaderLog", &GLProgram::getFragmentShaderLog, allow_raw_pointers())
+    .function("addAttribute", &GLProgram::bindAttribLocation, allow_raw_pointers())
+    .function("getUniformFlags", &GLProgram::getUniformFlags, allow_raw_pointers())
+    .function("getUniformLocationForName", &GLProgram::getUniformLocationForName, allow_raw_pointers())
+    .function("use", &GLProgram::use, allow_raw_pointers())
+    .function("getVertexShaderLog", &GLProgram::getVertexShaderLog, allow_raw_pointers())
+    .function("getUniform", &GLProgram::getUniform, allow_raw_pointers())
+    .function("initWithString", select_overload<bool(const GLchar*, const GLchar*)>(&GLProgram::initWithByteArrays), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(const GLchar*, const GLchar*, const std::string&)>(&GLProgram::initWithByteArrays), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(const GLchar*, const GLchar*, const std::string&, const std::string&)>(&GLProgram::initWithByteArrays), allow_raw_pointers())
+    .function("setUniformLocationWith1f", &GLProgram::setUniformLocationWith1f, allow_raw_pointers())
+    .function("init", select_overload<bool(const std::string&, const std::string&)>(&GLProgram::initWithFilenames), allow_raw_pointers())
+    .function("init", select_overload<bool(const std::string&, const std::string&, const std::string&)>(&GLProgram::initWithFilenames), allow_raw_pointers())
+    .function("init", select_overload<bool(const std::string&, const std::string&, const std::string&, const std::string&)>(&GLProgram::initWithFilenames), allow_raw_pointers())
+    .function("setUniformLocationWith3f", &GLProgram::setUniformLocationWith3f, allow_raw_pointers())
+    .function("setUniformsForBuiltins", select_overload<void()>(&GLProgram::setUniformsForBuiltins), allow_raw_pointers())
+    .function("setUniformsForBuiltins", select_overload<void(const Mat4 &)>(&GLProgram::setUniformsForBuiltins), allow_raw_pointers())
+    .function("setUniformLocationWith3i", &GLProgram::setUniformLocationWith3i, allow_raw_pointers())
+    .function("setUniformLocationWith4f", &GLProgram::setUniformLocationWith4f, allow_raw_pointers())
+    .function("updateUniforms", &GLProgram::updateUniforms, allow_raw_pointers())
+    .function("getUniformLocation", &GLProgram::getUniformLocation, allow_raw_pointers())
+    .function("link", &GLProgram::link, allow_raw_pointers())
+    .function("reset", &GLProgram::reset, allow_raw_pointers())
+    .function("getAttribLocation", &GLProgram::getAttribLocation, allow_raw_pointers())
+    .function("getVertexAttrib", &GLProgram::getVertexAttrib, allow_raw_pointers())
+    .function("setUniformLocationWith2f", &GLProgram::setUniformLocationWith2f, allow_raw_pointers())
+    .function("setUniformLocationWith4i", &GLProgram::setUniformLocationWith4i, allow_raw_pointers())
+    .function("setUniformLocationI32", &GLProgram::setUniformLocationWith1i, allow_raw_pointers())
+    .function("setUniformLocationWith2i", &GLProgram::setUniformLocationWith2i, allow_raw_pointers())
+    .function("ctor", &js_embind_ctor<GLProgram>, allow_raw_pointers())
+    .class_function("createWithByteArrays", select_overload<GLProgram*(const GLchar*, const GLchar*)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
+    .class_function("createWithByteArrays", select_overload<GLProgram*(const GLchar*, const GLchar*, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
+    .class_function("createWithByteArrays", select_overload<GLProgram*(const GLchar*, const GLchar*, const std::string&, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
+    .class_function("createWithFilenames", select_overload<GLProgram*(const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
+    .class_function("createWithFilenames", select_overload<GLProgram*(const std::string&, const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
+    .class_function("createWithFilenames", select_overload<GLProgram*(const std::string&, const std::string&, const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
+    .property("_className",  select_overload<std::string(const GLProgram&)>([](const GLProgram& _) -> std::string {return "GLProgram";}))
+    .property("__nativeObj", &js_embind_getBool<GLProgram, true>)
+    .property("__is_ref", &js_embind_getBool<GLProgram, true>)
+    ;
   class_<Texture2D, base<Ref>>("cc.Texture2D")
-    .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
-    .function("getMaxT", &Texture2D::getMaxT, allow_raw_pointers())
-    .function("setAlphaTexture", &Texture2D::setAlphaTexture, allow_raw_pointers())
-    .function("getStringForFormat", &Texture2D::getStringForFormat, allow_raw_pointers())
-    .function("initWithImage", &Texture2D::initWithImage, allow_raw_pointers())
-    .function("setShaderProgram", &Texture2D::setGLProgram, allow_raw_pointers())
-    .function("getMaxS", &Texture2D::getMaxS, allow_raw_pointers())
-    .function("hasPremultipliedAlpha", &Texture2D::hasPremultipliedAlpha, allow_raw_pointers())
-    .function("getPixelsHigh", &Texture2D::getPixelsHigh, allow_raw_pointers())
-    .function("initWithMipmaps", &Texture2D::initWithMipmaps, allow_raw_pointers())
-    .function("getAlphaTextureName", &Texture2D::getAlphaTextureName, allow_raw_pointers())
-    .function("getBitsPerPixelForFormat", &Texture2D::getBitsPerPixelForFormat, allow_raw_pointers())
-    .function("getName", &Texture2D::getName, allow_raw_pointers())
-    .function("initWithString", &Texture2D::initWithString, allow_raw_pointers())
-    .function("setMaxT", &Texture2D::setMaxT, allow_raw_pointers())
-    .function("getPath", &Texture2D::getPath, allow_raw_pointers())
-    .function("drawInRect", &Texture2D::drawInRect, allow_raw_pointers())
-    .function("getContentSize", &Texture2D::getContentSize, allow_raw_pointers())
-    .function("setAliasTexParameters", &Texture2D::setAliasTexParameters, allow_raw_pointers())
-    .function("setAntiAliasTexParameters", &Texture2D::setAntiAliasTexParameters, allow_raw_pointers())
-    .function("generateMipmap", &Texture2D::generateMipmap, allow_raw_pointers())
-    .function("getAlphaTexture", &Texture2D::getAlphaTexture, allow_raw_pointers())
-    .function("getDescription", &Texture2D::getDescription, allow_raw_pointers())
-    .function("getPixelFormat", &Texture2D::getPixelFormat, allow_raw_pointers())
-    .function("getContentSizeInPixels", &Texture2D::getContentSizeInPixels, allow_raw_pointers())
-    .function("releaseTexture", &Texture2D::releaseGLTexture, allow_raw_pointers())
-    .function("getPixelsWide", &Texture2D::getPixelsWide, allow_raw_pointers())
-    .function("drawAtPoint", &Texture2D::drawAtPoint, allow_raw_pointers())
-    .function("hasMipmaps", &Texture2D::hasMipmaps, allow_raw_pointers())
-    .function("setMaxS", &Texture2D::setMaxS, allow_raw_pointers())
-    .class_function("setDefaultAlphaPixelFormat", &Texture2D::setDefaultAlphaPixelFormat, allow_raw_pointers())
-    .class_function("getDefaultAlphaPixelFormat", &Texture2D::getDefaultAlphaPixelFormat, allow_raw_pointers())
-    .property("_className", &returnAs<std::string, "Texture2D">)
-    .property("__nativeObj", &returnAs<bool, true>)
-    .property("__is_ref", &returnAs<bool, true>)
+    // .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
+    // .function("getMaxT", &Texture2D::getMaxT, allow_raw_pointers())
+    // .function("setAlphaTexture", &Texture2D::setAlphaTexture, allow_raw_pointers())
+    // .function("getStringForFormat", &Texture2D::getStringForFormat, allow_raw_pointers())
+    // .function("initWithImage", &Texture2D::initWithImage, allow_raw_pointers())
+    // .function("setShaderProgram", &Texture2D::setGLProgram, allow_raw_pointers())
+    // .function("getMaxS", &Texture2D::getMaxS, allow_raw_pointers())
+    // .function("hasPremultipliedAlpha", &Texture2D::hasPremultipliedAlpha, allow_raw_pointers())
+    // .function("getPixelsHigh", &Texture2D::getPixelsHigh, allow_raw_pointers())
+    // .function("initWithMipmaps", &Texture2D::initWithMipmaps, allow_raw_pointers())
+    // .function("getAlphaTextureName", &Texture2D::getAlphaTextureName, allow_raw_pointers())
+    // .function("getBitsPerPixelForFormat", &Texture2D::getBitsPerPixelForFormat, allow_raw_pointers())
+    // .function("getName", &Texture2D::getName, allow_raw_pointers())
+    // .function("initWithString", &Texture2D::initWithString, allow_raw_pointers())
+    // .function("setMaxT", &Texture2D::setMaxT, allow_raw_pointers())
+    // .function("getPath", &Texture2D::getPath, allow_raw_pointers())
+    // .function("drawInRect", &Texture2D::drawInRect, allow_raw_pointers())
+    // .function("getContentSize", &Texture2D::getContentSize, allow_raw_pointers())
+    // .function("setAliasTexParameters", &Texture2D::setAliasTexParameters, allow_raw_pointers())
+    // .function("setAntiAliasTexParameters", &Texture2D::setAntiAliasTexParameters, allow_raw_pointers())
+    // .function("generateMipmap", &Texture2D::generateMipmap, allow_raw_pointers())
+    // .function("getAlphaTexture", &Texture2D::getAlphaTexture, allow_raw_pointers())
+    // .function("getDescription", &Texture2D::getDescription, allow_raw_pointers())
+    // .function("getPixelFormat", &Texture2D::getPixelFormat, allow_raw_pointers())
+    // .function("getContentSizeInPixels", &Texture2D::getContentSizeInPixels, allow_raw_pointers())
+    // .function("releaseTexture", &Texture2D::releaseGLTexture, allow_raw_pointers())
+    // .function("getPixelsWide", &Texture2D::getPixelsWide, allow_raw_pointers())
+    // .function("drawAtPoint", &Texture2D::drawAtPoint, allow_raw_pointers())
+    // .function("hasMipmaps", &Texture2D::hasMipmaps, allow_raw_pointers())
+    // .function("setMaxS", &Texture2D::setMaxS, allow_raw_pointers())
+    // .class_function("setDefaultAlphaPixelFormat", &Texture2D::setDefaultAlphaPixelFormat, allow_raw_pointers())
+    // .class_function("getDefaultAlphaPixelFormat", &Texture2D::getDefaultAlphaPixelFormat, allow_raw_pointers())
+    // .property("_className", &returnString<"Texture2D">)
+    // .property("__nativeObj", &returnBool<true>)
+    // .property("__is_ref", &returnBool<true>)
     ;
     /*
   class_<Director>("cc.Director")
