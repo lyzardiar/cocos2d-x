@@ -99,13 +99,7 @@ T* js_embind_constructor() {
 }
 
 EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
-  class_<Ref>("cc.Ref")
-    .function("retain", &Node::retain, allow_raw_pointers())
-    .function("release", &Node::release, allow_raw_pointers())
-    ;
-
-  
-  class_<GLProgram, base<Ref>>("cc.GLProgram")
+  class_<GLProgram>("cc.GLProgram")
     .constructor(&js_embind_constructor<GLProgram>, allow_raw_pointers())
     .function("getFragmentShaderLog", &GLProgram::getFragmentShaderLog, allow_raw_pointers())
     .function("addAttribute", &GLProgram::bindAttribLocation, allow_raw_pointers())
@@ -147,7 +141,8 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .property("__nativeObj", &js_embind_getBool<GLProgram, true>)
     .property("__is_ref", &js_embind_getBool<GLProgram, true>)
     ;
-  class_<Texture2D, base<Ref>>("cc.Texture2D")
+  class_<Texture2D>("cc.Texture2D")
+    .constructor(&js_embind_constructor<Texture2D>, allow_raw_pointers())
     .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
     .function("getMaxT", &Texture2D::getMaxT, allow_raw_pointers())
     .function("setAlphaTexture", &Texture2D::setAlphaTexture, allow_raw_pointers())
@@ -163,17 +158,30 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getBitsPerPixelForFormat", select_overload<unsigned int() const>(&Texture2D::getBitsPerPixelForFormat), allow_raw_pointers())
     .function("getBitsPerPixelForFormat", select_overload<unsigned int(Texture2D::PixelFormat) const>(&Texture2D::getBitsPerPixelForFormat), allow_raw_pointers())
     .function("getName", &Texture2D::getName, allow_raw_pointers())
-    .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize)>(std::bind(
-      static_cast<bool(Texture2D::*)(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString),
-      _1, _2, _3, Size(0, 0), TextHAlignment::CENTER, TextVAlignment::TOP, true, 0
- )), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
-    // .function("initWithString", select_overload<bool(const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)>(&Texture2D::initWithString), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(Texture2D&, const char *, const std::string &, float)>(
+      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize)-> bool{
+        return this_.initWithString(text, fontName, fontSize);
+      }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(Texture2D&, const char *, const std::string &, float, const Size&)>(
+      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions)-> bool{
+        return this_.initWithString(text, fontName, fontSize, dimensions);
+      }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(Texture2D&, const char *, const std::string &, float, const Size&, TextHAlignment)>(
+      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment)-> bool{
+        return this_.initWithString(text, fontName, fontSize, dimensions, hAlignment);
+      }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(Texture2D&, const char *, const std::string &, float, const Size&, TextHAlignment, TextVAlignment)>(
+      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment)-> bool{
+        return this_.initWithString(text, fontName, fontSize, dimensions, hAlignment, vAlignment);
+      }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(Texture2D&, const char *, const std::string &, float, const Size&, TextHAlignment, TextVAlignment, bool)>(
+      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap)-> bool{
+        return this_.initWithString(text, fontName, fontSize, dimensions, hAlignment, vAlignment, enableWrap);
+      }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(Texture2D&, const char *, const std::string &, float, const Size&, TextHAlignment, TextVAlignment, bool, int)>(
+      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow)-> bool{
+        return this_.initWithString(text, fontName, fontSize, dimensions, hAlignment, vAlignment, enableWrap, overflow);
+      }), allow_raw_pointers())
     .function("setMaxT", &Texture2D::setMaxT, allow_raw_pointers())
     .function("getPath", &Texture2D::getPath, allow_raw_pointers())
     .function("drawInRect", &Texture2D::drawInRect, allow_raw_pointers())
@@ -195,6 +203,24 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .property("_className",  select_overload<std::string(const Texture2D&)>([](const Texture2D& _) -> std::string {return "Texture2D";}))
     .property("__nativeObj", &js_embind_getBool<Texture2D, true>)
     .property("__is_ref", &js_embind_getBool<Texture2D, true>)
+    ;
+  class_<Touch>("cc.Touch")
+    .constructor(&js_embind_constructor<Touch>, allow_raw_pointers())
+    .function("getPreviousLocationInView", &Touch::getPreviousLocationInView, allow_raw_pointers())
+    .function("getLocation", &Touch::getLocation, allow_raw_pointers())
+    .function("getDelta", &Touch::getDelta, allow_raw_pointers())
+    .function("getStartLocationInView", &Touch::getStartLocationInView, allow_raw_pointers())
+    .function("getCurrentForce", &Touch::getCurrentForce, allow_raw_pointers())
+    .function("getStartLocation", &Touch::getStartLocation, allow_raw_pointers())
+    .function("getID", &Touch::getID, allow_raw_pointers())
+    .function("setTouchInfo", select_overload<void(int, float, float)>(&Touch::setTouchInfo), allow_raw_pointers())
+    .function("setTouchInfo", select_overload<void(int, float, float, float, float)>(&Touch::setTouchInfo), allow_raw_pointers())
+    .function("getMaxForce", &Touch::getMaxForce, allow_raw_pointers())
+    .function("getLocationInView", &Touch::getLocationInView, allow_raw_pointers())
+    .function("getPreviousLocation", &Touch::getPreviousLocation, allow_raw_pointers())
+    .property("_className",  select_overload<std::string(const Touch&)>([](const Touch& _) -> std::string {return "Touch";}))
+    .property("__nativeObj", &js_embind_getBool<Touch, true>)
+    .property("__is_ref", &js_embind_getBool<Touch, true>)
     ;
     /*
   class_<Director>("cc.Director")
