@@ -98,6 +98,13 @@ T* js_embind_constructor() {
   return obj;
 }
 
+// template instantiation for class with protected or private destructor
+namespace emscripten {
+    namespace internal {
+        template<> void raw_destructor<GLProgramState>(GLProgramState* _) {}
+    }
+}
+
 EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
   class_<GLProgram>("cc.GLProgram")
     .constructor(&js_embind_constructor<GLProgram>, allow_raw_pointers())
@@ -714,6 +721,169 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .property("_className",  optional_override([](const Follow& _) -> std::string {return "Follow";}))
     .property("__nativeObj", &js_embind_getBool<Follow, true>)
     .property("__is_ref", &js_embind_getBool<Follow, true>)
+    ;
+  class_<Image>("cc.Image")
+    .constructor(&js_embind_constructor<Image>, allow_raw_pointers())
+    .function("hasPremultipliedAlpha", &Image::hasPremultipliedAlpha, allow_raw_pointers())
+    .function("reversePremultipliedAlpha", &Image::reversePremultipliedAlpha, allow_raw_pointers())
+    .function("getDataLen", &Image::getDataLen, allow_raw_pointers())
+    .function("saveToFile", optional_override(
+      [](Image& this_, const std::string &filename){
+        return this_.saveToFile(filename);
+      }))
+    .function("saveToFile", &Image::saveToFile, allow_raw_pointers())
+    .function("hasAlpha", &Image::hasAlpha, allow_raw_pointers())
+    .function("isCompressed", &Image::isCompressed, allow_raw_pointers())
+    .function("getHeight", &Image::getHeight, allow_raw_pointers())
+    .function("premultiplyAlpha", &Image::premultiplyAlpha, allow_raw_pointers())
+    .function("initWithImageFile", &Image::initWithImageFile, allow_raw_pointers())
+    .function("getWidth", &Image::getWidth, allow_raw_pointers())
+    .function("getBitPerPixel", &Image::getBitPerPixel, allow_raw_pointers())
+    .function("getFileType", &Image::getFileType, allow_raw_pointers())
+    .function("getFilePath", &Image::getFilePath, allow_raw_pointers())
+    .function("getNumberOfMipmaps", &Image::getNumberOfMipmaps, allow_raw_pointers())
+    .function("getRenderFormat", &Image::getRenderFormat, allow_raw_pointers())
+    .function("getData", &Image::getData, allow_raw_pointers())
+    .function("getMipmaps", &Image::getMipmaps, allow_raw_pointers())
+    .function("initWithRawData", optional_override(
+      [](Image& this_, const unsigned char * data, ssize_t dataLen, int width, int height, int bitsPerComponent){
+        return this_.initWithRawData(data, dataLen, width, height, bitsPerComponent);
+      }), allow_raw_pointers())
+    .function("initWithRawData", &Image::initWithRawData, allow_raw_pointers())
+    .class_function("setPVRImagesHavePremultipliedAlpha", &Image::setPVRImagesHavePremultipliedAlpha, allow_raw_pointers())
+    .class_function("setPNGPremultipliedAlphaEnabled", &Image::setPNGPremultipliedAlphaEnabled, allow_raw_pointers())
+    .property("_className",  optional_override([](const Image& _) -> std::string {return "Image";}))
+    .property("__nativeObj", &js_embind_getBool<Image, true>)
+    .property("__is_ref", &js_embind_getBool<Image, true>)
+    ;
+  class_<GLProgramState>("cc.GLProgramState")
+    .function("setUniformCallback", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformCallback(v1.as<string>(), v2.as<const std::function<void(GLProgram*, Uniform*)>>());
+        }
+        else 
+        {
+          return this_.setUniformCallback(v1.as<GLint>(), v2.as<const std::function<void(GLProgram*, Uniform*)>>());
+        }
+    }))
+    .function("getVertexAttribsFlags", &GLProgramState::getVertexAttribsFlags, allow_raw_pointers())
+    .function("applyAutoBinding", &GLProgramState::applyAutoBinding, allow_raw_pointers())
+    .function("setUniformVec2", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformVec2(v1.as<string>(), v2.as<const Vec2&>());
+        }
+        else 
+        {
+          return this_.setUniformVec2(v1.as<GLint>(), v2.as<const Vec2&>());
+        }
+    }))
+    .function("setUniformVec3", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformVec3(v1.as<string>(), v2.as<const Vec3&>());
+        }
+        else 
+        {
+          return this_.setUniformVec3(v1.as<GLint>(), v2.as<const Vec3&>());
+        }
+    }))
+    .function("setVertexAttribCallback", &GLProgramState::setVertexAttribCallback, allow_raw_pointers())
+    .function("apply", &GLProgramState::apply, allow_raw_pointers())
+    .function("getNodeBinding", &GLProgramState::getNodeBinding, allow_raw_pointers())
+    .function("applyGLProgram", &GLProgramState::applyGLProgram, allow_raw_pointers())
+    .function("setNodeBinding", &GLProgramState::setNodeBinding, allow_raw_pointers())
+    .function("setUniformInt", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformInt(v1.as<string>(), v2.as<int>());
+        }
+        else 
+        {
+          return this_.setUniformInt(v1.as<GLint>(), v2.as<int>());
+        }
+    }))
+    .function("setParameterAutoBinding", &GLProgramState::setParameterAutoBinding, allow_raw_pointers())
+    .function("setUniformVec2v", optional_override([](GLProgramState& this_, val v1, val v2, val v3) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformVec2v(v1.as<string>(), v2.as<ssize_t>(), v3.as<const Vec2*>(allow_raw_pointers()));
+        }
+        else 
+        {
+          return this_.setUniformVec2v(v1.as<GLint>(), v2.as<ssize_t>(), v3.as<const Vec2*>(allow_raw_pointers()));
+        }
+    }))
+    .function("getUniformCount", &GLProgramState::getUniformCount, allow_raw_pointers())
+    .function("applyAttributes", optional_override(
+      [](GLProgramState& this_){
+        return this_.applyAttributes();
+      }))
+    .function("applyAttributes", &GLProgramState::applyAttributes, allow_raw_pointers())
+    .function("clone", &GLProgramState::clone, allow_raw_pointers())
+    .function("setGLProgram", &GLProgramState::setGLProgram, allow_raw_pointers())
+    .function("setUniformFloatv", optional_override([](GLProgramState& this_, val v1, val v2, val v3) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformFloatv(v1.as<string>(), v2.as<ssize_t>(), v3.as<const float*>(allow_raw_pointers()));
+        }
+        else 
+        {
+          return this_.setUniformFloatv(v1.as<GLint>(), v2.as<ssize_t>(), v3.as<const float*>(allow_raw_pointers()));
+        }
+    }))
+    .function("getGLProgram", &GLProgramState::getGLProgram, allow_raw_pointers())
+    .function("setUniformTexture", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformTexture(v1.as<string>(), v2.as<Texture2D *>(allow_raw_pointers()));
+        }
+        else 
+        {
+          return this_.setUniformTexture(v1.as<GLint>(), v2.as<Texture2D *>(allow_raw_pointers()));
+        }
+    }))
+    .function("applyUniforms", &GLProgramState::applyUniforms, allow_raw_pointers())
+    .function("setUniformFloat", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformFloat(v1.as<string>(), v2.as<float>(allow_raw_pointers()));
+        }
+        else 
+        {
+          return this_.setUniformFloat(v1.as<GLint>(), v2.as<float>(allow_raw_pointers()));
+        }
+    }))
+    .function("setUniformMat4", optional_override([](GLProgramState& this_, val v1, val v2) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformMat4(v1.as<string>(), v2.as<const Mat4&>());
+        }
+        else 
+        {
+          return this_.setUniformMat4(v1.as<GLint>(), v2.as<const Mat4&>());
+        }
+    }))
+    .function("setUniformVec3v", optional_override([](GLProgramState& this_, val v1, val v2, val v3) {
+        if (v1.isString()) 
+        {
+          return this_.setUniformVec3v(v1.as<string>(), v2.as<ssize_t>(), v3.as<const Vec3*>(allow_raw_pointers()));
+        }
+        else 
+        {
+          return this_.setUniformVec3v(v1.as<GLint>(), v2.as<ssize_t>(), v3.as<const Vec3*>(allow_raw_pointers()));
+        }
+    }))
+    .function("getVertexAttribCount", &GLProgramState::getVertexAttribCount, allow_raw_pointers())
+    .class_function("create", &GLProgramState::create, allow_raw_pointers())
+    .class_function("getOrCreateWithGLProgramName", select_overload<GLProgramState*(const std::string&)>(&GLProgramState::getOrCreateWithGLProgramName), allow_raw_pointers())
+    .class_function("getOrCreateWithGLProgramName", select_overload<GLProgramState*(const std::string&, Texture2D*)>(&GLProgramState::getOrCreateWithGLProgramName), allow_raw_pointers())
+    .class_function("getOrCreateWithGLProgram", &GLProgramState::getOrCreateWithGLProgram, allow_raw_pointers())
+    .class_function("getOrCreateWithShaders", &GLProgramState::getOrCreateWithShaders, allow_raw_pointers())
+    .property("_className",  optional_override([](const GLProgramState& _) -> std::string {return "GLProgramState";}))
+    .property("__nativeObj", &js_embind_getBool<GLProgramState, true>)
+    .property("__is_ref", &js_embind_getBool<GLProgramState, true>)
     ;
     /*
   class_<Director>("cc.Director")
