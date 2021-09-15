@@ -153,6 +153,10 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getMaxS", &Texture2D::getMaxS, allow_raw_pointers())
     .function("hasPremultipliedAlpha", &Texture2D::hasPremultipliedAlpha, allow_raw_pointers())
     .function("getPixelsHigh", &Texture2D::getPixelsHigh, allow_raw_pointers())
+    .function("initWithMipmaps", optional_override(
+      [](Texture2D& this_, MipmapInfo* mipmaps, int mipmapsNum, Texture2D::PixelFormat pixelFormat, int pixelsWide, int pixelsHigh){
+        return this_.initWithMipmaps(mipmaps, mipmapsNum, pixelFormat, pixelsWide, pixelsHigh);
+      }), allow_raw_pointers())
     .function("initWithMipmaps", &Texture2D::initWithMipmaps, allow_raw_pointers())
     .function("getAlphaTextureName", &Texture2D::getAlphaTextureName, allow_raw_pointers())
     .function("getBitsPerPixelForFormat", select_overload<unsigned int() const>(&Texture2D::getBitsPerPixelForFormat), allow_raw_pointers())
@@ -178,10 +182,8 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
       [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap){
         return this_.initWithString(text, fontName, fontSize, dimensions, hAlignment, vAlignment, enableWrap);
       }), allow_raw_pointers())
-    .function("initWithString", optional_override(
-      [](Texture2D& this_, const char *text,  const std::string &fontName, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment, bool enableWrap, int overflow){
-        return this_.initWithString(text, fontName, fontSize, dimensions, hAlignment, vAlignment, enableWrap, overflow);
-      }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(const char *, const std::string &, float, const Size&, TextHAlignment, TextVAlignment, bool, int)>(&Texture2D::initWithString), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(const char *, const FontDefinition&)>(&Texture2D::initWithString), allow_raw_pointers())
     .function("setMaxT", &Texture2D::setMaxT, allow_raw_pointers())
     .function("getPath", &Texture2D::getPath, allow_raw_pointers())
     .function("drawInRect", &Texture2D::drawInRect, allow_raw_pointers())
@@ -324,11 +326,18 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("setonEnterTransitionDidFinishCallback", &Node::setonEnterTransitionDidFinishCallback, allow_raw_pointers())
     .function("removeAllComponents", &Node::removeAllComponents, allow_raw_pointers())
     .function("_setLocalZOrder", &Node::_setLocalZOrder, allow_raw_pointers())
+    .function("setCameraMask", optional_override([](Node& this_, unsigned short mask) {
+        return this_.setCameraMask(mask);
+    }), allow_raw_pointers())
     .function("setCameraMask", &Node::setCameraMask, allow_raw_pointers())
     .function("getTag", &Node::getTag, allow_raw_pointers())
     .function("getonEnterTransitionDidFinishCallback", &Node::getonEnterTransitionDidFinishCallback, allow_raw_pointers())
     .function("getNodeToWorldTransform", &Node::getNodeToWorldAffineTransform, allow_raw_pointers())
     .function("getPosition3D", &Node::getPosition3D, allow_raw_pointers())
+    .function("removeChild", optional_override(
+      [](Node& this_, Node* child){
+        return this_.removeChild(child);
+      }), allow_raw_pointers())
     .function("removeChild", &Node::removeChild, allow_raw_pointers())
     .function("getScene", &Node::getScene, allow_raw_pointers())
     .function("getEventDispatcher", &Node::getEventDispatcher, allow_raw_pointers())
@@ -376,6 +385,10 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getPhysicsBody", &Node::getPhysicsBody, allow_raw_pointers())
     .function("getAnchorPointInPoints", &Node::getAnchorPointInPoints, allow_raw_pointers())
     .function("getRotationQuat", &Node::getRotationQuat, allow_raw_pointers())
+    .function("removeChildByName", optional_override(
+      [](Node& this_, const std::string &name){
+        return this_.removeChildByName(name);
+      }), allow_raw_pointers())
     .function("removeChildByName", &Node::removeChildByName, allow_raw_pointers())
     .function("setVertexZ", &Node::setPositionZ, allow_raw_pointers())
     .function("getGLProgramState", &Node::getGLProgramState, allow_raw_pointers())
@@ -401,6 +414,10 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getWorldToNodeTransform3D", &Node::getWorldToNodeTransform, allow_raw_pointers())
     .function("getPositionY", &Node::getPositionY, allow_raw_pointers())
     .function("getPositionX", &Node::getPositionX, allow_raw_pointers())
+    .function("removeChildByTag", optional_override(
+      [](Node& this_, int tag){
+        return this_.removeChildByTag(tag);
+      }), allow_raw_pointers())
     .function("removeChildByTag", &Node::removeChildByTag, allow_raw_pointers())
     .function("setPositionY", &Node::setPositionY, allow_raw_pointers())
     .function("updateDisplayedColor", &Node::updateDisplayedColor, allow_raw_pointers())
@@ -521,6 +538,10 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("setVR", &GLView::setVR, allow_raw_pointers())
     .function("getFrameSize", &GLView::getFrameSize, allow_raw_pointers())
     .function("getScissorRect", &GLView::getScissorRect, allow_raw_pointers())
+    .function("setCursor", optional_override(
+      [](GLView& this_, const std::string& filename){
+        return this_.setCursor(filename);
+      }))
     .function("setCursor", &GLView::setCursor, allow_raw_pointers())
     .function("getRetinaFactor", &GLView::getRetinaFactor, allow_raw_pointers())
     .function("setViewName", &GLView::setViewName, allow_raw_pointers())
@@ -680,15 +701,16 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("initWithTargetAndOffset", &Follow::initWithTargetAndOffset, allow_raw_pointers())
     .function("isBoundarySet", &Follow::isBoundarySet, allow_raw_pointers())
     .function("ctor", &js_embind_ctor<Follow>, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](Node* followedNode){
+        return Follow::create(followedNode);
+      }), allow_raw_pointers())
     .class_function("create", &Follow::create, allow_raw_pointers())
     .class_function("createWithOffset", optional_override(
       [](Node* followedNode, float xOffset, float yOffset){
         return Follow::createWithOffset(followedNode, xOffset, yOffset);
       }), allow_raw_pointers())
-    .class_function("createWithOffset", optional_override(
-      [](Node* followedNode, float xOffset, float yOffset, const Rect& rect){
-        return Follow::createWithOffset(followedNode, xOffset, yOffset, rect);
-      }), allow_raw_pointers())
+    .class_function("createWithOffset", &Follow::createWithOffset, allow_raw_pointers())
     .property("_className",  optional_override([](const Follow& _) -> std::string {return "Follow";}))
     .property("__nativeObj", &js_embind_getBool<Follow, true>)
     .property("__is_ref", &js_embind_getBool<Follow, true>)
