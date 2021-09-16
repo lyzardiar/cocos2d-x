@@ -2247,3 +2247,208 @@ __NodeRGBA::__NodeRGBA()
 }
 
 NS_CC_END
+
+
+#ifdef CC_ENABLE_COCOS_BINDINGS
+COCOS2D_BINDINGS(cc) {
+  class_<Node>("Node")
+    .constructor(&js_embind_constructor<Node>, allow_raw_pointers())
+    .function("addChild", select_overload<void(Node *)>(&Node::addChild), allow_raw_pointers())
+    .function("addChild", select_overload<void(Node *, int)>(&Node::addChild), allow_raw_pointers())
+    .function("addChild", optional_override([](Node& this_, val child, val localZOrder, val tagOrName) {
+        if (tagOrName.isString()) 
+        {
+          return this_.addChild(child.as<Node *>(allow_raw_pointers()), localZOrder.as<int>(), tagOrName.as<string>());
+        }
+        else 
+        {
+          return this_.addChild(child.as<Node *>(allow_raw_pointers()), localZOrder.as<int>(), tagOrName.as<int>());
+        }
+    }))
+    .function("removeComponent", optional_override([](Node& this_, val v) {
+        if (v.isString()) 
+        {
+          return this_.removeComponent(v.as<string>());
+        }
+        else 
+        {
+          return this_.removeComponent(v.as<Component *>(allow_raw_pointers()));
+        }
+    }))
+    .function("setPhysicsBody", &Node::setPhysicsBody, allow_raw_pointers())
+    .function("getShaderProgram", &Node::getGLProgram, allow_raw_pointers())
+    .function("getDescription", &Node::getDescription, allow_raw_pointers())
+    .function("setOpacityModifyRGB", &Node::setOpacityModifyRGB, allow_raw_pointers())
+    .function("setCascadeOpacityEnabled", &Node::setCascadeOpacityEnabled, allow_raw_pointers())
+    .function("getChildren", select_overload<const Vector<Node*>& () const>(&Node::getChildren), allow_raw_pointers())
+    .function("setOnExitCallback", &Node::setOnExitCallback, allow_raw_pointers())
+    .function("setActionManager", &Node::setActionManager, allow_raw_pointers())
+    .function("isIgnoreAnchorPointForPosition", &Node::isIgnoreAnchorPointForPosition, allow_raw_pointers())
+    .function("getChildByName", optional_override([](Node& this_, const std::string& name) {
+        return this_.getChildByName(name);
+    }), allow_raw_pointers())
+    .function("updateDisplayedOpacity", &Node::updateDisplayedOpacity, allow_raw_pointers())
+    .function("init", &Node::init, allow_raw_pointers())
+    .function("getCameraMask", &Node::getCameraMask, allow_raw_pointers())
+    .function("setRotation", &Node::setRotation, allow_raw_pointers())
+    .function("setScaleZ", &Node::setScaleZ, allow_raw_pointers())
+    .function("setScaleY", &Node::setScaleY, allow_raw_pointers())
+    .function("setScaleX", &Node::setScaleX, allow_raw_pointers())
+    .function("getColor", &Node::getColor, allow_raw_pointers())
+    .function("setonEnterTransitionDidFinishCallback", &Node::setonEnterTransitionDidFinishCallback, allow_raw_pointers())
+    .function("removeAllComponents", &Node::removeAllComponents, allow_raw_pointers())
+    .function("_setLocalZOrder", &Node::_setLocalZOrder, allow_raw_pointers())
+    .function("setCameraMask", optional_override([](Node& this_, unsigned short mask) {
+        return this_.setCameraMask(mask);
+    }), allow_raw_pointers())
+    .function("setCameraMask", &Node::setCameraMask, allow_raw_pointers())
+    .function("getTag", &Node::getTag, allow_raw_pointers())
+    .function("getonEnterTransitionDidFinishCallback", &Node::getonEnterTransitionDidFinishCallback, allow_raw_pointers())
+    .function("getNodeToWorldTransform", &Node::getNodeToWorldAffineTransform, allow_raw_pointers())
+    .function("getPosition3D", &Node::getPosition3D, allow_raw_pointers())
+    .function("removeChild", optional_override(
+      [](Node& this_, Node* child){
+        return this_.removeChild(child);
+      }), allow_raw_pointers())
+    .function("removeChild", &Node::removeChild, allow_raw_pointers())
+    .function("getScene", &Node::getScene, allow_raw_pointers())
+    .function("getEventDispatcher", &Node::getEventDispatcher, allow_raw_pointers())
+    .function("setSkewX", &Node::setSkewX, allow_raw_pointers())
+    .function("setGLProgramState", &Node::setGLProgramState, allow_raw_pointers())
+    .function("setOnEnterCallback", &Node::setOnEnterCallback, allow_raw_pointers())
+    .function("stopActionsByFlags", &Node::stopActionsByFlags, allow_raw_pointers())
+    .function("setNormalizedPosition", &Node::setNormalizedPosition, allow_raw_pointers())
+    .function("setonExitTransitionDidStartCallback", &Node::setonExitTransitionDidStartCallback, allow_raw_pointers())
+    .function("convertTouchToNodeSpace", &Node::convertTouchToNodeSpace, allow_raw_pointers())
+    .function("removeAllChildren", &Node::removeAllChildrenWithCleanup, allow_raw_pointers())
+    .function("getRotationX", &Node::getRotationSkewX, allow_raw_pointers())
+    .function("getRotationY", &Node::getRotationSkewY, allow_raw_pointers())
+    .function("getNodeToWorldTransform3D", &Node::getNodeToWorldTransform, allow_raw_pointers())
+    .function("isCascadeOpacityEnabled", &Node::isCascadeOpacityEnabled, allow_raw_pointers())
+    .function("setParent", &Node::setParent, allow_raw_pointers())
+    .function("getName", &Node::getName, allow_raw_pointers())
+    .function("getRotation3D", &Node::getRotation3D, allow_raw_pointers())
+    .function("getNodeToParentTransform", select_overload<AffineTransform() const>(&Node::getNodeToParentAffineTransform), allow_raw_pointers())
+    .function("getNodeToParentTransform", select_overload<AffineTransform(Node*) const>(&Node::getNodeToParentAffineTransform), allow_raw_pointers())
+    .function("convertTouchToNodeSpaceAR", &Node::convertTouchToNodeSpaceAR, allow_raw_pointers())
+    .function("getOnEnterCallback", &Node::getOnEnterCallback, allow_raw_pointers())
+    .function("setPositionNormalized", &Node::setPositionNormalized, allow_raw_pointers())
+    .function("isOpacityModifyRGB", &Node::isOpacityModifyRGB, allow_raw_pointers())
+    .function("stopActionByTag", &Node::stopActionByTag, allow_raw_pointers())
+    .function("reorderChild", &Node::reorderChild, allow_raw_pointers())
+    .function("setSkewY", &Node::setSkewY, allow_raw_pointers())
+    .function("setRotation3D", &Node::setRotation3D, allow_raw_pointers())
+    .function("setPositionX", &Node::setPositionX, allow_raw_pointers())
+    .function("setNodeToParentTransform", &Node::setNodeToParentTransform, allow_raw_pointers())
+    .function("getAnchorPoint", &Node::getAnchorPoint, allow_raw_pointers())
+    .function("getNumberOfRunningActions", &Node::getNumberOfRunningActions, allow_raw_pointers())
+    .function("updateTransform", &Node::updateTransform, allow_raw_pointers())
+    .function("isVisible", &Node::isVisible, allow_raw_pointers())
+    .function("getChildrenCount", &Node::getChildrenCount, allow_raw_pointers())
+    .function("getNodeToParentTransform3D", select_overload<const Mat4&() const>(&Node::getNodeToParentTransform), allow_raw_pointers())
+    .function("getNodeToParentTransform3D", select_overload<Mat4 (Node* ancestor) const>(&Node::getNodeToParentTransform), allow_raw_pointers())
+    .function("convertToNodeSpaceAR", &Node::convertToNodeSpaceAR, allow_raw_pointers())
+    .function("addComponent", &Node::addComponent, allow_raw_pointers())
+    .function("runAction", &Node::runAction, allow_raw_pointers())
+    .function("visit", select_overload<void (Renderer *, const Mat4&, uint32_t)>(&Node::visit), allow_raw_pointers())
+    .function("visit", select_overload<void ()>(&Node::visit), allow_raw_pointers())
+    .function("setShaderProgram", &Node::setGLProgram, allow_raw_pointers())
+    .function("getRotation", &Node::getRotation, allow_raw_pointers())
+    .function("getPhysicsBody", &Node::getPhysicsBody, allow_raw_pointers())
+    .function("getAnchorPointInPoints", &Node::getAnchorPointInPoints, allow_raw_pointers())
+    .function("getRotationQuat", &Node::getRotationQuat, allow_raw_pointers())
+    .function("removeChildByName", optional_override(
+      [](Node& this_, const std::string &name){
+        return this_.removeChildByName(name);
+      }), allow_raw_pointers())
+    .function("removeChildByName", &Node::removeChildByName, allow_raw_pointers())
+    .function("setVertexZ", &Node::setPositionZ, allow_raw_pointers())
+    .function("getGLProgramState", &Node::getGLProgramState, allow_raw_pointers())
+    .function("setScheduler", &Node::setScheduler, allow_raw_pointers())
+    .function("stopAllActions", &Node::stopAllActions, allow_raw_pointers())
+    .function("getSkewX", &Node::getSkewX, allow_raw_pointers())
+    .function("getSkewY", &Node::getSkewY, allow_raw_pointers())
+    .function("isScheduled", select_overload<bool (const std::string &key) const>(&Node::isScheduled), allow_raw_pointers())
+    .function("getDisplayedColor", &Node::getDisplayedColor, allow_raw_pointers())
+    .function("getActionByTag", &Node::getActionByTag, allow_raw_pointers())
+    .function("setRotationX", &Node::setRotationSkewX, allow_raw_pointers())
+    .function("setRotationY", &Node::setRotationSkewY, allow_raw_pointers())
+    .function("setName", &Node::setName, allow_raw_pointers())
+    .function("update", &Node::update, allow_raw_pointers())
+    .function("getDisplayedOpacity", &Node::getDisplayedOpacity, allow_raw_pointers())
+    .function("getLocalZOrder", &Node::getLocalZOrder, allow_raw_pointers())
+    .function("getScheduler", select_overload<const Scheduler* () const>(&Node::getScheduler), allow_raw_pointers())
+    .function("getPositionNormalized", &Node::getPositionNormalized, allow_raw_pointers())
+    .function("getPosition", select_overload<void (float*, float*) const>(&Node::getPosition), allow_raw_pointers())
+    .function("getPosition", select_overload<const Vec2& () const>(&Node::getPosition), allow_raw_pointers())
+    .function("isRunning", &Node::isRunning, allow_raw_pointers())
+    .function("getParent", select_overload<const Node* () const>(&Node::getParent), allow_raw_pointers())
+    .function("getWorldToNodeTransform3D", &Node::getWorldToNodeTransform, allow_raw_pointers())
+    .function("getPositionY", &Node::getPositionY, allow_raw_pointers())
+    .function("getPositionX", &Node::getPositionX, allow_raw_pointers())
+    .function("removeChildByTag", optional_override(
+      [](Node& this_, int tag){
+        return this_.removeChildByTag(tag);
+      }), allow_raw_pointers())
+    .function("removeChildByTag", &Node::removeChildByTag, allow_raw_pointers())
+    .function("setPositionY", &Node::setPositionY, allow_raw_pointers())
+    .function("updateDisplayedColor", &Node::updateDisplayedColor, allow_raw_pointers())
+    .function("setVisible", &Node::setVisible, allow_raw_pointers())
+    .function("getParentToNodeTransform", &Node::getParentToNodeAffineTransform, allow_raw_pointers())
+    .function("getVertexZ", &Node::getPositionZ, allow_raw_pointers())
+    .function("setGlobalZOrder", &Node::setGlobalZOrder, allow_raw_pointers())
+    .function("setScale", select_overload<void (float)>(&Node::setScale), allow_raw_pointers())
+    .function("setScale", select_overload<void (float, float)>(&Node::setScale), allow_raw_pointers())
+    .function("getOnExitCallback", &Node::getOnExitCallback, allow_raw_pointers())
+    .function("getChildByTag", optional_override([](Node& this_, int tag) {
+        return this_.getChildByTag(tag);
+    }), allow_raw_pointers())
+    .function("getScaleZ", &Node::getScaleZ, allow_raw_pointers())
+    .function("getScaleY", &Node::getScaleY, allow_raw_pointers())
+    .function("getScaleX", &Node::getScaleX, allow_raw_pointers())
+    .function("setLocalZOrder", &Node::setLocalZOrder, allow_raw_pointers())
+    .function("setCascadeColorEnabled", &Node::setCascadeColorEnabled, allow_raw_pointers())
+    .function("setOpacity", &Node::setOpacity, allow_raw_pointers())
+    .function("getComponent", &Node::getComponent, allow_raw_pointers())
+    .function("getContentSize", &Node::getContentSize, allow_raw_pointers())
+    .function("stopAllActionsByTag", &Node::stopAllActionsByTag, allow_raw_pointers())
+    .function("getBoundingBox", &Node::getBoundingBox, allow_raw_pointers())
+    .function("setIgnoreAnchorPointForPosition", &Node::setIgnoreAnchorPointForPosition, allow_raw_pointers())
+    .function("setEventDispatcher", &Node::setEventDispatcher, allow_raw_pointers())
+    .function("getGlobalZOrder", &Node::getGlobalZOrder, allow_raw_pointers())
+    .function("draw", select_overload<void ()>(&Node::draw), allow_raw_pointers())
+    .function("draw", select_overload<void (Renderer *, const Mat4&, uint32_t)>(&Node::draw), allow_raw_pointers())
+    .function("setUserObject", &Node::setUserObject, allow_raw_pointers())
+    .function("enumerateChildren", &Node::enumerateChildren, allow_raw_pointers())
+    .function("getonExitTransitionDidStartCallback", &Node::getonExitTransitionDidStartCallback, allow_raw_pointers())
+    .function("removeFromParent", &Node::removeFromParentAndCleanup, allow_raw_pointers())
+    .function("setPosition3D", &Node::setPosition3D, allow_raw_pointers())
+    .function("getNumberOfRunningActionsByTag", &Node::getNumberOfRunningActionsByTag, allow_raw_pointers())
+    .function("sortAllChildren", &Node::sortAllChildren, allow_raw_pointers())
+    .function("getWorldToNodeTransform", &Node::getWorldToNodeAffineTransform, allow_raw_pointers())
+    .function("getScale", &Node::getScale, allow_raw_pointers())
+    .function("getOpacity", &Node::getOpacity, allow_raw_pointers())
+    .function("updateOrderOfArrival", &Node::updateOrderOfArrival, allow_raw_pointers())
+    .function("getNormalizedPosition", &Node::getNormalizedPosition, allow_raw_pointers())
+    .function("getParentToNodeTransform3D", &Node::getParentToNodeTransform, allow_raw_pointers())
+    .function("convertToNodeSpace", &Node::convertToNodeSpace, allow_raw_pointers())
+    .function("setTag", &Node::setTag, allow_raw_pointers())
+    .function("isCascadeColorEnabled", &Node::isCascadeColorEnabled, allow_raw_pointers())
+    .function("setRotationQuat", &Node::setRotationQuat, allow_raw_pointers())
+    .function("stopAction", &Node::stopAction, allow_raw_pointers())
+    .function("getActionManager", select_overload<const ActionManager* () const>(&Node::getActionManager), allow_raw_pointers())
+    .function("ctor", &js_embind_ctor<Node>, allow_raw_pointers())
+    .class_function("create", &Node::create, allow_raw_pointers())
+    .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount, allow_raw_pointers())
+    .property("_className",  optional_override([](const Node& _) -> std::string {return "Node";}))
+    .property("__nativeObj", &js_embind_getBool<Node, true>)
+    .property("__is_ref", &js_embind_getBool<Node, true>)
+    ;
+  class_<__NodeRGBA>("__NodeRGBA")
+    .constructor(&js_embind_constructor<__NodeRGBA>, allow_raw_pointers())
+    .property("_className",  optional_override([](const __NodeRGBA& _) -> std::string {return "__NodeRGBA";}))
+    .property("__nativeObj", &js_embind_getBool<__NodeRGBA, true>)
+    .property("__is_ref", &js_embind_getBool<__NodeRGBA, true>)
+    ;
+}
+#endif // CC_ENABLE_COCOS_BINDINGS

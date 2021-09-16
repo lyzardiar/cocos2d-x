@@ -332,6 +332,22 @@ THE SOFTWARE.
 #endif
 #endif // CC_USE_WIC
 
+/** Indicate this is a build for internal editor
+ */
+#ifndef CC_TARGET_EDITOR
+#define CC_TARGET_EDITOR 1
+#endif
+
+/** Use new script binding module. 
+ * It is currently used to expose cocos2d classes to Javascript in emscripten build and internal editor, 
+ * eventually it will be used in all Lua/Javascript scripting engines and we will ditch bindings-generator at that point of time.  
+ */
+#ifndef CC_ENABLE_COCOS_BINDINGS
+#if CC_TARGET_EDITOR
+#define CC_ENABLE_COCOS_BINDINGS 1
+#endif
+#endif
+
 /** Enable Script binding. */
 #ifndef CC_ENABLE_SCRIPT_BINDING
 #define CC_ENABLE_SCRIPT_BINDING 1
