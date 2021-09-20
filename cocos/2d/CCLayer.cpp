@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <stdarg.h>
 #include "2d/CCLayer.h"
 #include "base/CCScriptSupport.h"
+#include "base/CCScriptBindings.h"
 #include "platform/CCDevice.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/ccGLStateCache.h"
@@ -1296,3 +1297,18 @@ std::string LayerMultiplex::getDescription() const
 }
 
 NS_CC_END
+
+#ifdef CC_ENABLE_COCOS_BINDINGS
+NS_CC_BINDINGS_BEGIN
+COCOS_BINDINGS(cc_layer) {
+    class_<Layer>("cc.Layer")
+        .constructor(&cc_bindings_constructor<Layer>, allow_raw_pointers())
+        .function("ctor", &cc_bindings_ctor<Node>, allow_raw_pointers())
+        .class_function("create", &Layer::create, allow_raw_pointers())
+        .property("_className",  optional_override([](const Layer& _) -> std::string {return "Layer";}))
+        .property("__nativeObj", &cc_bindings_getBool<Layer, true>)
+        .property("__is_ref", &cc_bindings_getBool<Layer, true>)
+        ;
+}
+NS_CC_BINDINGS_END
+#endif // CC_ENABLE_COCOS_BINDINGS

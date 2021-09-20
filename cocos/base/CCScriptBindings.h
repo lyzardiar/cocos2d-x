@@ -27,14 +27,13 @@
 #ifndef __SCRIPT_BINDINGS_H__
 #define __SCRIPT_BINDINGS_H__
 
-#if CC_ENABLE_COCOS_BINDINGS
-
+#include "base/ccConfig.h"
 #include <functional>
 #include <emscripten/bind.h>
 
-namespace cocos2d{
+#if CC_ENABLE_COCOS_BINDINGS
+namespace cocos2d {
   namespace bindings {
-
     // Type self-registration in compile phase.
     // See: https://stackoverflow.com/questions/4790721/c-type-registration-at-compile-time-trick/21626087
     template <int N>
@@ -56,7 +55,8 @@ namespace cocos2d{
       typedef TypeList<Ts..., T> type;
     };
 
-    TypeList<> GetTypes(Rank<0>) { return {}; }
+    template <class... Ts, int N>
+    TypeList<Ts...> GetTypes(Rank<N>);
 
     // Expose all the binding classes
     template <typename ... Types>
@@ -84,6 +84,8 @@ namespace cocos2d{
     emscripten::internal::LambdaSignature<LambdaType>* optional_override(const LambdaType& fp) {
         return emscripten::optional_override(fp);
     }
+
+    using val = emscripten::val;
 
     // Generic binding helpers:
     template<int Index>
@@ -113,18 +115,42 @@ namespace cocos2d{
     auto select_const(ReturnType (ClassType::*method)(Args...) const) -> decltype(method) {
         return method;
     };
+
+    // Embind helpers
+    template<typename T, bool R>
+    bool cc_bindings_getBool(const T& obj) {
+      return R;
+    }
+
+    template<typename T>
+    bool cc_bindings_ctor(const T& obj) {
+      return true;
+    }
+
+    template<typename T>
+    T* cc_bindings_constructor() {
+      T *obj = new (std::nothrow) T();
+      return obj;
+    }
   }
 }
 
-EMSCRIPTEN_BINDINGS(default_module) {
-  // Maximum 256 binding blocks
-  decltype(cocos2d::bindings::GetTypes(cocos2d::bindings::Rank<256>())) types;
-  cocos2d::bindings::exposeTypes(types);
-}
+// COCOS_BINDINGS cannot be called by duplicated names.
+// This is maximum time COCOS_BINDINGS can be called
+#define COCOS_BINDINGS_MAX 256
 
-#define COCOS_BINDINGS(name)                \
-  struct CocosBindingInitializer_##name{}; \
-  template<> void cocos2d::bindings::exposeType<CocosBindingInitializer_##name>()
+#define COCOS_BINDINGS(name)                                                          \
+struct CocosBindingInitializer_##name{};                                              \
+inline Append<decltype(GetTypes(Rank<COCOS_BINDINGS_MAX>())), CocosBindingInitializer_##name>::type  \
+  GetTypes(Rank<decltype(GetTypes(Rank<COCOS_BINDINGS_MAX>()))::size + 1>) {                         \
+  return {};                                                                          \
+}                                                                                     \
+template<> void exposeType<CocosBindingInitializer_##name>()
+
+// Cocos2d style namespace
+#define NS_CC_BINDINGS_BEGIN  namespace cocos2d{namespace bindings{
+#define NS_CC_BINDINGS_END    }}
+#define USING_NS_CC_BINDINGS  using namespace cocos2d::bindings
 
 #endif // CC_ENABLE_COCOS_BINDINGS
 #endif // __SCRIPT_BINDINGS_H__
