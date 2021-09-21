@@ -1301,9 +1301,9 @@ NS_CC_END
 #ifdef CC_ENABLE_COCOS_BINDINGS
 NS_CC_BINDINGS_BEGIN
 COCOS_BINDINGS(cc_layer) {
-    class_<Layer>("cc.Layer")
+    class_<Layer, base<Node>>("cc.Layer")
         .constructor(&cc_bindings_constructor<Layer>, allow_raw_pointers())
-        .function("ctor", &cc_bindings_ctor<Node>, allow_raw_pointers())
+        .function("ctor", &cc_bindings_ctor<Layer>, allow_raw_pointers())
         .class_function("create", &Layer::create, allow_raw_pointers())
         .property("_className",  optional_override([](const Layer& _) -> std::string {return "Layer";}))
         .property("__nativeObj", &cc_bindings_getBool<Layer, true>)

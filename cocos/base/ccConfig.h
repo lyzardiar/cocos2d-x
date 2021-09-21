@@ -345,6 +345,12 @@ THE SOFTWARE.
 #ifndef CC_ENABLE_COCOS_BINDINGS
 #if CC_TARGET_EDITOR
 #define CC_ENABLE_COCOS_BINDINGS 1
+
+/** Used to seperate difference between Lua bindings and js bindings */
+#define CC_SCRIPT_LUA 0
+#define CC_SCRIPT_JAVASCRIPT 1
+#define CC_SCRIPT_TYPE 1
+
 #endif
 #endif
 

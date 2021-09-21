@@ -87,6 +87,9 @@ namespace cocos2d {
 
     using val = emscripten::val;
 
+    template<typename BaseClass>
+      using base = emscripten::base<BaseClass>;
+
     // Generic binding helpers:
     template<int Index>
     struct arg {
