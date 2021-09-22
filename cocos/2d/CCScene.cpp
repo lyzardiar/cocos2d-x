@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "2d/CCCamera.h"
 #include "base/CCEventDispatcher.h"
 #include "base/CCEventListenerCustom.h"
-#include "base/CCScriptBindings.h"
 #include "base/ccUTF8.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/CCFrameBuffer.h"
@@ -382,30 +381,3 @@ void Scene::stepPhysicsAndNavigation(float deltaTime)
 #endif
 
 NS_CC_END
-
-#ifdef CC_ENABLE_COCOS_BINDINGS
-NS_CC_BINDINGS_BEGIN
-COCOS_BINDINGS(cc_scene) {
-    class_<Scene, base<Node>>("cc.Scene")
-        .constructor(&cc_bindings_constructor<Scene>, allow_raw_pointers())
-        .function("setCameraOrderDirty", &Scene::setCameraOrderDirty, allow_raw_pointers())
-        .function("render", optional_override(
-            [](Scene& this_, Renderer* renderer, const Mat4& eyeTransform){
-                return this_.render(renderer, eyeTransform);
-            }), allow_raw_pointers())
-        .function("render", select_overload<void (Renderer*, const Mat4&, const Mat4*)>(&Scene::render), allow_raw_pointers())
-        .function("render", select_overload<void (Renderer*, const Mat4*, const Mat4*, unsigned int)>(&Scene::render), allow_raw_pointers())
-        .function("stepPhysicsAndNavigation", &Scene::stepPhysicsAndNavigation, allow_raw_pointers())
-        .function("onProjectionChanged", &Scene::onProjectionChanged, allow_raw_pointers())
-        .function("initWithSize", &Scene::initWithSize, allow_raw_pointers())
-        .function("getDefaultCamera", &Scene::getDefaultCamera, allow_raw_pointers())
-        .function("ctor", &cc_bindings_ctor<Scene>, allow_raw_pointers())
-        .class_function("create", &Scene::create, allow_raw_pointers())
-        .class_function("createWithSize", &Scene::createWithSize, allow_raw_pointers())
-        .property("_className",  optional_override([](const Scene& _) -> std::string {return "Scene";}))
-        .property("__nativeObj", &cc_bindings_getBool<Scene, true>)
-        .property("__is_ref", &cc_bindings_getBool<Scene, true>)
-        ;
-}
-NS_CC_BINDINGS_END
-#endif // CC_ENABLE_COCOS_BINDINGS

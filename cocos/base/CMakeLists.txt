@@ -63,7 +63,6 @@ set(COCOS_BASE_HEADER
     base/CCMap.h
     base/ccUTF8.h
     base/CCScriptSupport.h
-    base/CCScriptBindings.h
     base/allocator/CCAllocatorBase.h
     base/allocator/CCAllocatorDiagnostics.h
     base/allocator/CCAllocatorMacros.h
@@ -127,7 +126,6 @@ set(COCOS_BASE_SRC
     base/CCRef.cpp
     base/CCScheduler.cpp
     base/CCScriptSupport.cpp
-    base/CCScriptBindings.cpp
     base/CCTouch.cpp
     base/CCUserDefault.cpp
     base/CCValue.cpp
