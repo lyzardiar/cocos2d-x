@@ -2,10 +2,12 @@ set(cocos_root ${COCOS2DX_ROOT_PATH})
 
 set(js_embind_bindings_manual_headers
     manual/js_embind_cocos2dx_manual.hpp
+    manual/CCScriptBindings.h
     )
 
 set(js_embind_bindings_manual_files
     manual/js_embind_cocos2dx_manual.cpp
+    manual/CCScriptBindings.cpp
     )
 
 set(js_embind_bindings_auto_headers)

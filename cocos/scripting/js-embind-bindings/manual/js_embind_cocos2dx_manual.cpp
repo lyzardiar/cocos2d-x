@@ -1,18 +1,10 @@
-#include "scripting/js-embind-bindings/manual/js_embind_cocos2dx_manual.hpp"
+#include "CCScriptBindings.h"
 #include "cocos2d.h"
-#include "audio/include/SimpleAudioEngine.h"
-#include "2d/CCProtectedNode.h"
-#include "base/CCAsyncTaskPool.h"
-#include "scripting/js-bindings/manual/component/CCComponentJS.h"
 
-#include <functional>
-#include <emscripten/bind.h>
-
-using namespace emscripten;
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
-
+NS_CC_BINDINGS_BEGIN
 val Node_getChildren(const Node& node) {
     Vector<Node*> children = node.getChildren();
     
@@ -82,32 +74,11 @@ Texture2D* Texture2D_createWithImage(Image * image) {
     return nullptr;
 }
 
-template<typename T, bool R>
-bool js_embind_getBool(const T& obj) {
-  return R;
-}
 
-template<typename T>
-bool js_embind_ctor(const T& obj) {
-  return true;
-}
 
-template<typename T>
-T* js_embind_constructor() {
-  T *obj = new (std::nothrow) T();
-  return obj;
-}
-
-// template instantiation for class with protected or private destructor
-namespace emscripten {
-    namespace internal {
-        template<> void raw_destructor<GLProgramState>(GLProgramState* _) {}
-    }
-}
-
-EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
+COCOS_BINDINGS(cocos2dx) {
   class_<GLProgram>("cc.GLProgram")
-    .constructor(&js_embind_constructor<GLProgram>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<GLProgram>, allow_raw_pointers())
     .function("getFragmentShaderLog", &GLProgram::getFragmentShaderLog, allow_raw_pointers())
     .function("addAttribute", &GLProgram::bindAttribLocation, allow_raw_pointers())
     .function("getUniformFlags", &GLProgram::getUniformFlags, allow_raw_pointers())
@@ -137,7 +108,7 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("setUniformLocationWith4i", &GLProgram::setUniformLocationWith4i, allow_raw_pointers())
     .function("setUniformLocationI32", &GLProgram::setUniformLocationWith1i, allow_raw_pointers())
     .function("setUniformLocationWith2i", &GLProgram::setUniformLocationWith2i, allow_raw_pointers())
-    .function("ctor", &js_embind_ctor<GLProgram>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor<GLProgram>, allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const GLchar*, const GLchar*)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const GLchar*, const GLchar*, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const GLchar*, const GLchar*, const std::string&, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
@@ -145,11 +116,11 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .class_function("createWithFilenames", select_overload<GLProgram*(const std::string&, const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
     .class_function("createWithFilenames", select_overload<GLProgram*(const std::string&, const std::string&, const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
     .property("_className",  optional_override([](const GLProgram& _) -> std::string {return "GLProgram";}))
-    .property("__nativeObj", &js_embind_getBool<GLProgram, true>)
-    .property("__is_ref", &js_embind_getBool<GLProgram, true>)
+    .property("__nativeObj", &cc_bindings_getBool<GLProgram, true>)
+    .property("__is_ref", &cc_bindings_getBool<GLProgram, true>)
     ;
   class_<Texture2D>("cc.Texture2D")
-    .constructor(&js_embind_constructor<Texture2D>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Texture2D>, allow_raw_pointers())
     .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
     .function("getMaxT", &Texture2D::getMaxT, allow_raw_pointers())
     .function("setAlphaTexture", &Texture2D::setAlphaTexture, allow_raw_pointers())
@@ -210,11 +181,11 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .class_function("setDefaultAlphaPixelFormat", &Texture2D::setDefaultAlphaPixelFormat, allow_raw_pointers())
     .class_function("getDefaultAlphaPixelFormat", &Texture2D::getDefaultAlphaPixelFormat, allow_raw_pointers())
     .property("_className",  optional_override([](const Texture2D& _) -> std::string {return "Texture2D";}))
-    .property("__nativeObj", &js_embind_getBool<Texture2D, true>)
-    .property("__is_ref", &js_embind_getBool<Texture2D, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Texture2D, true>)
+    .property("__is_ref", &cc_bindings_getBool<Texture2D, true>)
     ;
   class_<Touch>("cc.Touch")
-    .constructor(&js_embind_constructor<Touch>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Touch>, allow_raw_pointers())
     .function("getPreviousLocationInView", &Touch::getPreviousLocationInView, allow_raw_pointers())
     .function("getLocation", &Touch::getLocation, allow_raw_pointers())
     .function("getDelta", &Touch::getDelta, allow_raw_pointers())
@@ -228,8 +199,8 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getLocationInView", &Touch::getLocationInView, allow_raw_pointers())
     .function("getPreviousLocation", &Touch::getPreviousLocation, allow_raw_pointers())
     .property("_className",  optional_override([](const Touch& _) -> std::string {return "Touch";}))
-    .property("__nativeObj", &js_embind_getBool<Touch, true>)
-    .property("__is_ref", &js_embind_getBool<Touch, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Touch, true>)
+    .property("__is_ref", &cc_bindings_getBool<Touch, true>)
     ;
   class_<Event>("cc.Event")
     .constructor(select_overload<Event*(Event::Type type)>([](Event::Type type)-> Event*{
@@ -240,16 +211,16 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getCurrentTarget", &Event::getCurrentTarget, allow_raw_pointers())
     .function("stopPropagation", &Event::stopPropagation, allow_raw_pointers())
     .property("_className",  optional_override([](const Event& _) -> std::string {return "Event";}))
-    .property("__nativeObj", &js_embind_getBool<Event, true>)
-    .property("__is_ref", &js_embind_getBool<Event, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Event, true>)
+    .property("__is_ref", &cc_bindings_getBool<Event, true>)
     ;
   class_<EventTouch, base<Event>>("cc.EventTouch")
-    .constructor(&js_embind_constructor<EventTouch>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<EventTouch>, allow_raw_pointers())
     .function("getEventCode", &EventTouch::getEventCode, allow_raw_pointers())
     .function("setEventCode", &EventTouch::setEventCode, allow_raw_pointers())
     .property("_className",  optional_override([](const EventTouch& _) -> std::string {return "EventTouch";}))
-    .property("__nativeObj", &js_embind_getBool<EventTouch, true>)
-    .property("__is_ref", &js_embind_getBool<EventTouch, true>)
+    .property("__nativeObj", &cc_bindings_getBool<EventTouch, true>)
+    .property("__is_ref", &cc_bindings_getBool<EventTouch, true>)
     ;
   class_<ComponentContainer>("cc.ComponentContainer")
     .function("visit", &ComponentContainer::visit, allow_raw_pointers())
@@ -268,11 +239,11 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("isEmpty", &ComponentContainer::isEmpty, allow_raw_pointers())
     .function("getComponent", &ComponentContainer::get, allow_raw_pointers())
     .property("_className",  optional_override([](const ComponentContainer& _) -> std::string {return "ComponentContainer";}))
-    .property("__nativeObj", &js_embind_getBool<ComponentContainer, true>)
-    .property("__is_ref", &js_embind_getBool<ComponentContainer, false>)
+    .property("__nativeObj", &cc_bindings_getBool<ComponentContainer, true>)
+    .property("__is_ref", &cc_bindings_getBool<ComponentContainer, false>)
     ;
   class_<Component>("cc.Component")
-    .constructor(&js_embind_constructor<Component>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Component>, allow_raw_pointers())
     .function("setEnabled", &Component::setEnabled, allow_raw_pointers())
     .function("setName", &Component::setName, allow_raw_pointers())
     .function("isEnabled", &Component::isEnabled, allow_raw_pointers())
@@ -280,14 +251,14 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("init", &Component::init, allow_raw_pointers())
     .function("setOwner", &Component::setOwner, allow_raw_pointers())
     .function("getName", &Component::getName, allow_raw_pointers())
-    .function("ctor", &js_embind_ctor<Component>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor<Component>, allow_raw_pointers())
     .class_function("create", &Component::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Component& _) -> std::string {return "Component";}))
-    .property("__nativeObj", &js_embind_getBool<Component, true>)
-    .property("__is_ref", &js_embind_getBool<Component, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Component, true>)
+    .property("__is_ref", &cc_bindings_getBool<Component, true>)
     ;
   class_<Node>("cc.Node")
-    .constructor(&js_embind_constructor<Node>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Node>, allow_raw_pointers())
     .function("addChild", select_overload<void(Node *)>(&Node::addChild), allow_raw_pointers())
     .function("addChild", select_overload<void(Node *, int)>(&Node::addChild), allow_raw_pointers())
     .function("addChild", optional_override([](Node& this_, val child, val localZOrder, val tagOrName) {
@@ -472,21 +443,21 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("setRotationQuat", &Node::setRotationQuat, allow_raw_pointers())
     .function("stopAction", &Node::stopAction, allow_raw_pointers())
     .function("getActionManager", select_overload<const ActionManager* () const>(&Node::getActionManager), allow_raw_pointers())
-    .function("ctor", &js_embind_ctor<Node>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor<Node>, allow_raw_pointers())
     .class_function("create", &Node::create, allow_raw_pointers())
     .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount, allow_raw_pointers())
     .property("_className",  optional_override([](const Node& _) -> std::string {return "Node";}))
-    .property("__nativeObj", &js_embind_getBool<Node, true>)
-    .property("__is_ref", &js_embind_getBool<Node, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Node, true>)
+    .property("__is_ref", &cc_bindings_getBool<Node, true>)
     ;
   class_<__NodeRGBA>("cc.__NodeRGBA")
-    .constructor(&js_embind_constructor<__NodeRGBA>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<__NodeRGBA>, allow_raw_pointers())
     .property("_className",  optional_override([](const __NodeRGBA& _) -> std::string {return "__NodeRGBA";}))
-    .property("__nativeObj", &js_embind_getBool<__NodeRGBA, true>)
-    .property("__is_ref", &js_embind_getBool<__NodeRGBA, true>)
+    .property("__nativeObj", &cc_bindings_getBool<__NodeRGBA, true>)
+    .property("__is_ref", &cc_bindings_getBool<__NodeRGBA, true>)
     ;
   class_<Scene, base<Node>>("cc.Scene")
-    .constructor(&js_embind_constructor<Scene>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Scene>, allow_raw_pointers())
     .function("setCameraOrderDirty", &Scene::setCameraOrderDirty, allow_raw_pointers())
     .function("render", optional_override(
       [](Scene& this_, Renderer* renderer, const Mat4& eyeTransform){
@@ -498,13 +469,13 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("onProjectionChanged", &Scene::onProjectionChanged, allow_raw_pointers())
     .function("initWithSize", &Scene::initWithSize, allow_raw_pointers())
     .function("getDefaultCamera", &Scene::getDefaultCamera, allow_raw_pointers())
-    .function("ctor", &js_embind_ctor<Scene>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor<Scene>, allow_raw_pointers())
     
     .class_function("createWithSize", &Scene::createWithSize, allow_raw_pointers())
     .class_function("create", &Scene::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Scene& _) -> std::string {return "Scene";}))
-    .property("__nativeObj", &js_embind_getBool<Scene, true>)
-    .property("__is_ref", &js_embind_getBool<Scene, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Scene, true>)
+    .property("__is_ref", &cc_bindings_getBool<Scene, true>)
     ;
   class_<GLView>("cc.GLView")
     .function("setFrameSize", &GLView::setFrameSize, allow_raw_pointers())
@@ -559,8 +530,8 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .class_function("setGLContextAttrs", &GLView::setGLContextAttrs, allow_raw_pointers())
     .class_function("getGLContextAttrs", &GLView::getGLContextAttrs, allow_raw_pointers())
     .property("_className",  optional_override([](const GLView& _) -> std::string {return "GLView";}))
-    .property("__nativeObj", &js_embind_getBool<GLView, true>)
-    .property("__is_ref", &js_embind_getBool<GLView, true>)
+    .property("__nativeObj", &cc_bindings_getBool<GLView, true>)
+    .property("__is_ref", &cc_bindings_getBool<GLView, true>)
     ;
   class_<Director>("cc.Director")
     .function("pause", &Director::pause, allow_raw_pointers())
@@ -638,11 +609,11 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getActionManager", &Director::getActionManager, allow_raw_pointers())
     .class_function("getInstance", &Director::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const Director& _) -> std::string {return "Director";}))
-    .property("__nativeObj", &js_embind_getBool<Director, true>)
-    .property("__is_ref", &js_embind_getBool<Director, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Director, true>)
+    .property("__is_ref", &cc_bindings_getBool<Director, true>)
     ;
   class_<Scheduler>("cc.Scheduler")
-    .constructor(&js_embind_constructor<Scheduler>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Scheduler>, allow_raw_pointers())
     .function("setTimeScale", &Scheduler::setTimeScale, allow_raw_pointers())
     .function("unscheduleAllWithMinPriority", &Scheduler::unscheduleAllWithMinPriority, allow_raw_pointers())
     .function("update", &Scheduler::update, allow_raw_pointers())
@@ -652,16 +623,16 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("unscheduleAll", &Scheduler::unscheduleAll, allow_raw_pointers())
     .function("getTimeScale", &Scheduler::getTimeScale, allow_raw_pointers())
     .property("_className",  optional_override([](const Scheduler& _) -> std::string {return "Scheduler";}))
-    .property("__nativeObj", &js_embind_getBool<Scheduler, true>)
-    .property("__is_ref", &js_embind_getBool<Scheduler, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Scheduler, true>)
+    .property("__is_ref", &cc_bindings_getBool<Scheduler, true>)
     ;
   class_<AsyncTaskPool>("cc.AsyncTaskPool")
     .function("stopTasks", &AsyncTaskPool::stopTasks, allow_raw_pointers())
     .class_function("destroyInstance", &AsyncTaskPool::destroyInstance, allow_raw_pointers())
     .class_function("getInstance", &AsyncTaskPool::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const AsyncTaskPool& _) -> std::string {return "AsyncTaskPool";}))
-    .property("__nativeObj", &js_embind_getBool<AsyncTaskPool, true>)
-    .property("__is_ref", &js_embind_getBool<AsyncTaskPool, false>)
+    .property("__nativeObj", &cc_bindings_getBool<AsyncTaskPool, true>)
+    .property("__is_ref", &cc_bindings_getBool<AsyncTaskPool, false>)
     ;
   class_<Action>("cc.Action")
     .function("startWithTarget", &Action::startWithTarget, allow_raw_pointers())
@@ -680,15 +651,15 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("isDone", &Action::isDone, allow_raw_pointers())
     .function("reverse", &Action::reverse, allow_raw_pointers())
     .property("_className",  optional_override([](const Action& _) -> std::string {return "Action";}))
-    .property("__nativeObj", &js_embind_getBool<Action, true>)
-    .property("__is_ref", &js_embind_getBool<Action, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Action, true>)
+    .property("__is_ref", &cc_bindings_getBool<Action, true>)
     ;
   class_<FiniteTimeAction, base<Action>>("cc.FiniteTimeAction")
     .function("setDuration", &FiniteTimeAction::setDuration, allow_raw_pointers())
     .function("getDuration", &FiniteTimeAction::getDuration, allow_raw_pointers())
     .property("_className",  optional_override([](const FiniteTimeAction& _) -> std::string {return "FiniteTimeAction";}))
-    .property("__nativeObj", &js_embind_getBool<FiniteTimeAction, true>)
-    .property("__is_ref", &js_embind_getBool<FiniteTimeAction, true>)
+    .property("__nativeObj", &cc_bindings_getBool<FiniteTimeAction, true>)
+    .property("__is_ref", &cc_bindings_getBool<FiniteTimeAction, true>)
     ;
   class_<Speed, base<Action>>("cc.Speed")
     .function("setInnerAction", &Speed::setInnerAction, allow_raw_pointers())
@@ -698,16 +669,16 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .function("getInnerAction", &Speed::getInnerAction, allow_raw_pointers())
     .class_function("create", &Speed::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Speed& _) -> std::string {return "Speed";}))
-    .property("__nativeObj", &js_embind_getBool<Speed, true>)
-    .property("__is_ref", &js_embind_getBool<Speed, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Speed, true>)
+    .property("__is_ref", &cc_bindings_getBool<Speed, true>)
     ;
   class_<Follow, base<Action>>("cc.Follow")
-    .constructor(&js_embind_constructor<Follow>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Follow>, allow_raw_pointers())
     .function("setBoundarySet", &Follow::setBoundarySet, allow_raw_pointers())
     .function("initWithTarget", &Follow::initWithTarget, allow_raw_pointers())
     .function("initWithTargetAndOffset", &Follow::initWithTargetAndOffset, allow_raw_pointers())
     .function("isBoundarySet", &Follow::isBoundarySet, allow_raw_pointers())
-    .function("ctor", &js_embind_ctor<Follow>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor<Follow>, allow_raw_pointers())
     .class_function("create", optional_override(
       [](Node* followedNode){
         return Follow::create(followedNode);
@@ -719,11 +690,11 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
       }), allow_raw_pointers())
     .class_function("createWithOffset", &Follow::createWithOffset, allow_raw_pointers())
     .property("_className",  optional_override([](const Follow& _) -> std::string {return "Follow";}))
-    .property("__nativeObj", &js_embind_getBool<Follow, true>)
-    .property("__is_ref", &js_embind_getBool<Follow, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Follow, true>)
+    .property("__is_ref", &cc_bindings_getBool<Follow, true>)
     ;
   class_<Image>("cc.Image")
-    .constructor(&js_embind_constructor<Image>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Image>, allow_raw_pointers())
     .function("hasPremultipliedAlpha", &Image::hasPremultipliedAlpha, allow_raw_pointers())
     .function("reversePremultipliedAlpha", &Image::reversePremultipliedAlpha, allow_raw_pointers())
     .function("getDataLen", &Image::getDataLen, allow_raw_pointers())
@@ -753,8 +724,8 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .class_function("setPVRImagesHavePremultipliedAlpha", &Image::setPVRImagesHavePremultipliedAlpha, allow_raw_pointers())
     .class_function("setPNGPremultipliedAlphaEnabled", &Image::setPNGPremultipliedAlphaEnabled, allow_raw_pointers())
     .property("_className",  optional_override([](const Image& _) -> std::string {return "Image";}))
-    .property("__nativeObj", &js_embind_getBool<Image, true>)
-    .property("__is_ref", &js_embind_getBool<Image, true>)
+    .property("__nativeObj", &cc_bindings_getBool<Image, true>)
+    .property("__is_ref", &cc_bindings_getBool<Image, true>)
     ;
   class_<GLProgramState>("cc.GLProgramState")
     .function("setUniformCallback", optional_override([](GLProgramState& this_, val v1, val v2) {
@@ -882,8 +853,8 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     .class_function("getOrCreateWithGLProgram", &GLProgramState::getOrCreateWithGLProgram, allow_raw_pointers())
     .class_function("getOrCreateWithShaders", &GLProgramState::getOrCreateWithShaders, allow_raw_pointers())
     .property("_className",  optional_override([](const GLProgramState& _) -> std::string {return "GLProgramState";}))
-    .property("__nativeObj", &js_embind_getBool<GLProgramState, true>)
-    .property("__is_ref", &js_embind_getBool<GLProgramState, true>)
+    .property("__nativeObj", &cc_bindings_getBool<GLProgramState, true>)
+    .property("__is_ref", &cc_bindings_getBool<GLProgramState, true>)
     ;
     /*
   class_<Director>("cc.Director")
@@ -1068,3 +1039,4 @@ EMSCRIPTEN_BINDINGS(js_embind_cocos2dx) {
     ;
     */
 }
+NS_CC_BINDINGS_END

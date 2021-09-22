@@ -461,9 +461,10 @@ public:
         AutoBindingResolver();
     };
 
-protected:
+CC_CONSTRUCTOR_ACCESS:
     GLProgramState();
     virtual ~GLProgramState();
+protected:
     bool init(GLProgram* program);
     void resetGLProgram();
     void updateUniformsAndAttributes();
