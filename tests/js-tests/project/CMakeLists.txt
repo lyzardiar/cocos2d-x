@@ -154,7 +154,11 @@ else()
     target_link_libraries(${APP_NAME} -Wl,--whole-archive js_android_spec -Wl,--no-whole-archive)
 endif()
 
-target_link_libraries(${APP_NAME} jscocos2d)
+if(EMSCRIPTEN)
+    target_link_libraries(${APP_NAME} jsembindcocos2d)
+else()
+    target_link_libraries(${APP_NAME} jscocos2d)
+endif()
 target_include_directories(${APP_NAME} PRIVATE Classes)
 
 # mark app resources
