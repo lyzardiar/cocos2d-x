@@ -195,7 +195,7 @@ if(EMSCRIPTEN)
     set(EMSCRIPTEN_LINK_FLAGS "-lidbfs.js -s INITIAL_MEMORY=512MB -s WASM=0 --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/index.html --use-preload-cache")
 
     foreach(res_main_file IN LISTS res_main_files)
-        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_main_file}/@/")
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_main_file}@/")
     endforeach()
 
     foreach(res_res_folder IN LISTS res_res_folders)
