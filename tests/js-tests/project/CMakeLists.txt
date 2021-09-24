@@ -53,7 +53,6 @@ set(res_main_files
 # "${COCOS2DX_ROOT_PATH}/tests/cpp-tests/Resources"
 set(res_res_folders
     "${CMAKE_CURRENT_SOURCE_DIR}/../resjs"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../res"
     "${COCOS2DX_ROOT_PATH}/tests/cpp-tests/Resources"
     )
 set(res_src_folders
@@ -195,10 +194,22 @@ if(EMSCRIPTEN)
                         )
     set(EMSCRIPTEN_LINK_FLAGS "-lidbfs.js -s INITIAL_MEMORY=512MB -s WASM=0 --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/index.html --use-preload-cache")
 
-    string(APPEND EMSCRIPTEN_LINK_FLAGS " --bind")
-    foreach(FOLDER IN LISTS GAME_RES_FOLDER)
-        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${FOLDER}/@/")
+    foreach(res_main_file IN LISTS res_main_files)
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_main_file}/@/")
+    endforeach()
+
+    foreach(res_res_folder IN LISTS res_res_folders)
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_res_folder}/@/res")
+    endforeach()
+
+    foreach(res_src_folder IN LISTS res_src_folders)
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_src_folder}/@/src")
+    endforeach()
+
+    foreach(res_script_folder IN LISTS res_script_folders)
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_script_folder}/@/script")
     endforeach()
     
+    string(APPEND EMSCRIPTEN_LINK_FLAGS " --bind")
     set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
 endif()
