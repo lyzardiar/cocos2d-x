@@ -441,9 +441,10 @@ public:
     void setStateBlock(StateBlock* state);
     StateBlock* getStateBlock() const;
 
-protected:
+CC_CONSTRUCTOR_ACCESS:
     RenderState();
     ~RenderState();
+protected:
     bool init(RenderState* parent);
     void cloneInto(RenderState* state) const;
 

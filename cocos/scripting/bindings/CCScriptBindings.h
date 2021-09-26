@@ -79,6 +79,9 @@ namespace cocos2d {
 
     template<typename ClassType, typename BaseSpecifier = emscripten::internal::NoBaseClass>
       using class_ = emscripten::class_<ClassType, BaseSpecifier>;
+    
+    template<typename ClassType>
+      using value_object = emscripten::value_object<ClassType>;
 
     template<typename LambdaType>
     inline emscripten::internal::LambdaSignature<LambdaType>* optional_override(const LambdaType& fp) {
@@ -141,14 +144,12 @@ namespace cocos2d {
 // COCOS_BINDINGS cannot be called by duplicated names.
 // This is maximum time COCOS_BINDINGS can be called
 #define COCOS_BINDINGS_MAX 256
-
-#define COCOS_BINDINGS(name)                                                          \
-struct CocosBindingInitializer_##name{};                                              \
-inline Append<decltype(GetTypes(Rank<COCOS_BINDINGS_MAX>())), CocosBindingInitializer_##name>::type  \
-  GetTypes(Rank<decltype(GetTypes(Rank<COCOS_BINDINGS_MAX>()))::size + 1>) {                         \
-  return {};                                                                          \
-}                                                                                     \
-template<> void exposeType<CocosBindingInitializer_##name>()
+                                                   \
+#define COCOS_BINDINGS(name)                                       \
+    static struct CocosBindingInitializer_##name {                 \
+        CocosBindingInitializer_##name();                          \
+    } CocosBindingInitializer_##name##_instance;                   \
+    CocosBindingInitializer_##name::CocosBindingInitializer_##name()
 
 // Cocos2d style namespace
 #define NS_CC_BINDINGS_BEGIN  namespace cocos2d{namespace bindings{

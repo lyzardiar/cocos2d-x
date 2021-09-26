@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define _SIMPLE_AUDIO_ENGINE_H_
 
 #include "audio/include/Export.h"
+#include "base/ccConfig.h"
 
 #if defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
 #define CC_DEPRECATED_ATTRIBUTE __attribute__((deprecated))
@@ -250,7 +251,7 @@ public:
      */
     virtual void unloadEffect(const char* filePath);
 
-protected:
+CC_CONSTRUCTOR_ACCESS:
     /**
     * Constructor of SimpleAudioEngine.
     */

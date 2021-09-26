@@ -80,9 +80,10 @@ public:
     /** Returns a new clone of the Technique */
     Technique* clone() const;
 
-protected:
+CC_CONSTRUCTOR_ACCESS:
     Technique();
     ~Technique();
+protected:
     bool init(Material* parent);
 
     void setName(const std::string& name);

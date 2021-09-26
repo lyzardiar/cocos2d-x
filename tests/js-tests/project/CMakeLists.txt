@@ -38,7 +38,7 @@ if(NOT DEFINED BUILD_ENGINE_DONE)
 
     include(CocosBuildSet)
     if(EMSCRIPTEN)
-        set(BUILD_JS_EMBIND_LIBS ON)
+        set(BUILD_CCBIND_LIBS ON)
     else()
         set(BUILD_JS_LIBS ON)
     endif()
@@ -132,13 +132,9 @@ endif()
 
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
-     Classes/js_Effect3D_bindings.h
-     Classes/js_DrawNode3D_bindings.h
      )
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
-     Classes/js_DrawNode3D_bindings.cpp
-     Classes/js_Effect3D_bindings.cpp
      )
 
 set(APP_SRC ${GAME_HEADER} ${GAME_SOURCE})
@@ -154,7 +150,7 @@ else()
 endif()
 
 if(EMSCRIPTEN)
-    target_link_libraries(${APP_NAME} jsembindcocos2d)
+    target_link_libraries(${APP_NAME} -Wl,--whole-archive ccbindcocos2d -Wl,--no-whole-archive)
 else()
     target_link_libraries(${APP_NAME} jscocos2d)
 endif()

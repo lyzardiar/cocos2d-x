@@ -254,6 +254,25 @@
             }
           }
         },
+        cocosInitialized: function(bootSrc, mainSrc) {
+          var prepare = document.createElement('script');
+          prepare.src = "script/jsb_prepare.js";
+          prepare.onload = function(){
+
+            for (key in Module) {
+              console.log(key)
+              if (key.startsWith('cc$')) {
+                cc[key.substring(3)] = Module[key]
+              }
+            }
+
+            var boot = document.createElement('script');
+            boot.src = bootSrc;
+            document.body.appendChild(boot);
+          };
+
+          document.body.appendChild(prepare);
+        },
         hierarchyFind(move) {
           var queryText = document.getElementById('searchBar').value.toLowerCase();
           var items = hierarchyElement.getElementsByTagName('li');

@@ -33,8 +33,5 @@ namespace cocos2d {
 }
 
 using namespace cocos2d::bindings;
-
-EMSCRIPTEN_BINDINGS(default_module) {
-  decltype(GetTypes(Rank<COCOS_BINDINGS_MAX>())) types;
-  exposeTypes(types);
-}
+struct CocosBindingInitializer_cocos2dx;
+void exposeType();

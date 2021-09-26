@@ -122,9 +122,10 @@ public:
     /** returns a clone (deep-copy) of the material */
     virtual Material* clone() const;
 
-protected:
+CC_CONSTRUCTOR_ACCESS:
     Material();
     ~Material();
+protected:
     bool initWithGLProgramState(GLProgramState* state);
     bool initWithFile(const std::string& file);
     bool initWithProperties(Properties* materialProperties);

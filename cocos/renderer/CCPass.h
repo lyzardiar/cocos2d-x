@@ -91,9 +91,10 @@ public:
      * Returns a clone (deep-copy) of this instance */
     Pass* clone() const;
 
-protected:
+CC_CONSTRUCTOR_ACCESS:
     Pass();
     ~Pass();
+protected:
     bool init(Technique* parent);
     bool initWithGLProgramState(Technique* parent, GLProgramState *glProgramState);
 

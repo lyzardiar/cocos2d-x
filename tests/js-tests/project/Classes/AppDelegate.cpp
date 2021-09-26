@@ -81,6 +81,9 @@
 #include "scripting/js-bindings/auto/jsb_cocos2dx_audioengine_auto.hpp"
 #endif
 
+#else
+#include <emscripten.h>
+#include <emscripten/bind.h>
 #endif // CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN
 
 USING_NS_CC;
@@ -190,6 +193,10 @@ bool AppDelegate::applicationDidFinishLaunching()
     ScriptEngineManager::getInstance()->setScriptEngine(sc);
 
     sc->runScript("main.js");
+#else
+    EM_ASM({
+        Module.cocosInitialized(UTF8ToString($0), UTF8ToString($1));
+    }, "script/jsb_boot.js", "main.js");
 #endif // CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN
     return true;
 }
