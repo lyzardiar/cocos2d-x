@@ -6,6 +6,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocos2d::extension;
 
 COCOS_BINDINGS(ccbind_cocos2dx_extension) {
 
@@ -254,7 +255,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
         [](ScrollView& this_, cocos2d::Size arg0){
         return this_.initWithViewSize(arg0);
       }), allow_raw_pointers())
-    .function("pause", &ScrollView::pause, allow_raw_pointers())
+    .function("pause", select_overload<void(Ref* sender)>(&ScrollView::pause), allow_raw_pointers())
     .function("setDirection", &ScrollView::setDirection, allow_raw_pointers())
     .function("setContentOffset", &ScrollView::setContentOffset, allow_raw_pointers())
     .function("setContentOffset", optional_override(
@@ -266,7 +267,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("isBounceable", &ScrollView::isBounceable, allow_raw_pointers())
     .function("setTouchEnabled", &ScrollView::setTouchEnabled, allow_raw_pointers())
     .function("getContentOffset", &ScrollView::getContentOffset, allow_raw_pointers())
-    .function("resume", &ScrollView::resume, allow_raw_pointers())
+    .function("resume", select_overload<void(Ref* sender)>(&ScrollView::resume), allow_raw_pointers())
     .function("setClippingToBounds", &ScrollView::setClippingToBounds, allow_raw_pointers())
     .function("setViewSize", &ScrollView::setViewSize, allow_raw_pointers())
     .function("getViewSize", &ScrollView::getViewSize, allow_raw_pointers())
@@ -368,4 +369,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
   class_<EventListenerAssetsManagerEx, base<EventListenerCustom>>("cc.EventListenerAssetsManager")
     .constructor<>()
     .property("_className",  optional_override([](const EventListenerAssetsManagerEx& _) -> std::string {return "EventListenerAssetsManagerEx";}))    
-    ;}
+    ;
+}

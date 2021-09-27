@@ -246,4 +246,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_3d) {
         return Bundle3D::loadObj(arg0, arg1, arg2, arg3);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const Bundle3D& _) -> std::string {return "Bundle3D";}))    
-    ;}
+    ;
+}

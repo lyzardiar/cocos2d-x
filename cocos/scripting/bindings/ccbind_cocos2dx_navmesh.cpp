@@ -73,4 +73,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_navmesh) {
     .function("debugDraw", &NavMesh::debugDraw, allow_raw_pointers())
     .class_function("create", &NavMesh::create, allow_raw_pointers())
     .property("_className",  optional_override([](const NavMesh& _) -> std::string {return "NavMesh";}))    
-    ;}
+    ;
+}
+
+#endif
+

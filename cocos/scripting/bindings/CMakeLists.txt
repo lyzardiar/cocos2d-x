@@ -2,20 +2,20 @@ set(cocos_root ${COCOS2DX_ROOT_PATH})
 
 set(ccbind_bindings_files
     ccbind_cocos2dx.cpp
-    # ccbind_cocos2dx_3d.cpp
-    # ccbind_cocos2dx_3d_extension.cpp
-    # ccbind_cocos2dx_audioengine.cpp
-    # ccbind_cocos2dx_builder.cpp
-    # ccbind_cocos2dx_experimental_video.cpp
-    # ccbind_cocos2dx_experimental_webView.cpp
-    # ccbind_cocos2dx_extension.cpp
-    # ccbind_cocos2dx_navmesh.cpp
-    # ccbind_cocos2dx_network.cpp
-    # ccbind_cocos2dx_physics3d.cpp
-    # ccbind_cocos2dx_spine.cpp
-    # ccbind_cocos2dx_studio.cpp
+    ccbind_cocos2dx_3d.cpp
+    ccbind_cocos2dx_3d_extension.cpp
+    ccbind_cocos2dx_audioengine.cpp
+    ccbind_cocos2dx_builder.cpp
+    ccbind_cocos2dx_experimental_video.cpp
+    ccbind_cocos2dx_experimental_webView.cpp
+    ccbind_cocos2dx_extension.cpp
+    ccbind_cocos2dx_navmesh.cpp
+    ccbind_cocos2dx_network.cpp
+    ccbind_cocos2dx_physics3d.cpp
+    ccbind_cocos2dx_spine.cpp
+    ccbind_cocos2dx_studio.cpp
     # ccbind_cocos2dx_ui.cpp
-    # CCScriptBindings.cpp
+    CCScriptBindings.cpp
     )
 set(ccbind_bindings_headers
     ccbind_cocos2dx.hpp

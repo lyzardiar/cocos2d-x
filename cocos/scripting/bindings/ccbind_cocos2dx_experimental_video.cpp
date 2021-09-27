@@ -33,4 +33,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_experimental_video) {
     .function("setFileName", &VideoPlayer::setFileName, allow_raw_pointers())
     .class_function("create", &VideoPlayer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const VideoPlayer& _) -> std::string {return "VideoPlayer";}))    
-    ;}
+    ;
+}
+
+#endif

@@ -69,4 +69,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_3d_extension) {
     .class_function("create", select_overload<cocos2d::PUParticleSystem3D*()>(&PUParticleSystem3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::PUParticleSystem3D*(const std::string&, const std::string&)>(&PUParticleSystem3D::create), allow_raw_pointers())
     .property("_className",  optional_override([](const PUParticleSystem3D& _) -> std::string {return "PUParticleSystem3D";}))    
-    ;}
+    ;
+}

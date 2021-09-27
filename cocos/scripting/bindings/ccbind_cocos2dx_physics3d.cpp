@@ -360,4 +360,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_physics3d) {
     .class_function("create", select_overload<cocos2d::Physics3D6DofConstraint*(cocos2d::Physics3DRigidBody*, const cocos2d::Mat4&, bool)>(&Physics3D6DofConstraint::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Physics3D6DofConstraint*(cocos2d::Physics3DRigidBody*, cocos2d::Physics3DRigidBody*, const cocos2d::Mat4&, const cocos2d::Mat4&, bool)>(&Physics3D6DofConstraint::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Physics3D6DofConstraint& _) -> std::string {return "Physics3D6DofConstraint";}))    
-    ;}
+    ;
+}
+
+#endif

@@ -69,10 +69,10 @@ public:
     virtual void apply(float percent);
 
     virtual Frame* clone() = 0;
-protected:
+CC_CONSTRUCTOR_ACCESS:
     Frame();
     virtual ~Frame();
-    
+protected:
     virtual void onApply(float percent) {};
     //update percent depends _tweenType, and return the Calculated percent
     virtual float tweenPercent(float percent);

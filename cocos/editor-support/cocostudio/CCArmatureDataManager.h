@@ -55,7 +55,7 @@ public:
     static ArmatureDataManager *getInstance();
     static void destroyInstance();
     
-private:
+CC_CONSTRUCTOR_ACCESS:
     /**
      * @js ctor
      */

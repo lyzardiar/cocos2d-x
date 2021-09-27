@@ -6,6 +6,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocos2d::network;
 
 COCOS_BINDINGS(ccbind_cocos2dx_network) {
 
@@ -23,4 +24,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_network) {
     .function("setOnFileTaskSuccess", &Downloader::setOnFileTaskSuccess, allow_raw_pointers())
     .function("setOnDataTaskSuccess", &Downloader::setOnDataTaskSuccess, allow_raw_pointers())
     .property("_className",  optional_override([](const Downloader& _) -> std::string {return "Downloader";}))    
-    ;}
+    ;
+}

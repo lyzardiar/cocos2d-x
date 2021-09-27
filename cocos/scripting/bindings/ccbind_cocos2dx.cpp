@@ -146,7 +146,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setOnExitCallback", &Node::setOnExitCallback, allow_raw_pointers())
     .function("setActionManager", &Node::setActionManager, allow_raw_pointers())
     .function("isIgnoreAnchorPointForPosition", &Node::isIgnoreAnchorPointForPosition, allow_raw_pointers())
-    .function("getChildByName", &Node::getChildByName, allow_raw_pointers())
+    .function("getChildByName", optional_override([](Node& this_, const std::string& name) {
+        return this_.getChildByName(name);
+    }), allow_raw_pointers())
     .function("updateDisplayedOpacity", &Node::updateDisplayedOpacity, allow_raw_pointers())
     .function("init", &Node::init, allow_raw_pointers())
     .function("getCameraMask", &Node::getCameraMask, allow_raw_pointers())
@@ -264,7 +266,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setScale", select_overload<void(float, float)>(&Node::setScale), allow_raw_pointers())
     .function("setScale", select_overload<void(float)>(&Node::setScale), allow_raw_pointers())
     .function("getOnExitCallback", &Node::getOnExitCallback, allow_raw_pointers())
-    .function("getChildByTag", &Node::getChildByTag, allow_raw_pointers())
+    .function("getChildByTag", optional_override([](Node& this_, int tag) {
+        return this_.getChildByTag(tag);
+    }), allow_raw_pointers())
     .function("getScaleZ", &Node::getScaleZ, allow_raw_pointers())
     .function("getScaleY", &Node::getScaleY, allow_raw_pointers())
     .function("getScaleX", &Node::getScaleX, allow_raw_pointers())
@@ -598,7 +602,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setUniformInt", select_overload<void(int, int)>(&GLProgramState::setUniformInt), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("setParameterAutoBinding", &GLProgramState::setParameterAutoBinding, allow_raw_pointers())
-    .function("setUniformVec2v", select_overload<void(int, int, const cocos2d::Vec2*)>(&GLProgramState::setUniformVec2v), allow_raw_pointers())
+    // TODO: .function("setUniformVec2v", select_overload<void(int, int, const cocos2d::Vec2*)>(&GLProgramState::setUniformVec2v), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("getUniformCount", &GLProgramState::getUniformCount, allow_raw_pointers())
     .function("applyAttributes", &GLProgramState::applyAttributes, allow_raw_pointers())
@@ -608,7 +612,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
       }), allow_raw_pointers())
     .function("clone", &GLProgramState::clone, allow_raw_pointers())
     .function("setGLProgram", &GLProgramState::setGLProgram, allow_raw_pointers())
-    .function("setUniformFloatv", select_overload<void(int, int, const float*)>(&GLProgramState::setUniformFloatv), allow_raw_pointers())
+    // TODO .function("setUniformFloatv", select_overload<void(int, int, const float*)>(&GLProgramState::setUniformFloatv), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("getGLProgram", &GLProgramState::getGLProgram, allow_raw_pointers())
     .function("setUniformTexture", select_overload<void(const std::string&, cocos2d::Texture2D*)>(&GLProgramState::setUniformTexture), allow_raw_pointers())
@@ -618,7 +622,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setUniformMat4", select_overload<void(int, const cocos2d::Mat4&)>(&GLProgramState::setUniformMat4), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .function("setUniformVec3v", select_overload<void(int, int, const cocos2d::Vec3*)>(&GLProgramState::setUniformVec3v), allow_raw_pointers())
+    // TODO .function("setUniformVec3v", select_overload<void(int, int, const cocos2d::Vec3*)>(&GLProgramState::setUniformVec3v), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("getVertexAttribCount", &GLProgramState::getVertexAttribCount, allow_raw_pointers())
     .class_function("create", &GLProgramState::create, allow_raw_pointers())
@@ -4192,7 +4196,8 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .class_function("getInstance", &SimpleAudioEngine::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const SimpleAudioEngine& _) -> std::string {return "SimpleAudioEngine";}))    
     ;
-
-  class_<ComponentJS, base<Component>>("cc.ComponentJS")
-    .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
-    ;}
+  // TODO: need emscripten comJS
+  // class_<ComponentJS, base<Component>>("cc.ComponentJS")
+  //   .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
+  //   ;
+}

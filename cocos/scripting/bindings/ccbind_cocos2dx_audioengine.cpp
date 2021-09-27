@@ -1,12 +1,13 @@
 #include "scripting/bindings/CCScriptBindings.h"
 #include "scripting/bindings/ccbind_cocos2dx_audioengine.hpp"
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
 #include "audio/include/AudioEngine.h"
 
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocos2d::experimental;
 
 COCOS_BINDINGS(ccbind_cocos2dx_audioengine) {
 
@@ -64,4 +65,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_audioengine) {
     // TODO: Only support function overloading with different number of parameters
     .class_function("getPlayingAudioCount", &AudioEngine::getPlayingAudioCount, allow_raw_pointers())
     .property("_className",  optional_override([](const AudioEngine& _) -> std::string {return "AudioEngine";}))    
-    ;}
+    ;
+}
+
+#endif

@@ -40,4 +40,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_experimental_webView) {
     .function("getOnDidFinishLoading", &WebView::getOnDidFinishLoading, allow_raw_pointers())
     .class_function("create", &WebView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const WebView& _) -> std::string {return "WebView";}))    
-    ;}
+    ;
+}
+
+#endif

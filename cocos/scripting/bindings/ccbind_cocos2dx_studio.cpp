@@ -2,12 +2,13 @@
 #include "scripting/bindings/ccbind_cocos2dx_studio.hpp"
 #include "editor-support/cocostudio/CocoStudio.h"
 #include "editor-support/cocostudio/CCComExtensionData.h"
-#include "scripting/js-bindings/manual/cocostudio/jsb_cocos2dx_studio_conversions.h"
 
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocostudio;
+using namespace cocostudio::timeline;
 
 COCOS_BINDINGS(ccbind_cocos2dx_studio) {
 
@@ -123,7 +124,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     .constructor<>()
     .function("getAnimation", &Tween::getAnimation, allow_raw_pointers())
     .function("gotoAndPause", &Tween::gotoAndPause, allow_raw_pointers())
-    .function("play", &Tween::play, allow_raw_pointers())
+    .function("play", select_overload<void(MovementBoneData *, int, int, int, int)>(&Tween::play), allow_raw_pointers())
     .function("gotoAndPlay", &Tween::gotoAndPlay, allow_raw_pointers())
     .function("init", &Tween::init, allow_raw_pointers())
     .function("setAnimation", &Tween::setAnimation, allow_raw_pointers())
@@ -218,7 +219,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     // TODO: Only support function overloading with different number of parameters
     .function("setIgnoreMovementBoneData", &Bone::setIgnoreMovementBoneData, allow_raw_pointers())
     .function("getBlendFunc", &Bone::getBlendFunc, allow_raw_pointers())
-    .function("removeFromParent", &Bone::removeFromParent, allow_raw_pointers())
+    .function("removeFromParent", select_overload<void(bool)>(&Bone::removeFromParent), allow_raw_pointers())
     .function("getColliderDetector", &Bone::getColliderDetector, allow_raw_pointers())
     .function("setParentBone", &Bone::setParentBone, allow_raw_pointers())
     .function("getChildArmature", &Bone::getChildArmature, allow_raw_pointers())
@@ -257,7 +258,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     .function("getSpeedScale", &ArmatureAnimation::getSpeedScale, allow_raw_pointers())
     .function("setSpeedScale", &ArmatureAnimation::setSpeedScale, allow_raw_pointers())
     .function("init", &ArmatureAnimation::init, allow_raw_pointers())
-    .function("play", &ArmatureAnimation::play, allow_raw_pointers())
+    .function("play", select_overload<void(const std::string&, int, int)>(&ArmatureAnimation::play), allow_raw_pointers())
     .function("play", optional_override(
         [](ArmatureAnimation& this_, const std::string& arg0){
         return this_.play(arg0);
@@ -766,4 +767,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     .function("setCustomProperty", &ComExtensionData::setCustomProperty, allow_raw_pointers())
     .class_function("create", &ComExtensionData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ComExtensionData& _) -> std::string {return "ComExtensionData";}))    
-    ;}
+    ;
+}

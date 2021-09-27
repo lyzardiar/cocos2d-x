@@ -117,11 +117,13 @@ public:
     btTypedConstraint* getbtContraint() { return _constraint; }
 #endif
     
-protected:
+CC_CONSTRUCTOR_ACCESS:
     
     Physics3DConstraint();
     virtual ~Physics3DConstraint();
     
+protected:
+
     btTypedConstraint* _constraint;
     
     Physics3DRigidBody* _bodyA;
