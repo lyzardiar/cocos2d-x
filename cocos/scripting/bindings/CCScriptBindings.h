@@ -88,6 +88,11 @@ namespace cocos2d {
         return emscripten::optional_override(fp);
     }
 
+    template<typename ReturnType, typename... Args, typename... Policies>
+    inline void function(const char* name, ReturnType (*fn)(Args...), Policies... policies) {
+        emscripten::function(name, fn, std::forward<Policies>(policies)...);
+    }
+
     using val = emscripten::val;
 
     template<typename BaseClass>

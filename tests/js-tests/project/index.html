@@ -260,11 +260,12 @@
           prepare.onload = function(){
 
             for (key in Module) {
-              console.log(key)
               if (key.startsWith('cc$')) {
                 cc[key.substring(3)] = Module[key]
               }
             }
+
+            window["__getPlatform"] = Module["__getPlatform"]
 
             var boot = document.createElement('script');
             boot.src = bootSrc;
