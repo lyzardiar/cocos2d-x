@@ -2859,7 +2859,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     ;
 
 
-  class_<ParticleSystemQuad, base<ParticleSystem>>("cc.ParticleSystem")
+  class_<ParticleSystemQuad, base<ParticleSystem>>("cc.ParticleSystemQuad")
     .constructor<>()
     .function("setTextureWithRect", &ParticleSystemQuad::setTextureWithRect, allow_raw_pointers())
     .function("setDisplayFrame", &ParticleSystemQuad::setDisplayFrame, allow_raw_pointers())
@@ -3827,6 +3827,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<SAXParser>("cc.PlistParser")
     .function("init", &SAXParser::init, allow_raw_pointers())
+    // TODO: temp function before fully rewrite cocos2d_specifics.cpp
+    .class_function("getInstance", optional_override([](){
+        static SAXParser instance_;
+        return &instance_;
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const SAXParser& _) -> std::string {return "SAXParser";}))    
     ;
 
@@ -4200,4 +4205,18 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
   // class_<ComponentJS, base<Component>>("cc.ComponentJS")
   //   .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
   //   ;
+
+  // value objects
+  value_object<Rect>("cc.Rect")
+    .field("origin", &Rect::origin)
+    .field("size", &Rect::size)
+    ;
+  value_object<Vec2>("cc.Vec2")
+    .field("x", &Vec2::x)
+    .field("y", &Vec2::y)
+    ;
+  value_object<Size>("cc.Size")
+    .field("width", &Size::width)
+    .field("height", &Size::height)
+    ;
 }

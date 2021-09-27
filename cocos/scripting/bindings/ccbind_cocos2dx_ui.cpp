@@ -7,6 +7,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocos2d::ui;
 
 COCOS_BINDINGS(ccbind_cocos2dx_ui) {
 
@@ -522,8 +523,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getScrollDuration", &ListView::getScrollDuration, allow_raw_pointers())
     .function("getMagneticAllowedOutOfBoundary", &ListView::getMagneticAllowedOutOfBoundary, allow_raw_pointers())
     .function("getItemsMargin", &ListView::getItemsMargin, allow_raw_pointers())
-    .function("scrollToItem", select_overload<void(int, const cocos2d::Vec2&, const cocos2d::Vec2&, float)>(&ListView::scrollToItem), allow_raw_pointers())
-    .function("scrollToItem", select_overload<void(int, const cocos2d::Vec2&, const cocos2d::Vec2&)>(&ListView::scrollToItem), allow_raw_pointers())
+    .function("scrollToItem", select_overload<void(ssize_t, const Vec2&, const Vec2&, float)>(&ListView::scrollToItem))
+    .function("scrollToItem", select_overload<void(ssize_t, const Vec2&, const Vec2&)>(&ListView::scrollToItem))
     .function("jumpToItem", &ListView::jumpToItem, allow_raw_pointers())
     .function("setTopPadding", &ListView::setTopPadding, allow_raw_pointers())
     .function("getIndex", &ListView::getIndex, allow_raw_pointers())
@@ -532,7 +533,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("insertDefaultItem", &ListView::insertDefaultItem, allow_raw_pointers())
     .function("setMagneticType", &ListView::setMagneticType, allow_raw_pointers())
     .function("setMagneticAllowedOutOfBoundary", &ListView::setMagneticAllowedOutOfBoundary, allow_raw_pointers())
-    .function("addEventListener", &ListView::addEventListener, allow_raw_pointers())
+    .function("addEventListener", select_overload<void(const ListView::ccListViewCallback&)>(&ListView::addEventListener))
     .function("getTopmostItemInCurrentView", &ListView::getTopmostItemInCurrentView, allow_raw_pointers())
     .function("setPadding", &ListView::setPadding, allow_raw_pointers())
     .function("removeAllItems", &ListView::removeAllItems, allow_raw_pointers())
@@ -730,7 +731,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setIndicatorIndexNodesScale", &PageView::setIndicatorIndexNodesScale, allow_raw_pointers())
     .function("setIndicatorEnabled", &PageView::setIndicatorEnabled, allow_raw_pointers())
     .function("setIndicatorSelectedIndexColor", &PageView::setIndicatorSelectedIndexColor, allow_raw_pointers())
-    .function("addEventListener", &PageView::addEventListener, allow_raw_pointers())
+    .function("addEventListener", select_overload<void (const PageView::ccPageViewCallback&)>(&PageView::addEventListener))
     .function("getIndicatorPosition", &PageView::getIndicatorPosition, allow_raw_pointers())
     .function("setCurrentPageIndex", &PageView::setCurrentPageIndex, allow_raw_pointers())
     .function("getIndicatorIndexNodesColor", &PageView::getIndicatorIndexNodesColor, allow_raw_pointers())
@@ -738,12 +739,12 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getIndicatorIndexNodesScale", &PageView::getIndicatorIndexNodesScale, allow_raw_pointers())
     .function("setIndicatorPosition", &PageView::setIndicatorPosition, allow_raw_pointers())
     .function("getIndicatorSelectedIndexOpacity", &PageView::getIndicatorSelectedIndexOpacity, allow_raw_pointers())
-    .function("scrollToPage", select_overload<void(int, float)>(&PageView::scrollToPage), allow_raw_pointers())
-    .function("scrollToPage", select_overload<void(int)>(&PageView::scrollToPage), allow_raw_pointers())
+    .function("scrollToPage", select_overload<void(ssize_t, float)>(&PageView::scrollToPage), allow_raw_pointers())
+    .function("scrollToPage", select_overload<void(ssize_t)>(&PageView::scrollToPage), allow_raw_pointers())
     .function("setIndicatorIndexNodesColor", &PageView::setIndicatorIndexNodesColor, allow_raw_pointers())
     .function("setIndicatorPositionAsAnchorPoint", &PageView::setIndicatorPositionAsAnchorPoint, allow_raw_pointers())
-    .function("scrollToItem", select_overload<void(int, float)>(&PageView::scrollToItem), allow_raw_pointers())
-    .function("scrollToItem", select_overload<void(int)>(&PageView::scrollToItem), allow_raw_pointers())
+    .function("scrollToItem", select_overload<void(ssize_t, float)>(&PageView::scrollToItem), allow_raw_pointers())
+    .function("scrollToItem", select_overload<void(ssize_t)>(&PageView::scrollToItem), allow_raw_pointers())
     .function("removeAllPages", &PageView::removeAllPages, allow_raw_pointers())
     .function("getIndicatorIndexNodesOpacity", &PageView::getIndicatorIndexNodesOpacity, allow_raw_pointers())
     .function("getIndicatorPositionAsAnchorPoint", &PageView::getIndicatorPositionAsAnchorPoint, allow_raw_pointers())
@@ -1042,7 +1043,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("init", select_overload<bool(cocos2d::Sprite*, const cocos2d::Rect&, bool, const cocos2d::Vec2&, const cocos2d::Size&, const cocos2d::Rect&)>(&Scale9Sprite::init), allow_raw_pointers())
     .function("setPreferredSize", &Scale9Sprite::setPreferredSize, allow_raw_pointers())
     .function("copyTo", &Scale9Sprite::copyTo, allow_raw_pointers())
-    .function("setSpriteFrame", &Scale9Sprite::setSpriteFrame, allow_raw_pointers())
+    .function("setSpriteFrame", select_overload<void (SpriteFrame *, const Rect&)>(&Scale9Sprite::setSpriteFrame), allow_raw_pointers())
     .function("getState", &Scale9Sprite::getState, allow_raw_pointers())
     .function("getInsetBottom", &Scale9Sprite::getInsetBottom, allow_raw_pointers())
     .function("setScale9Enabled", &Scale9Sprite::setScale9Enabled, allow_raw_pointers())
@@ -1054,7 +1055,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("initWithFile", select_overload<bool(const std::string&, const cocos2d::Rect&, const cocos2d::Rect&)>(&Scale9Sprite::initWithFile), allow_raw_pointers())
     .function("getInsetTop", &Scale9Sprite::getInsetTop, allow_raw_pointers())
     .function("setInsetLeft", &Scale9Sprite::setInsetLeft, allow_raw_pointers())
-    .function("initWithSpriteFrame", &Scale9Sprite::initWithSpriteFrame, allow_raw_pointers())
+    .function("initWithSpriteFrame", select_overload<bool(SpriteFrame*, const Rect&)>(&Scale9Sprite::initWithSpriteFrame), allow_raw_pointers())
     .function("getPreferredSize", &Scale9Sprite::getPreferredSize, allow_raw_pointers())
     .function("setCapInsets", &Scale9Sprite::setCapInsets, allow_raw_pointers())
     .function("getInsetLeft", &Scale9Sprite::getInsetLeft, allow_raw_pointers())

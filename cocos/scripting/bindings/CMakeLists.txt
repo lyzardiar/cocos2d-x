@@ -14,7 +14,7 @@ set(ccbind_bindings_files
     ccbind_cocos2dx_physics3d.cpp
     ccbind_cocos2dx_spine.cpp
     ccbind_cocos2dx_studio.cpp
-    # ccbind_cocos2dx_ui.cpp
+    ccbind_cocos2dx_ui.cpp
     CCScriptBindings.cpp
     )
 set(ccbind_bindings_headers

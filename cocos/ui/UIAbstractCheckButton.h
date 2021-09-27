@@ -177,8 +177,7 @@ CC_CONSTRUCTOR_ACCESS:
                       const std::string& backGroundDisabled,
                       const std::string& frontCrossDisabled,
                       TextureResType texType = TextureResType::LOCAL);
-    
-protected:
+
     /**
      * Default constructor.
      */
@@ -191,6 +190,7 @@ protected:
      */
     virtual ~AbstractCheckButton();
     
+protected:
     virtual void initRenderer() override;
     virtual void onPressStateChangedToNormal() override;
     virtual void onPressStateChangedToPressed() override;

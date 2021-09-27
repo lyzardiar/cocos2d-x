@@ -157,10 +157,11 @@ namespace ui {
         int   getIndexInTabControl() const;
         
         
-    protected:
+    CC_CONSTRUCTOR_ACCESS:
         TabHeader();
         ~TabHeader();
         
+    protected:
         virtual void initRenderer() override;
         virtual void onSizeChanged() override;
         
@@ -337,10 +338,11 @@ namespace ui {
         TabControl::Dock getHeaderDockPlace() const { return _headerDockPlace; }
 
         /// @}
-    protected:
+    CC_CONSTRUCTOR_ACCESS:
         TabControl();
         ~TabControl();
 
+    protected:
         void onSizeChanged() override;
         void initTabHeadersPos(int startIndex);
         void initContainers();
