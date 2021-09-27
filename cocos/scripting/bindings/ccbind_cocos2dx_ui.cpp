@@ -190,22 +190,16 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getRendererDisabled", &Button::getRendererDisabled, allow_raw_pointers())
     .function("setCapInsetsDisabledRenderer", &Button::setCapInsetsDisabledRenderer, allow_raw_pointers())
     .function("getTitleColor", &Button::getTitleColor, allow_raw_pointers())
-    .function("loadTextureDisabled", &Button::loadTextureDisabled, allow_raw_pointers())
-    .function("loadTextureDisabled", optional_override(
-        [](Button& this_, const std::string& arg0){
-        return this_.loadTextureDisabled(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureDisabled", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::loadTextureDisabled), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("init", select_overload<bool(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::init), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     .function("setTitleText", &Button::setTitleText, allow_raw_pointers())
     .function("setCapInsetsNormalRenderer", &Button::setCapInsetsNormalRenderer, allow_raw_pointers())
-    .function("loadTexturePressed", &Button::loadTexturePressed, allow_raw_pointers())
-    .function("loadTexturePressed", optional_override(
-        [](Button& this_, const std::string& arg0){
-        return this_.loadTexturePressed(arg0);
-      }), allow_raw_pointers())
+    .function("loadTexturePressed", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::loadTexturePressed), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("setTitleFontName", &Button::setTitleFontName, allow_raw_pointers())
     .function("getCapInsetsNormalRenderer", &Button::getCapInsetsNormalRenderer, allow_raw_pointers())
     .function("setTitleAlignment", select_overload<void(cocos2d::TextHAlignment, cocos2d::TextVAlignment)>(&Button::setTitleAlignment), allow_raw_pointers())
@@ -221,11 +215,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
         return this_.loadTextures(arg0, arg1, arg2);
       }), allow_raw_pointers())
     .function("isScale9Enabled", &Button::isScale9Enabled, allow_raw_pointers())
-    .function("loadTextureNormal", &Button::loadTextureNormal, allow_raw_pointers())
-    .function("loadTextureNormal", optional_override(
-        [](Button& this_, const std::string& arg0){
-        return this_.loadTextureNormal(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureNormal", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::loadTextureNormal), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getNormalFile", &Button::getNormalFile, allow_raw_pointers())
     .function("setCapInsetsPressedRenderer", &Button::setCapInsetsPressedRenderer, allow_raw_pointers())
     .function("getPressedFile", &Button::getPressedFile, allow_raw_pointers())
@@ -253,25 +244,16 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getBackNormalFile", &AbstractCheckButton::getBackNormalFile, allow_raw_pointers())
     .function("getZoomScale", &AbstractCheckButton::getZoomScale, allow_raw_pointers())
     .function("getRendererFrontCross", &AbstractCheckButton::getRendererFrontCross, allow_raw_pointers())
-    .function("loadTextureBackGroundDisabled", &AbstractCheckButton::loadTextureBackGroundDisabled, allow_raw_pointers())
-    .function("loadTextureBackGroundDisabled", optional_override(
-        [](AbstractCheckButton& this_, const std::string& arg0){
-        return this_.loadTextureBackGroundDisabled(arg0);
-      }), allow_raw_pointers())
-    .function("loadTextureFrontCross", &AbstractCheckButton::loadTextureFrontCross, allow_raw_pointers())
-    .function("loadTextureFrontCross", optional_override(
-        [](AbstractCheckButton& this_, const std::string& arg0){
-        return this_.loadTextureFrontCross(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureBackGroundDisabled", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&AbstractCheckButton::loadTextureBackGroundDisabled), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
+    .function("loadTextureFrontCross", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&AbstractCheckButton::loadTextureFrontCross), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("isSelected", &AbstractCheckButton::isSelected, allow_raw_pointers())
     .function("init", select_overload<bool(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&AbstractCheckButton::init), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("getCrossDisabledFile", &AbstractCheckButton::getCrossDisabledFile, allow_raw_pointers())
-    .function("loadTextureBackGround", &AbstractCheckButton::loadTextureBackGround, allow_raw_pointers())
-    .function("loadTextureBackGround", optional_override(
-        [](AbstractCheckButton& this_, const std::string& arg0){
-        return this_.loadTextureBackGround(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureBackGround", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&AbstractCheckButton::loadTextureBackGround), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getRendererBackground", &AbstractCheckButton::getRendererBackground, allow_raw_pointers())
     .function("getCrossNormalFile", &AbstractCheckButton::getCrossNormalFile, allow_raw_pointers())
     .function("loadTextures", &AbstractCheckButton::loadTextures, allow_raw_pointers())
@@ -279,16 +261,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
         [](AbstractCheckButton& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4){
         return this_.loadTextures(arg0, arg1, arg2, arg3, arg4);
       }), allow_raw_pointers())
-    .function("loadTextureFrontCrossDisabled", &AbstractCheckButton::loadTextureFrontCrossDisabled, allow_raw_pointers())
-    .function("loadTextureFrontCrossDisabled", optional_override(
-        [](AbstractCheckButton& this_, const std::string& arg0){
-        return this_.loadTextureFrontCrossDisabled(arg0);
-      }), allow_raw_pointers())
-    .function("loadTextureBackGroundSelected", &AbstractCheckButton::loadTextureBackGroundSelected, allow_raw_pointers())
-    .function("loadTextureBackGroundSelected", optional_override(
-        [](AbstractCheckButton& this_, const std::string& arg0){
-        return this_.loadTextureBackGroundSelected(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureFrontCrossDisabled", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&AbstractCheckButton::loadTextureFrontCrossDisabled), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
+    .function("loadTextureBackGroundSelected", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&AbstractCheckButton::loadTextureBackGroundSelected), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getBackPressedFile", &AbstractCheckButton::getBackPressedFile, allow_raw_pointers())
     .function("getRendererFrontCrossDisabled", &AbstractCheckButton::getRendererFrontCrossDisabled, allow_raw_pointers())
     .function("getRendererBackgroundDisabled", &AbstractCheckButton::getRendererBackgroundDisabled, allow_raw_pointers())
@@ -349,19 +325,16 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
 
   class_<ImageView, base<Widget>>("ccui.ImageView")
     .constructor<>()
-    .function("loadTexture", &ImageView::loadTexture, allow_raw_pointers())
-    .function("loadTexture", optional_override(
-        [](ImageView& this_, const std::string& arg0){
-        return this_.loadTexture(arg0);
-      }), allow_raw_pointers())
     .function("_init", select_overload<bool(const std::string&, cocos2d::ui::Widget::TextureResType)>(&ImageView::init), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("setScale9Enabled", &ImageView::setScale9Enabled, allow_raw_pointers())
-    .function("setTextureRect", &ImageView::setTextureRect, allow_raw_pointers())
-    .function("setCapInsets", &ImageView::setCapInsets, allow_raw_pointers())
     .function("getRenderFile", &ImageView::getRenderFile, allow_raw_pointers())
+    .function("setTextureRect", &ImageView::setTextureRect, allow_raw_pointers())
+    .function("loadTexture", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&ImageView::loadTexture), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getCapInsets", &ImageView::getCapInsets, allow_raw_pointers())
     .function("isScale9Enabled", &ImageView::isScale9Enabled, allow_raw_pointers())
+    .function("setCapInsets", &ImageView::setCapInsets, allow_raw_pointers())
     .function("ctor", &cc_bindings_ctor<ImageView>, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::ImageView*(const std::string&, cocos2d::ui::Widget::TextureResType)>(&ImageView::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -448,18 +421,15 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
   class_<LoadingBar, base<Widget>>("ccui.LoadingBar")
     .constructor<>()
     .function("setPercent", &LoadingBar::setPercent, allow_raw_pointers())
-    .function("loadTexture", &LoadingBar::loadTexture, allow_raw_pointers())
-    .function("loadTexture", optional_override(
-        [](LoadingBar& this_, const std::string& arg0){
-        return this_.loadTexture(arg0);
-      }), allow_raw_pointers())
-    .function("setDirection", &LoadingBar::setDirection, allow_raw_pointers())
-    .function("getRenderFile", &LoadingBar::getRenderFile, allow_raw_pointers())
     .function("setScale9Enabled", &LoadingBar::setScale9Enabled, allow_raw_pointers())
-    .function("setCapInsets", &LoadingBar::setCapInsets, allow_raw_pointers())
-    .function("getDirection", &LoadingBar::getDirection, allow_raw_pointers())
+    .function("getRenderFile", &LoadingBar::getRenderFile, allow_raw_pointers())
+    .function("setDirection", &LoadingBar::setDirection, allow_raw_pointers())
+    .function("loadTexture", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&LoadingBar::loadTexture), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getCapInsets", &LoadingBar::getCapInsets, allow_raw_pointers())
     .function("isScale9Enabled", &LoadingBar::isScale9Enabled, allow_raw_pointers())
+    .function("setCapInsets", &LoadingBar::setCapInsets, allow_raw_pointers())
+    .function("getDirection", &LoadingBar::getDirection, allow_raw_pointers())
     .function("getPercent", &LoadingBar::getPercent, allow_raw_pointers())
     .function("ctor", &cc_bindings_ctor<LoadingBar>, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, float)>(&LoadingBar::create), allow_raw_pointers())
@@ -474,67 +444,67 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
 
   class_<ScrollView, base<Layout>>("ccui.ScrollView")
     .constructor<>()
-    .function("scrollToTop", &ScrollView::scrollToTop, allow_raw_pointers())
-    .function("scrollToPercentHorizontal", &ScrollView::scrollToPercentHorizontal, allow_raw_pointers())
-    .function("setScrollBarOpacity", &ScrollView::setScrollBarOpacity, allow_raw_pointers())
-    .function("setTouchTotalTimeThreshold", &ScrollView::setTouchTotalTimeThreshold, allow_raw_pointers())
-    .function("setScrollBarEnabled", &ScrollView::setScrollBarEnabled, allow_raw_pointers())
-    .function("getTouchTotalTimeThreshold", &ScrollView::getTouchTotalTimeThreshold, allow_raw_pointers())
-    .function("scrollToBottom", &ScrollView::scrollToBottom, allow_raw_pointers())
-    .function("getScrolledPercentBothDirection", &ScrollView::getScrolledPercentBothDirection, allow_raw_pointers())
-    .function("getDirection", &ScrollView::getDirection, allow_raw_pointers())
-    .function("setScrollBarColor", &ScrollView::setScrollBarColor, allow_raw_pointers())
-    .function("scrollToBottomLeft", &ScrollView::scrollToBottomLeft, allow_raw_pointers())
-    .function("getInnerContainer", &ScrollView::getInnerContainer, allow_raw_pointers())
-    .function("jumpToBottom", &ScrollView::jumpToBottom, allow_raw_pointers())
+    .function("isInertiaScrollEnabled", &ScrollView::isInertiaScrollEnabled, allow_raw_pointers())
     .function("setInnerContainerPosition", &ScrollView::setInnerContainerPosition, allow_raw_pointers())
-    .function("setDirection", &ScrollView::setDirection, allow_raw_pointers())
-    .function("scrollToTopLeft", &ScrollView::scrollToTopLeft, allow_raw_pointers())
-    .function("jumpToTopRight", &ScrollView::jumpToTopRight, allow_raw_pointers())
-    .function("scrollToPercentBothDirection", &ScrollView::scrollToPercentBothDirection, allow_raw_pointers())
-    .function("setInnerContainerSize", &ScrollView::setInnerContainerSize, allow_raw_pointers())
-    .function("getInnerContainerPosition", &ScrollView::getInnerContainerPosition, allow_raw_pointers())
-    .function("jumpToTop", &ScrollView::jumpToTop, allow_raw_pointers())
-    .function("getScrolledPercentVertical", &ScrollView::getScrolledPercentVertical, allow_raw_pointers())
-    .function("isBounceEnabled", &ScrollView::isBounceEnabled, allow_raw_pointers())
     .function("jumpToPercentVertical", &ScrollView::jumpToPercentVertical, allow_raw_pointers())
-    .function("addEventListener", &ScrollView::addEventListener, allow_raw_pointers())
-    .function("setScrollBarAutoHideTime", &ScrollView::setScrollBarAutoHideTime, allow_raw_pointers())
     .function("stopScroll", &ScrollView::stopScroll, allow_raw_pointers())
     .function("setScrollBarPositionFromCornerForHorizontal", &ScrollView::setScrollBarPositionFromCornerForHorizontal, allow_raw_pointers())
     .function("setInertiaScrollEnabled", &ScrollView::setInertiaScrollEnabled, allow_raw_pointers())
-    .function("setScrollBarAutoHideEnabled", &ScrollView::setScrollBarAutoHideEnabled, allow_raw_pointers())
     .function("getScrollBarColor", &ScrollView::getScrollBarColor, allow_raw_pointers())
-    .function("setScrollBarWidth", &ScrollView::setScrollBarWidth, allow_raw_pointers())
-    .function("jumpToTopLeft", &ScrollView::jumpToTopLeft, allow_raw_pointers())
     .function("isScrollBarEnabled", &ScrollView::isScrollBarEnabled, allow_raw_pointers())
-    .function("isAutoScrolling", &ScrollView::isAutoScrolling, allow_raw_pointers())
+    .function("getTouchTotalTimeThreshold", &ScrollView::getTouchTotalTimeThreshold, allow_raw_pointers())
+    .function("scrollToTopRight", &ScrollView::scrollToTopRight, allow_raw_pointers())
+    .function("stopOverallScroll", &ScrollView::stopOverallScroll, allow_raw_pointers())
+    .function("setScrollBarAutoHideEnabled", &ScrollView::setScrollBarAutoHideEnabled, allow_raw_pointers())
+    .function("jumpToLeft", &ScrollView::jumpToLeft, allow_raw_pointers())
+    .function("jumpToRight", &ScrollView::jumpToRight, allow_raw_pointers())
+    .function("scrollToBottom", &ScrollView::scrollToBottom, allow_raw_pointers())
+    .function("getDirection", &ScrollView::getDirection, allow_raw_pointers())
+    .function("scrollToBottomLeft", &ScrollView::scrollToBottomLeft, allow_raw_pointers())
+    .function("jumpToBottom", &ScrollView::jumpToBottom, allow_raw_pointers())
+    .function("scrollToTopLeft", &ScrollView::scrollToTopLeft, allow_raw_pointers())
+    .function("jumpToTopRight", &ScrollView::jumpToTopRight, allow_raw_pointers())
+    .function("scrollToPercentBothDirection", &ScrollView::scrollToPercentBothDirection, allow_raw_pointers())
     .function("jumpToBottomRight", &ScrollView::jumpToBottomRight, allow_raw_pointers())
-    .function("getScrollBarPositionFromCornerForHorizontal", &ScrollView::getScrollBarPositionFromCornerForHorizontal, allow_raw_pointers())
+    .function("setScrollBarAutoHideTime", &ScrollView::setScrollBarAutoHideTime, allow_raw_pointers())
+    .function("setTouchTotalTimeThreshold", &ScrollView::setTouchTotalTimeThreshold, allow_raw_pointers())
     .function("getScrolledPercentHorizontal", &ScrollView::getScrolledPercentHorizontal, allow_raw_pointers())
-    .function("isInertiaScrollEnabled", &ScrollView::isInertiaScrollEnabled, allow_raw_pointers())
     .function("setBounceEnabled", &ScrollView::setBounceEnabled, allow_raw_pointers())
     .function("stopAutoScroll", &ScrollView::stopAutoScroll, allow_raw_pointers())
-    .function("scrollToTopRight", &ScrollView::scrollToTopRight, allow_raw_pointers())
-    .function("isScrolling", &ScrollView::isScrolling, allow_raw_pointers())
+    .function("getScrollBarPositionFromCornerForHorizontal", &ScrollView::getScrollBarPositionFromCornerForHorizontal, allow_raw_pointers())
     .function("scrollToLeft", &ScrollView::scrollToLeft, allow_raw_pointers())
     .function("jumpToPercentBothDirection", &ScrollView::jumpToPercentBothDirection, allow_raw_pointers())
-    .function("stopOverallScroll", &ScrollView::stopOverallScroll, allow_raw_pointers())
+    .function("setScrollBarPositionFromCorner", &ScrollView::setScrollBarPositionFromCorner, allow_raw_pointers())
+    .function("setScrollBarPositionFromCornerForVertical", &ScrollView::setScrollBarPositionFromCornerForVertical, allow_raw_pointers())
+    .function("getScrollBarPositionFromCornerForVertical", &ScrollView::getScrollBarPositionFromCornerForVertical, allow_raw_pointers())
+    .function("setScrollBarEnabled", &ScrollView::setScrollBarEnabled, allow_raw_pointers())
+    .function("jumpToBottomLeft", &ScrollView::jumpToBottomLeft, allow_raw_pointers())
+    .function("getInnerContainer", &ScrollView::getInnerContainer, allow_raw_pointers())
+    .function("jumpToTop", &ScrollView::jumpToTop, allow_raw_pointers())
+    .function("getScrolledPercentVertical", &ScrollView::getScrolledPercentVertical, allow_raw_pointers())
+    .function("isBounceEnabled", &ScrollView::isBounceEnabled, allow_raw_pointers())
+    .function("isScrolling", &ScrollView::isScrolling, allow_raw_pointers())
+    .function("isAutoScrolling", &ScrollView::isAutoScrolling, allow_raw_pointers())
     .function("scrollToPercentVertical", &ScrollView::scrollToPercentVertical, allow_raw_pointers())
     .function("getScrollBarOpacity", &ScrollView::getScrollBarOpacity, allow_raw_pointers())
     .function("scrollToBottomRight", &ScrollView::scrollToBottomRight, allow_raw_pointers())
-    .function("setScrollBarPositionFromCorner", &ScrollView::setScrollBarPositionFromCorner, allow_raw_pointers())
-    .function("setScrollBarPositionFromCornerForVertical", &ScrollView::setScrollBarPositionFromCornerForVertical, allow_raw_pointers())
-    .function("getScrollBarAutoHideTime", &ScrollView::getScrollBarAutoHideTime, allow_raw_pointers())
-    .function("jumpToLeft", &ScrollView::jumpToLeft, allow_raw_pointers())
-    .function("scrollToRight", &ScrollView::scrollToRight, allow_raw_pointers())
-    .function("getScrollBarPositionFromCornerForVertical", &ScrollView::getScrollBarPositionFromCornerForVertical, allow_raw_pointers())
     .function("getScrollBarWidth", &ScrollView::getScrollBarWidth, allow_raw_pointers())
-    .function("isScrollBarAutoHideEnabled", &ScrollView::isScrollBarAutoHideEnabled, allow_raw_pointers())
-    .function("jumpToBottomLeft", &ScrollView::jumpToBottomLeft, allow_raw_pointers())
-    .function("jumpToRight", &ScrollView::jumpToRight, allow_raw_pointers())
+    .function("scrollToTop", &ScrollView::scrollToTop, allow_raw_pointers())
+    .function("scrollToRight", &ScrollView::scrollToRight, allow_raw_pointers())
+    .function("scrollToPercentHorizontal", &ScrollView::scrollToPercentHorizontal, allow_raw_pointers())
+    .function("getScrolledPercentBothDirection", &ScrollView::getScrolledPercentBothDirection, allow_raw_pointers())
+    .function("setScrollBarColor", &ScrollView::setScrollBarColor, allow_raw_pointers())
+    .function("setDirection", &ScrollView::setDirection, allow_raw_pointers())
+    .function("getInnerContainerPosition", &ScrollView::getInnerContainerPosition, allow_raw_pointers())
+    .function("setInnerContainerSize", &ScrollView::setInnerContainerSize, allow_raw_pointers())
     .function("getInnerContainerSize", &ScrollView::getInnerContainerSize, allow_raw_pointers())
+    .function("addEventListener", &ScrollView::addEventListener, allow_raw_pointers())
+    .function("jumpToTopLeft", &ScrollView::jumpToTopLeft, allow_raw_pointers())
+    .function("setScrollBarOpacity", &ScrollView::setScrollBarOpacity, allow_raw_pointers())
+    .function("setScrollBarWidth", &ScrollView::setScrollBarWidth, allow_raw_pointers())
     .function("jumpToPercentHorizontal", &ScrollView::jumpToPercentHorizontal, allow_raw_pointers())
+    .function("isScrollBarAutoHideEnabled", &ScrollView::isScrollBarAutoHideEnabled, allow_raw_pointers())
+    .function("getScrollBarAutoHideTime", &ScrollView::getScrollBarAutoHideTime, allow_raw_pointers())
     .function("ctor", &cc_bindings_ctor<ScrollView>, allow_raw_pointers())
     .class_function("create", &ScrollView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
@@ -597,16 +567,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .constructor<>()
     .function("setPercent", &Slider::setPercent, allow_raw_pointers())
     .function("getMaxPercent", &Slider::getMaxPercent, allow_raw_pointers())
-    .function("loadSlidBallTextureNormal", &Slider::loadSlidBallTextureNormal, allow_raw_pointers())
-    .function("loadSlidBallTextureNormal", optional_override(
-        [](Slider& this_, const std::string& arg0){
-        return this_.loadSlidBallTextureNormal(arg0);
-      }), allow_raw_pointers())
-    .function("loadProgressBarTexture", &Slider::loadProgressBarTexture, allow_raw_pointers())
-    .function("loadProgressBarTexture", optional_override(
-        [](Slider& this_, const std::string& arg0){
-        return this_.loadProgressBarTexture(arg0);
-      }), allow_raw_pointers())
+    .function("loadSlidBallTextureNormal", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::loadSlidBallTextureNormal), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
+    .function("loadProgressBarTexture", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::loadProgressBarTexture), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getBallNormalFile", &Slider::getBallNormalFile, allow_raw_pointers())
     .function("getSlidBallDisabledRenderer", &Slider::getSlidBallDisabledRenderer, allow_raw_pointers())
     .function("setScale9Enabled", &Slider::setScale9Enabled, allow_raw_pointers())
@@ -629,32 +593,23 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getSlidBallRenderer", &Slider::getSlidBallRenderer, allow_raw_pointers())
     .function("addEventListener", &Slider::addEventListener, allow_raw_pointers())
     .function("setMaxPercent", &Slider::setMaxPercent, allow_raw_pointers())
-    .function("loadBarTexture", &Slider::loadBarTexture, allow_raw_pointers())
-    .function("loadBarTexture", optional_override(
-        [](Slider& this_, const std::string& arg0){
-        return this_.loadBarTexture(arg0);
-      }), allow_raw_pointers())
+    .function("loadBarTexture", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::loadBarTexture), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getProgressBarFile", &Slider::getProgressBarFile, allow_raw_pointers())
     .function("getCapInsetsBarRenderer", &Slider::getCapInsetsBarRenderer, allow_raw_pointers())
     .function("updateVisualSlider", &Slider::updateVisualSlider, allow_raw_pointers())
     .function("getCapInsetsProgressBarRenderer", &Slider::getCapInsetsProgressBarRenderer, allow_raw_pointers())
     .function("getSlidBallPressedRenderer", &Slider::getSlidBallPressedRenderer, allow_raw_pointers())
-    .function("loadSlidBallTexturePressed", &Slider::loadSlidBallTexturePressed, allow_raw_pointers())
-    .function("loadSlidBallTexturePressed", optional_override(
-        [](Slider& this_, const std::string& arg0){
-        return this_.loadSlidBallTexturePressed(arg0);
-      }), allow_raw_pointers())
+    .function("loadSlidBallTexturePressed", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::loadSlidBallTexturePressed), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getBackFile", &Slider::getBackFile, allow_raw_pointers())
     .function("isScale9Enabled", &Slider::isScale9Enabled, allow_raw_pointers())
     .function("getBallDisabledFile", &Slider::getBallDisabledFile, allow_raw_pointers())
     .function("setCapInsetsBarRenderer", &Slider::setCapInsetsBarRenderer, allow_raw_pointers())
     .function("setZoomScale", &Slider::setZoomScale, allow_raw_pointers())
     .function("setCapInsets", &Slider::setCapInsets, allow_raw_pointers())
-    .function("loadSlidBallTextureDisabled", &Slider::loadSlidBallTextureDisabled, allow_raw_pointers())
-    .function("loadSlidBallTextureDisabled", optional_override(
-        [](Slider& this_, const std::string& arg0){
-        return this_.loadSlidBallTextureDisabled(arg0);
-      }), allow_raw_pointers())
+    .function("loadSlidBallTextureDisabled", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::loadSlidBallTextureDisabled), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getSlidBallNormalRenderer", &Slider::getSlidBallNormalRenderer, allow_raw_pointers())
     .function("getPercent", &Slider::getPercent, allow_raw_pointers())
     .function("ctor", &cc_bindings_ctor<Slider>, allow_raw_pointers())
@@ -1140,11 +1095,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setString", &EditBox::setText, allow_raw_pointers())
     .function("setCapInsetsDisabledRenderer", &EditBox::setCapInsetsDisabledRenderer, allow_raw_pointers())
     .function("setPlaceholderFontSize", &EditBox::setPlaceholderFontSize, allow_raw_pointers())
-    .function("loadTextureDisabled", &EditBox::loadTextureDisabled, allow_raw_pointers())
-    .function("loadTextureDisabled", optional_override(
-        [](EditBox& this_, const std::string& arg0){
-        return this_.loadTextureDisabled(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureDisabled", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::loadTextureDisabled), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("setInputMode", &EditBox::setInputMode, allow_raw_pointers())
     .function("setPlaceholderFontColor", select_overload<void(const cocos2d::Color4B&)>(&EditBox::setPlaceholderFontColor), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -1153,11 +1105,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     // TODO: Only support function overloading with different number of parameters
     .function("getFontName", &EditBox::getFontName, allow_raw_pointers())
     .function("setCapInsetsNormalRenderer", &EditBox::setCapInsetsNormalRenderer, allow_raw_pointers())
-    .function("loadTexturePressed", &EditBox::loadTexturePressed, allow_raw_pointers())
-    .function("loadTexturePressed", optional_override(
-        [](EditBox& this_, const std::string& arg0){
-        return this_.loadTexturePressed(arg0);
-      }), allow_raw_pointers())
+    .function("loadTexturePressed", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::loadTexturePressed), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getFontColor", &EditBox::getFontColor, allow_raw_pointers())
     .function("getInputFlag", &EditBox::getInputFlag, allow_raw_pointers())
     .function("initWithSizeAndTexture", &EditBox::initWithSizeAndTexture, allow_raw_pointers())
@@ -1188,11 +1137,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setPlaceHolder", &EditBox::setPlaceHolder, allow_raw_pointers())
     .function("setInputFlag", &EditBox::setInputFlag, allow_raw_pointers())
     .function("setReturnType", &EditBox::setReturnType, allow_raw_pointers())
-    .function("loadTextureNormal", &EditBox::loadTextureNormal, allow_raw_pointers())
-    .function("loadTextureNormal", optional_override(
-        [](EditBox& this_, const std::string& arg0){
-        return this_.loadTextureNormal(arg0);
-      }), allow_raw_pointers())
+    .function("loadTextureNormal", select_overload<void(const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::loadTextureNormal), allow_raw_pointers())
+    // TODO: Only support function overloading with different number of parameters
     .function("getMaxLength", &EditBox::getMaxLength, allow_raw_pointers())
     .function("setCapInsetsPressedRenderer", &EditBox::setCapInsetsPressedRenderer, allow_raw_pointers())
     .function("setPlaceholderFont", &EditBox::setPlaceholderFont, allow_raw_pointers())
@@ -1293,26 +1239,26 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     ;
 
   class_<TabControl, base<Widget>>("ccui.TabControl")
-    .function("setHeaderWidth", &TabControl::setHeaderWidth, allow_raw_pointers())
-    .function("removeTab", &TabControl::removeTab, allow_raw_pointers())
-    .function("getTabCount", &TabControl::getTabCount, allow_raw_pointers())
-    .function("getHeaderDockPlace", &TabControl::getHeaderDockPlace, allow_raw_pointers())
-    .function("getSelectedTabIndex", &TabControl::getSelectedTabIndex, allow_raw_pointers())
-    .function("insertTab", &TabControl::insertTab, allow_raw_pointers())
-    .function("ignoreHeadersTextureSize", &TabControl::ignoreHeadersTextureSize, allow_raw_pointers())
-    .function("getHeaderWidth", &TabControl::getHeaderWidth, allow_raw_pointers())
     .function("setHeaderDockPlace", &TabControl::setHeaderDockPlace, allow_raw_pointers())
+    .function("ignoreHeadersTextureSize", &TabControl::ignoreHeadersTextureSize, allow_raw_pointers())
+    .function("setHeaderSelectedZoom", &TabControl::setHeaderSelectedZoom, allow_raw_pointers())
+    .function("indexOfTabHeader", &TabControl::indexOfTabHeader, allow_raw_pointers())
+    .function("getHeaderHeight", &TabControl::getHeaderHeight, allow_raw_pointers())
+    .function("getTabCount", &TabControl::getTabCount, allow_raw_pointers())
+    .function("insertTab", &TabControl::insertTab, allow_raw_pointers())
+    .function("getHeaderSelectedZoom", &TabControl::getHeaderSelectedZoom, allow_raw_pointers())
+    .function("setTabChangedEventListener", &TabControl::setTabChangedEventListener, allow_raw_pointers())
+    .function("getTabContainer", &TabControl::getTabContainer, allow_raw_pointers())
+    .function("removeTab", &TabControl::removeTab, allow_raw_pointers())
+    .function("getHeaderWidth", &TabControl::getHeaderWidth, allow_raw_pointers())
     .function("setSelectTab", select_overload<void(cocos2d::ui::TabHeader*)>(&TabControl::setSelectTab), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
+    .function("setHeaderHeight", &TabControl::setHeaderHeight, allow_raw_pointers())
+    .function("setHeaderWidth", &TabControl::setHeaderWidth, allow_raw_pointers())
+    .function("getHeaderDockPlace", &TabControl::getHeaderDockPlace, allow_raw_pointers())
+    .function("getSelectedTabIndex", &TabControl::getSelectedTabIndex, allow_raw_pointers())
     .function("getTabHeader", &TabControl::getTabHeader, allow_raw_pointers())
     .function("isIgnoreHeadersTextureSize", &TabControl::isIgnoreHeadersTextureSize, allow_raw_pointers())
-    .function("setTabChangedEventListener", &TabControl::setTabChangedEventListener, allow_raw_pointers())
-    .function("setHeaderSelectedZoom", &TabControl::setHeaderSelectedZoom, allow_raw_pointers())
-    .function("setHeaderHeight", &TabControl::setHeaderHeight, allow_raw_pointers())
-    .function("indexOfTabHeader", &TabControl::indexOfTabHeader, allow_raw_pointers())
-    .function("getTabContainer", &TabControl::getTabContainer, allow_raw_pointers())
-    .function("getHeaderSelectedZoom", &TabControl::getHeaderSelectedZoom, allow_raw_pointers())
-    .function("getHeaderHeight", &TabControl::getHeaderHeight, allow_raw_pointers())
     .class_function("create", &TabControl::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TabControl& _) -> std::string {return "TabControl";}))    
     // TODO: assign cc.Class.extend to ccui.TabControl.extend
