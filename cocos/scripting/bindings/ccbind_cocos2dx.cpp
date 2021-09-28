@@ -4233,4 +4233,5 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<ComponentJS, base<Component>>("cc.ComponentJS")
     .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
-    ;}
+    ;
+}

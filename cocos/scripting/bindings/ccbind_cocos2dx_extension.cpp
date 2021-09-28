@@ -6,6 +6,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocos2d::extension;
 
 COCOS_BINDINGS(ccbind_cocos2dx_extension) {
 
@@ -255,7 +256,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
         [](ScrollView& this_, cocos2d::Size arg0){
         return this_.initWithViewSize(arg0);
       }))
-    .function("pause", &ScrollView::pause, allow_raw_pointers())
+    .function("pause", select_overload<void (Ref* sender)>(&ScrollView::pause), allow_raw_pointers())
     .function("setDirection", &ScrollView::setDirection)
     .function("stopAnimatedContentOffset", &ScrollView::stopAnimatedContentOffset)
     .function("setContentOffset", &ScrollView::setContentOffset)
@@ -268,7 +269,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("isBounceable", &ScrollView::isBounceable)
     .function("setTouchEnabled", &ScrollView::setTouchEnabled)
     .function("getContentOffset", &ScrollView::getContentOffset)
-    .function("resume", &ScrollView::resume, allow_raw_pointers())
+    .function("resume", select_overload<void (Ref* sender)>(&ScrollView::resume), allow_raw_pointers())
     .function("setClippingToBounds", &ScrollView::setClippingToBounds)
     .function("setViewSize", &ScrollView::setViewSize)
     .function("getViewSize", &ScrollView::getViewSize)
@@ -371,4 +372,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
   class_<EventListenerAssetsManagerEx, base<EventListenerCustom>>("cc.EventListenerAssetsManager")
     .constructor<>()
     .property("_className",  optional_override([](const EventListenerAssetsManagerEx& _) -> std::string {return "EventListenerAssetsManagerEx";}))    
-    ;}
+    ;
+}

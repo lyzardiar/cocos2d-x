@@ -2,12 +2,13 @@
 #include "scripting/bindings/ccbind_cocos2dx_studio.hpp"
 #include "editor-support/cocostudio/CocoStudio.h"
 #include "editor-support/cocostudio/CCComExtensionData.h"
-#include "scripting/js-bindings/manual/cocostudio/jsb_cocos2dx_studio_conversions.h"
 
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocostudio;
+using namespace cocostudio::timeline;
 
 COCOS_BINDINGS(ccbind_cocos2dx_studio) {
 
@@ -123,7 +124,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     .constructor<>()
     .function("getAnimation", &Tween::getAnimation, allow_raw_pointers())
     .function("gotoAndPause", &Tween::gotoAndPause)
-    .function("play", &Tween::play, allow_raw_pointers())
+    .function("play", select_overload<void (MovementBoneData *, int, int, int, int)>(&Tween::play), allow_raw_pointers())
     .function("gotoAndPlay", &Tween::gotoAndPlay)
     .function("init", &Tween::init, allow_raw_pointers())
     .function("setAnimation", &Tween::setAnimation, allow_raw_pointers())
@@ -220,7 +221,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     // TODO: Only support function overloading with different number of parameters
     .function("setIgnoreMovementBoneData", &Bone::setIgnoreMovementBoneData)
     .function("getBlendFunc", &Bone::getBlendFunc)
-    .function("removeFromParent", &Bone::removeFromParent)
+    .function("removeFromParent", select_overload<void (bool)>(&Bone::removeFromParent))
     .function("getColliderDetector", &Bone::getColliderDetector, allow_raw_pointers())
     .function("getChildArmature", &Bone::getChildArmature, allow_raw_pointers())
     .function("changeDisplayWithIndex", &Bone::changeDisplayWithIndex)
@@ -246,7 +247,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
   class_<ArmatureAnimation, base<ProcessBase>>("ccs.ArmatureAnimation")
     .constructor<>()
     .function("getSpeedScale", &ArmatureAnimation::getSpeedScale)
-    .function("play", &ArmatureAnimation::play)
+    .function("play", select_overload<void (const std::string&, int, int)>(&ArmatureAnimation::play))
     .function("play", optional_override(
         [](ArmatureAnimation& this_, const std::string& arg0){
         return this_.play(arg0);
@@ -489,7 +490,6 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
 
 
   class_<Frame>("ccs.Frame")
-    .constructor<>()
     .function("clone", &Frame::clone, allow_raw_pointers())
     .function("setTweenType", &Frame::setTweenType)
     .function("setNode", &Frame::setNode, allow_raw_pointers())
@@ -776,4 +776,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     .function("setCustomProperty", &ComExtensionData::setCustomProperty)
     .class_function("create", &ComExtensionData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ComExtensionData& _) -> std::string {return "ComExtensionData";}))    
-    ;}
+    ;
+}

@@ -1,12 +1,12 @@
 #include "scripting/bindings/CCScriptBindings.h"
 #include "scripting/bindings/ccbind_cocos2dx_spine.hpp"
 #include "editor-support/spine/spine-cocos2dx.h"
-#include "scripting/js-bindings/manual/spine/jsb_cocos2dx_spine_manual.h"
 
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace spine;
 
 COCOS_BINDINGS(ccbind_cocos2dx_spine) {
 
@@ -102,4 +102,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_spine) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const SkeletonAnimation& _) -> std::string {return "SkeletonAnimation";}))    
     // TODO: assign cc.Class.extend to sp.SkeletonAnimation.extend
-    ;}
+    ;
+}

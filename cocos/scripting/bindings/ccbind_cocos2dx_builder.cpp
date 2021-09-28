@@ -6,6 +6,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocosbuilder;
 
 COCOS_BINDINGS(ccbind_cocos2dx_builder) {
 
@@ -75,4 +76,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_builder) {
     .function("getNodesWithAnimationManagers", &CCBReader::getNodesWithAnimationManagers)
     .class_function("setResolutionScale", &CCBReader::setResolutionScale, allow_raw_pointers())
     .property("_className",  optional_override([](const CCBReader& _) -> std::string {return "CCBReader";}))    
-    ;}
+    ;
+}

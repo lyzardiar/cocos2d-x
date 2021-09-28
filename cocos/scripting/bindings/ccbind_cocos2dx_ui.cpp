@@ -7,6 +7,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
+using namespace cocos2d::ui;
 
 COCOS_BINDINGS(ccbind_cocos2dx_ui) {
 
@@ -497,8 +498,8 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getScrollDuration", &ListView::getScrollDuration)
     .function("getMagneticAllowedOutOfBoundary", &ListView::getMagneticAllowedOutOfBoundary)
     .function("getItemsMargin", &ListView::getItemsMargin)
-    .function("scrollToItem", select_overload<void(int, const cocos2d::Vec2&, const cocos2d::Vec2&, float)>(&ListView::scrollToItem))
-    .function("scrollToItem", select_overload<void(int, const cocos2d::Vec2&, const cocos2d::Vec2&)>(&ListView::scrollToItem))
+    .function("scrollToItem", select_overload<void(ssize_t, const cocos2d::Vec2&, const cocos2d::Vec2&, float)>(&ListView::scrollToItem))
+    .function("scrollToItem", select_overload<void(ssize_t, const cocos2d::Vec2&, const cocos2d::Vec2&)>(&ListView::scrollToItem))
     .function("jumpToItem", &ListView::jumpToItem)
     .function("setTopPadding", &ListView::setTopPadding)
     .function("getIndex", &ListView::getIndex, allow_raw_pointers())
@@ -507,7 +508,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("insertDefaultItem", &ListView::insertDefaultItem)
     .function("setMagneticType", &ListView::setMagneticType)
     .function("setMagneticAllowedOutOfBoundary", &ListView::setMagneticAllowedOutOfBoundary)
-    .function("addEventListener", &ListView::addEventListener)
+    .function("addEventListener", select_overload<void (const ListView::ccListViewCallback&)>(&ListView::addEventListener))
     .function("doLayout", &ListView::doLayout)
     .function("getTopmostItemInCurrentView", &ListView::getTopmostItemInCurrentView, allow_raw_pointers())
     .function("setPadding", &ListView::setPadding)
@@ -702,7 +703,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setIndicatorIndexNodesScale", &PageView::setIndicatorIndexNodesScale)
     .function("setIndicatorEnabled", &PageView::setIndicatorEnabled)
     .function("setIndicatorSelectedIndexColor", &PageView::setIndicatorSelectedIndexColor)
-    .function("addEventListener", &PageView::addEventListener)
+    .function("addEventListener", select_overload<void (const PageView::ccPageViewCallback&)>(&PageView::addEventListener))
     .function("getIndicatorPosition", &PageView::getIndicatorPosition)
     .function("setCurrentPageIndex", &PageView::setCurrentPageIndex)
     .function("getIndicatorIndexNodesColor", &PageView::getIndicatorIndexNodesColor)
@@ -710,11 +711,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getIndicatorIndexNodesScale", &PageView::getIndicatorIndexNodesScale)
     .function("setIndicatorPosition", &PageView::setIndicatorPosition)
     .function("getIndicatorSelectedIndexOpacity", &PageView::getIndicatorSelectedIndexOpacity)
-    .function("scrollToPage", select_overload<void(int, float)>(&PageView::scrollToPage))
-    .function("scrollToPage", select_overload<void(int)>(&PageView::scrollToPage))
+    .function("scrollToPage", select_overload<void(ssize_t, float)>(&PageView::scrollToPage))
+    .function("scrollToPage", select_overload<void(ssize_t)>(&PageView::scrollToPage))
     .function("setIndicatorPositionAsAnchorPoint", &PageView::setIndicatorPositionAsAnchorPoint)
-    .function("scrollToItem", select_overload<void(int, float)>(&PageView::scrollToItem))
-    .function("scrollToItem", select_overload<void(int)>(&PageView::scrollToItem))
+    .function("scrollToItem", select_overload<void(ssize_t, float)>(&PageView::scrollToItem))
+    .function("scrollToItem", select_overload<void(ssize_t)>(&PageView::scrollToItem))
     .function("setIndicatorIndexNodesColor", &PageView::setIndicatorIndexNodesColor)
     .function("getIndicatorIndexNodesOpacity", &PageView::getIndicatorIndexNodesOpacity)
     .function("getIndicatorPositionAsAnchorPoint", &PageView::getIndicatorPositionAsAnchorPoint)
@@ -1011,7 +1012,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("init", select_overload<bool(cocos2d::Sprite*, const cocos2d::Rect&, bool, const cocos2d::Vec2&, const cocos2d::Size&, const cocos2d::Rect&)>(&Scale9Sprite::init), allow_raw_pointers())
     .function("setPreferredSize", &Scale9Sprite::setPreferredSize)
     .function("copyTo", &Scale9Sprite::copyTo, allow_raw_pointers())
-    .function("setSpriteFrame", &Scale9Sprite::setSpriteFrame, allow_raw_pointers())
+    .function("setSpriteFrame", select_overload<void (SpriteFrame *, const Rect&)>(&Scale9Sprite::setSpriteFrame), allow_raw_pointers())
     .function("getState", &Scale9Sprite::getState)
     .function("getInsetBottom", &Scale9Sprite::getInsetBottom)
     .function("setScale9Enabled", &Scale9Sprite::setScale9Enabled)
@@ -1024,7 +1025,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("initWithFile", select_overload<bool(const std::string&, const cocos2d::Rect&, const cocos2d::Rect&)>(&Scale9Sprite::initWithFile))
     .function("getInsetTop", &Scale9Sprite::getInsetTop)
     .function("setInsetLeft", &Scale9Sprite::setInsetLeft)
-    .function("initWithSpriteFrame", &Scale9Sprite::initWithSpriteFrame, allow_raw_pointers())
+    .function("initWithSpriteFrame", select_overload<bool (SpriteFrame*, const Rect&)>(&Scale9Sprite::initWithSpriteFrame), allow_raw_pointers())
     .function("getPreferredSize", &Scale9Sprite::getPreferredSize)
     .function("setCapInsets", &Scale9Sprite::setCapInsets)
     .function("getInsetLeft", &Scale9Sprite::getInsetLeft)
@@ -1250,4 +1251,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .class_function("create", &ScrollViewBar::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollViewBar& _) -> std::string {return "ScrollViewBar";}))    
     // TODO: assign cc.Class.extend to ccui.ScrollViewBar.extend
-    ;}
+    ;
+}
