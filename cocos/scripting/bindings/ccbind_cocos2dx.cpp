@@ -2874,7 +2874,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     ;
 
 
-  class_<ParticleSystemQuad, base<ParticleSystem>>("cc.ParticleSystem")
+  class_<ParticleSystemQuad, base<ParticleSystem>>("cc.ParticleSystemQuad")
     .constructor<>()
     .function("setDisplayFrame", &ParticleSystemQuad::setDisplayFrame, allow_raw_pointers())
     .function("setTextureWithRect", &ParticleSystemQuad::setTextureWithRect, allow_raw_pointers())
@@ -3851,12 +3851,19 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<SAXParser>("cc.PlistParser")
     .function("init", &SAXParser::init, allow_raw_pointers())
+    // TODO: temp function before fully rewrite cocos2d_specifics.cpp
+    .class_function("getInstance", optional_override([](){
+      static SAXParser instance_;
+      return &instance_;
+    }), allow_raw_pointers())
     .property("_className",  optional_override([](const SAXParser& _) -> std::string {return "SAXParser";}))    
     ;
 
   class_<Application>("cc.Application")
     .function("getTargetPlatform", &Application::getTargetPlatform)
-    .function("getCurrentLanguage", &Application::getCurrentLanguage)
+    .function("getCurrentLanguage", optional_override([](Application& this_) {
+      return (int)this_.getCurrentLanguage();
+    }))
     .function("openURL", &Application::openURL)
     .function("getVersion", &Application::getVersion)
     .class_function("getInstance", &Application::getInstance, allow_raw_pointers())
@@ -4230,8 +4237,8 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .class_function("getInstance", &SimpleAudioEngine::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const SimpleAudioEngine& _) -> std::string {return "SimpleAudioEngine";}))    
     ;
-
-  class_<ComponentJS, base<Component>>("cc.ComponentJS")
-    .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
-    ;
+  // TODO: 
+  // class_<ComponentJS, base<Component>>("cc.ComponentJS")
+  //   .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
+  //   ;
 }
