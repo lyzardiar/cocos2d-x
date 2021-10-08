@@ -485,18 +485,8 @@ JS_BINDED_CONSTRUCTOR_IMPL(MinXmlHttpRequest)
     JS::RootedObject obj(cx, JS_NewObject(cx, &MinXmlHttpRequest::js_class, proto, parentProto));
     js_proxy_t *p = jsb_new_proxy(req, obj);
 
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    CC_UNUSED_PARAM(p);
-    js_add_FinalizeHook(cx, obj, true);
-    // don't retain it, already retained
-#if COCOS2D_DEBUG > 1
-    CCLOG("++++++RETAINED++++++ Cpp(XMLHttpRequest): %p - JS: %p", req, obj.get());
-#endif // COCOS2D_DEBUG
-#else
-    // autorelease it
     req->autorelease();
     JS::AddNamedObjectRoot(cx, &p->obj, "XMLHttpRequest");
-#endif
 
     jsval out;
     if (obj)

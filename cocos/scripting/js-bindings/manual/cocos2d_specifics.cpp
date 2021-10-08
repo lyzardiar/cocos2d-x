@@ -2214,14 +2214,12 @@ bool js_forceGC(JSContext *cx, uint32_t argc, jsval *vp) {
 bool js_cocos2dx_retain(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-#if ! CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     js_proxy_t *proxy = jsb_get_js_proxy(obj);
     cocos2d::Ref* cobj = (cocos2d::Ref *)(proxy ? proxy->ptr : nullptr);
     JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_retain : Invalid Native Object");
 
     cobj->retain();
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     args.rval().setUndefined();
     return true;
 }
@@ -2229,14 +2227,12 @@ bool js_cocos2dx_retain(JSContext *cx, uint32_t argc, jsval *vp)
 bool js_cocos2dx_release(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-#if ! CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     js_proxy_t *proxy = jsb_get_js_proxy(obj);
     cocos2d::Ref* cobj = (cocos2d::Ref *)(proxy ? proxy->ptr : nullptr);
     JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_release : Invalid Native Object");
 
     cobj->release();
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     args.rval().setUndefined();
     return true;
 }
@@ -2594,9 +2590,7 @@ bool js_cocos2dx_ActionInterval_repeat(JSContext *cx, uint32_t argc, jsval *vp)
 
         cocos2d::Repeat* action = new (std::nothrow) cocos2d::Repeat;
         action->initWithAction(cobj, timesInt);
-#if !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         action->autorelease();
-#endif
         jsb_ref_rebind(cx, obj, proxy, cobj, action, "cocos2d::Repeat");
 
         args.rval().set(OBJECT_TO_JSVAL(obj));
@@ -2618,9 +2612,7 @@ bool js_cocos2dx_ActionInterval_repeatForever(JSContext *cx, uint32_t argc, jsva
     if (argc == 0) {
         cocos2d::RepeatForever* action = new (std::nothrow) cocos2d::RepeatForever;
         action->initWithAction(cobj);
-#if !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         action->autorelease();
-#endif
         jsb_ref_rebind(cx, jsobj, proxy, cobj, action, "cocos2d::RepeatForever");
         args.rval().set(OBJECT_TO_JSVAL(jsobj));
         return true;
@@ -2651,9 +2643,7 @@ bool js_cocos2dx_ActionInterval_speed(JSContext *cx, uint32_t argc, jsval *vp)
 
         cocos2d::Speed* action = new (std::nothrow) cocos2d::Speed;
         action->initWithAction(cobj, speed);
-#if !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         action->autorelease();
-#endif
         jsb_ref_rebind(cx, obj, proxy, cobj, action, "cocos2d::Speed");
 
         args.rval().set(OBJECT_TO_JSVAL(obj));
@@ -2969,9 +2959,8 @@ bool js_cocos2dx_ActionInterval_easing(JSContext *cx, uint32_t argc, jsval *vp)
         }
     } while (false);
 
-#if !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     newAction->autorelease();
-#endif
+
     // Unbind existing proxy binding with cobj, and rebind with the new action
     jsb_ref_rebind(cx, jsobj, proxy, oldAction, newAction, "cocos2d::EaseAction");
 
@@ -6019,14 +6008,6 @@ void register_cocos2dx_js_core(JSContext* cx, JS::HandleObject global)
     JS::RootedObject tmpObj(cx);
     get_or_create_js_obj(cx, global, "cc", &ccObj);
     get_or_create_js_obj(cx, global, "jsb", &jsbObj);
-
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    JS::RootedValue trueVal(cx, JSVAL_TRUE);
-    JS_SetProperty(cx, jsbObj, "ENABLE_GC_FOR_NATIVE_OBJECTS", trueVal);
-#else
-    JS::RootedValue falseVal(cx, JSVAL_FALSE);
-    JS_SetProperty(cx, jsbObj, "ENABLE_GC_FOR_NATIVE_OBJECTS", falseVal);
-#endif
 
     // Memory management related
     jsb_register_RefFinalizeHook(cx, jsbObj);

@@ -80,9 +80,6 @@ ComponentJS::ComponentJS(const std::string& scriptFileName)
         js_proxy_t* nproxy = jsb_get_native_proxy(this);
         if (nproxy)
         {
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-            JS::RemoveObjectRoot(cx, &nproxy->obj);
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
             JS::RootedObject nobj(cx, nproxy->obj);
             jsb_remove_proxy(nproxy, jsb_get_js_proxy(nobj));
         }

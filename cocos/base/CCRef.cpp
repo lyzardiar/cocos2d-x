@@ -70,7 +70,6 @@ Ref::~Ref()
         // if the object is referenced by Lua engine, remove it
         pEngine->removeScriptObjectByObject(this);
     }
-#if !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     else
     {
         if (pEngine != nullptr && pEngine->getScriptType() == kScriptTypeJavascript)
@@ -78,7 +77,6 @@ Ref::~Ref()
             pEngine->removeScriptObjectByObject(this);
         }
     }
-#endif // !CC_ENABLE_GC_FOR_NATIVE_OBJECTS
 #endif // CC_ENABLE_SCRIPT_BINDING
 
 

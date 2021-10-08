@@ -523,15 +523,13 @@ public:
     
     /**
      * Roots the associated JSObj.
-     * The GC won't collected rooted objects. This function is only called
-     * when compiled with CC_ENABLE_GC_FOR_NATIVE_OBJECTS=1
+     * The GC won't collected rooted objects.
      */
     virtual void rootObject(cocos2d::Ref* ref) override;
     /**
      * Unroots the associated JSObj.
      * The GC will collect this object the next time the GC
      * is called.
-     * This function is only called when compiled with CC_ENABLE_GC_FOR_NATIVE_OBJECTS=1
      */
     virtual void unrootObject(cocos2d::Ref* ref) override;
     
@@ -661,7 +659,7 @@ JSObject* jsb_ref_autoreleased_create_jsobject(JSContext *cx, cocos2d::Ref *ref,
 /**
  * It will try to get the associated JSObjct for the native object.
  * The reference created from JSObject to native object is weak because it won't retain it.
- * The behavior is exactly the same with 'jsb_ref_create_jsobject' when CC_ENABLE_GC_FOR_NATIVE_OBJECTS deactivated.
+ * The behavior is exactly the same with 'jsb_ref_create_jsobject'.
  */
 JSObject* jsb_create_weak_jsobject(JSContext *cx, void *native, js_type_class_t *typeClass, const char* debug);
 
@@ -683,7 +681,7 @@ JSObject* jsb_ref_autoreleased_get_or_create_jsobject(JSContext *cx, cocos2d::Re
  * It will try to get the associated JSObjct for the native object.
  * If it can't find it, it will create a new one associating it to the native object.
  * The reference created from JSObject to native object is weak because it won't retain it.
- * The behavior is exactly the same with 'jsb_ref_get_or_create_jsobject' when CC_ENABLE_GC_FOR_NATIVE_OBJECTS deactivated.
+ * The behavior is exactly the same with 'jsb_ref_get_or_create_jsobject'.
  */
 CC_JS_DLL JSObject* jsb_get_or_create_weak_jsobject(JSContext *cx, void *native, js_type_class_t *typeClass, const char* debug=nullptr);
 

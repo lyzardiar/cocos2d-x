@@ -882,14 +882,7 @@ void Director::replaceScene(Scene *scene)
     ssize_t index = _scenesStack.size() - 1;
 
     _sendCleanupToScene = true;
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-    if (sEngine)
-    {
-        sEngine->retainScriptObject(this, scene);
-        sEngine->releaseScriptObject(this, _scenesStack.at(index));
-    }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+
     _scenesStack.replace(index, scene);
 
     _nextScene = scene;
@@ -900,14 +893,6 @@ void Director::pushScene(Scene *scene)
     CCASSERT(scene, "the scene should not null");
 
     _sendCleanupToScene = false;
-
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-    if (sEngine)
-    {
-        sEngine->retainScriptObject(this, scene);
-    }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.pushBack(scene);
     _nextScene = scene;
 }
@@ -916,13 +901,6 @@ void Director::popScene()
 {
     CCASSERT(_runningScene != nullptr, "running scene should not null");
     
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-    if (sEngine)
-    {
-        sEngine->releaseScriptObject(this, _scenesStack.back());
-    }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.popBack();
     ssize_t c = _scenesStack.size();
 
@@ -961,13 +939,6 @@ void Director::popToSceneStackLevel(int level)
     auto firstOnStackScene = _scenesStack.back();
     if (firstOnStackScene == _runningScene)
     {
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-        if (sEngine)
-        {
-            sEngine->releaseScriptObject(this, _scenesStack.back());
-        }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _scenesStack.popBack();
         --c;
     }
@@ -983,13 +954,6 @@ void Director::popToSceneStackLevel(int level)
         }
 
         current->cleanup();
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-        if (sEngine)
-        {
-            sEngine->releaseScriptObject(this, _scenesStack.back());
-        }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _scenesStack.popBack();
         --c;
     }
@@ -1012,18 +976,8 @@ void Director::restart()
 
 void Director::reset()
 {
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    
     if (_runningScene)
     {
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        if (sEngine)
-        {
-            sEngine->releaseScriptObject(this, _runningScene);
-        }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _runningScene->onExit();
         _runningScene->cleanup();
         _runningScene->release();
@@ -1055,17 +1009,6 @@ void Director::reset()
     
     // remove all objects, but don't release it.
     // runWithScene might be executed after 'end'.
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    if (sEngine)
-    {
-        for (const auto &scene : _scenesStack)
-        {
-            if (scene)
-                sEngine->releaseScriptObject(this, scene);
-        }
-    }
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-
     while (!_scenesStack.empty())
     {
         _scenesStack.popBack();

@@ -75,10 +75,6 @@
 #define TRACE_DEBUGGER_SERVER(...)
 #endif // #if COCOS2D_DEBUG
 
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-#error "The functionality of JS controls C++ object's lifecycle isn't stable enough, please don't enable it now."
-#endif
-
 #define BYTE_CODE_FILE_EXT ".jsc"
 
 using namespace cocos2d;
@@ -234,9 +230,8 @@ void removeJSObject(JSContext* cx, cocos2d::Ref* nativeObj)
     auto proxy = jsb_get_native_proxy(nativeObj);
     if (proxy)
     {
-#if ! CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         JS::RemoveObjectRoot(cx, &proxy->obj);
-#endif
+
         // remove the proxy here, since this was a "stack" object, not heap
         // when js_finalize will be called, it will fail, but
         // the correct solution is to have a new finalize for event
@@ -1808,9 +1803,8 @@ void ScriptingCore::removeObjectProxy(Ref* obj)
     auto proxy = jsb_get_native_proxy(obj);
     if (proxy)
     {
-#if ! CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         JS::RemoveObjectRoot(_cx, &proxy->obj);
-#endif
+
         // remove the proxy here, since this was a "stack" object, not heap
         // when js_finalize will be called, it will fail, but
         // the correct solution is to have a new finalize for event
@@ -2311,18 +2305,7 @@ JSObject* jsb_create_weak_jsobject(JSContext *cx, void *native, js_type_class_t 
     JS::RootedObject jsObj(cx, JS_NewObject(cx, typeClass->jsclass, proto, parent));
     auto proxy = jsb_new_proxy(native, jsObj);
     js_add_FinalizeHook(cx, jsObj, false);
-
-#if ! CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     JS::AddNamedObjectRoot(cx, &proxy->obj, debug);
-#else
-    CC_UNUSED_PARAM(proxy);
-#if COCOS2D_DEBUG > 1
-    if (debug != nullptr)
-    {
-        CCLOG("++++++WEAK_REF++++++ Cpp(%s): %p - JS: %p", debug, native, jsObj.get());
-    }
-#endif // COCOS2D_DEBUG
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     return jsObj;
 }
 
@@ -2340,17 +2323,9 @@ JSObject* jsb_ref_get_or_create_jsobject(JSContext *cx, cocos2d::Ref *ref, js_ty
     JS::RootedObject parent(cx, typeClass->parentProto.ref());
     JS::RootedObject jsObj(cx, JS_NewObject(cx, typeClass->jsclass, proto, parent));
     js_proxy_t* newproxy = jsb_new_proxy(ref, jsObj);
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    CC_UNUSED_PARAM(newproxy);
-    ref->retain();
-    js_add_FinalizeHook(cx, jsObj, true);
-#if COCOS2D_DEBUG > 1
-    CCLOG("++++++RETAINED++++++ Cpp(%s): %p - JS: %p", debug, ref, jsObj.get());
-#endif // COCOS2D_DEBUG
-#else
+
     // don't auto-release, don't retain.
     JS::AddNamedObjectRoot(cx, &newproxy->obj, debug);
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
 
     return jsObj;
 }
@@ -2388,15 +2363,6 @@ JSObject* jsb_get_or_create_weak_jsobject(JSContext *cx, void *native, js_type_c
     JS::RootedValue flagVal(cx, OBJECT_TO_JSVAL(flag));
     JS_SetProperty(cx, jsObj, "__cppCreated", flagVal);
 
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    js_add_FinalizeHook(cx, jsObj, false);
-#if COCOS2D_DEBUG > 1
-    if (debug != nullptr)
-    {
-        CCLOG("++++++WEAK_REF++++++ Cpp(%s): %p - JS: %p", debug, native, jsObj.get());
-    }
-#endif // COCOS2D_DEBUG
-#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     return jsObj;
 }
 
@@ -2404,72 +2370,33 @@ JSObject* jsb_get_or_create_weak_jsobject(JSContext *cx, void *native, js_type_c
 void jsb_ref_init(JSContext* cx, JS::Heap<JSObject*> *obj, Ref* ref, const char* debug)
 {
 //    CCLOG("jsb_ref_init: JSObject address =  %p. %s", obj->get(), debug);
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    (void)ref;
-    JS::RootedObject jsObj(cx, *obj);
-    js_add_FinalizeHook(cx, jsObj, true);
-    // don't retain it, already retained
-#if COCOS2D_DEBUG > 1
-    CCLOG("++++++RETAINED++++++ Cpp(%s): %p - JS: %p", debug, ref, jsObj.get());
-#endif // COCOS2D_DEBUG
-#else
     // autorelease it
     ref->autorelease();
     JS::AddNamedObjectRoot(cx, obj, debug);
-#endif
 }
 
 void jsb_ref_autoreleased_init(JSContext* cx, JS::Heap<JSObject*> *obj, Ref* ref, const char* debug)
 {
     //    CCLOG("jsb_ref_init: JSObject address =  %p. %s", obj->get(), debug);
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    (void)cx;
-    (void)obj;
-    ref->retain();
-    JS::RootedObject jsObj(cx, *obj);
-    js_add_FinalizeHook(cx, jsObj, true);
-#if COCOS2D_DEBUG > 1
-    CCLOG("++++++RETAINED++++++ Cpp(%s): %p - JS: %p", debug, ref, jsObj.get());
-#endif // COCOS2D_DEBUG
-#else
     // don't autorelease it, since it is already autoreleased
     JS::AddNamedObjectRoot(cx, obj, debug);
-#endif
 }
 
 // rebind
 void jsb_ref_rebind(JSContext* cx, JS::HandleObject jsobj, js_proxy_t *proxy, cocos2d::Ref* oldRef, cocos2d::Ref* newRef, const char* debug)
 {
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    // Release the old reference as it have been retained by jsobj previously,
-    // and the jsobj won't have any chance to release it in the future
-    oldRef->release();
-#else
     JS::RemoveObjectRoot(cx, &proxy->obj);
-#endif
     jsb_remove_proxy(proxy);
 
     // Rebind js obj with new action
     js_proxy_t* newProxy = jsb_new_proxy(newRef, jsobj);
     
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    CC_UNUSED_PARAM(newProxy);
-#else
     JS::AddNamedObjectRoot(cx, &newProxy->obj, debug);
-#endif
 }
 
 void jsb_non_ref_init(JSContext* cx, JS::Heap<JSObject*> *obj, void* native, const char* debug)
 {
-//    CCLOG("jsb_non_ref_init: JSObject address =  %p. %s", obj->get(), debug);
-#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    JS::RootedObject jsObj(cx, *obj);
-    js_add_FinalizeHook(cx, jsObj, false);
-    // don't retain it, already retained
-#if COCOS2D_DEBUG > 1
-    CCLOG("++++++RETAINED++++++ Cpp(%s): %p - JS: %p", debug, native, jsObj.get());
-#endif // COCOS2D_DEBUG
-#endif
+    
 }
 
 // Register finalize hook
