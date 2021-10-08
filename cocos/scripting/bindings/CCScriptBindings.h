@@ -24,12 +24,13 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __SCRIPT_BINDINGS_H__
-#define __SCRIPT_BINDINGS_H__
+#ifndef __CC_SCRIPT_BINDINGS_H__
+#define __CC_SCRIPT_BINDINGS_H__
 
 #include "base/ccConfig.h"
 #include <functional>
 #include <emscripten/bind.h>
+#include <unordered_map>
 
 #if CC_ENABLE_COCOS_BINDINGS
 namespace cocos2d {
@@ -133,9 +134,10 @@ namespace cocos2d {
       return R;
     }
 
-    template<typename T>
-    bool cc_bindings_ctor(const T& obj) {
-      return true;
+    static bool cc_bindings_ctor(const emscripten::val& obj) {   
+        int ptr = obj["$$"]["ptr"].as<int>();
+        emscripten::val::global("_native_js_global_map").call<void>("set", val(ptr), obj);
+        return true;
     }
 
     template<typename T>
@@ -162,4 +164,4 @@ namespace cocos2d {
 #define USING_NS_CC_BINDINGS  using namespace cocos2d::bindings
 
 #endif // CC_ENABLE_COCOS_BINDINGS
-#endif // __SCRIPT_BINDINGS_H__
+#endif // __CC_SCRIPT_BINDINGS_H__

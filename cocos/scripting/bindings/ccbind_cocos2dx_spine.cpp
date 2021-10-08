@@ -91,7 +91,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_spine) {
     .function("clearTracks", &SkeletonAnimation::clearTracks)
     .function("setTrackEndListener", &SkeletonAnimation::setTrackEndListener, allow_raw_pointers())
     .function("setStartListener", &SkeletonAnimation::setStartListener)
-    .function("ctor", &cc_bindings_ctor<SkeletonAnimation>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("createWithBinaryFile", select_overload<spine::SkeletonAnimation*(const std::string&, const std::string&, float)>(&SkeletonAnimation::createWithBinaryFile), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
@@ -101,6 +101,6 @@ COCOS_BINDINGS(ccbind_cocos2dx_spine) {
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const SkeletonAnimation& _) -> std::string {return "SkeletonAnimation";}))    
-    // TODO: assign cc.Class.extend to sp.SkeletonAnimation.extend
+    .allow_subclass<emscripten::wrapper<SkeletonAnimation>>("_subclass.sp.SkeletonAnimation")
     ;
 }

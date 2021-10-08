@@ -1,4 +1,5 @@
 #include "scripting/bindings/CCScriptBindings.h"
+#include "scripting/bindings/CCScriptEngine.h"
 #include "scripting/bindings/ccbind_cocos2dx.hpp"
 #include "cocos2d.h"
 #include "audio/include/SimpleAudioEngine.h"
@@ -121,10 +122,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("init", &Component::init)
     .function("setOwner", &Component::setOwner, allow_raw_pointers())
     .function("getName", &Component::getName)
-    .function("ctor", &cc_bindings_ctor<Component>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Component::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Component& _) -> std::string {return "Component";}))    
-    // TODO: assign cc.Class.extend to cc.Component.extend
+    .allow_subclass<emscripten::wrapper<Component>>("_subclass.cc.Component")
     ;
 
 
@@ -294,13 +295,23 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("isCascadeColorEnabled", &Node::isCascadeColorEnabled)
     .function("setRotationQuat", &Node::setRotationQuat)
     .function("stopAction", &Node::stopAction, allow_raw_pointers())
+
+    .function("onEnter", optional_override([](Node& this_) {
+      CCScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.onEnter();
+    }))
+    .function("onEnterTransitionDidFinish", optional_override([](Node& this_) {
+      CCScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.onEnterTransitionDidFinish();
+    }))
+    
     .function("getActionManager", select_overload<const cocos2d::ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor<Node>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Node::create, allow_raw_pointers())
     .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount, allow_raw_pointers())
     .property("_className",  optional_override([](const Node& _) -> std::string {return "Node";}))    
-    // TODO: assign cc.Class.extend to cc.Node.extend
+    .allow_subclass<emscripten::wrapper<Node>>("_subclass.cc.Node")
     ;
 
 
@@ -320,11 +331,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("onProjectionChanged", &Scene::onProjectionChanged, allow_raw_pointers())
     .function("initWithSize", &Scene::initWithSize)
     .function("getDefaultCamera", &Scene::getDefaultCamera, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<Scene>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("createWithSize", &Scene::createWithSize, allow_raw_pointers())
     .class_function("create", &Scene::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Scene& _) -> std::string {return "Scene";}))    
-    // TODO: assign cc.Class.extend to cc.Scene.extend
+    .property("_className",  optional_override([](const Scene& _) -> std::string {return "Scene";}))
+    .allow_subclass<emscripten::wrapper<Scene>>("_subclass.cc.Scene")
     ;
 
   class_<GLView>("cc.GLView")
@@ -351,7 +362,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setDefaultCursor", &GLView::setDefaultCursor)
     .function("windowShouldClose", &GLView::windowShouldClose)
-    .function("setDesignResolutionSize", &GLView::setDesignResolutionSize)
+    .function("setDesignResolutionSize", optional_override([](GLView& this_, float width, float height, int resolutionPolicy) {
+      this_.setDesignResolutionSize(width, height, (ResolutionPolicy)resolutionPolicy);
+    }))
     .function("getResolutionPolicy", &GLView::getResolutionPolicy)
     .function("isRetinaDisplay", &GLView::isRetinaDisplay)
     .function("renderScene", &GLView::renderScene, allow_raw_pointers())
@@ -525,7 +538,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         return this_.initWithTargetAndOffset(arg0, arg1, arg2);
       }), allow_raw_pointers())
     .function("isBoundarySet", &Follow::isBoundarySet)
-    .function("ctor", &cc_bindings_ctor<Follow>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Follow::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](cocos2d::Node* arg0){
@@ -537,7 +550,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         return Follow::createWithOffset(arg0, arg1, arg2);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const Follow& _) -> std::string {return "Follow";}))    
-    // TODO: assign cc.Class.extend to cc.Follow.extend
+    .allow_subclass<emscripten::wrapper<Follow>>("_subclass.cc.Follow")
     ;
 
 
@@ -654,13 +667,13 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getAnchorPoint", &SpriteFrame::getAnchorPoint)
     .function("hasAnchorPoint", &SpriteFrame::hasAnchorPoint)
     .function("getOffsetInPixels", &SpriteFrame::getOffsetInPixels)
-    .function("ctor", &cc_bindings_ctor<SpriteFrame>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::SpriteFrame*(const std::string&, const cocos2d::Rect&, bool, const cocos2d::Vec2&, const cocos2d::Size&)>(&SpriteFrame::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::SpriteFrame*(const std::string&, const cocos2d::Rect&)>(&SpriteFrame::create), allow_raw_pointers())
     .class_function("createWithTexture", select_overload<cocos2d::SpriteFrame*(cocos2d::Texture2D*, const cocos2d::Rect&, bool, const cocos2d::Vec2&, const cocos2d::Size&)>(&SpriteFrame::createWithTexture), allow_raw_pointers())
     .class_function("createWithTexture", select_overload<cocos2d::SpriteFrame*(cocos2d::Texture2D*, const cocos2d::Rect&)>(&SpriteFrame::createWithTexture), allow_raw_pointers())
     .property("_className",  optional_override([](const SpriteFrame& _) -> std::string {return "SpriteFrame";}))    
-    // TODO: assign cc.Class.extend to cc.SpriteFrame.extend
+    .allow_subclass<emscripten::wrapper<SpriteFrame>>("_subclass.cc.SpriteFrame")
     ;
 
 
@@ -675,10 +688,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getDelayUnits", &AnimationFrame::getDelayUnits)
     .function("setUserInfo", &AnimationFrame::setUserInfo)
     .function("initWithSpriteFrame", &AnimationFrame::initWithSpriteFrame, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<AnimationFrame>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &AnimationFrame::create, allow_raw_pointers())
     .property("_className",  optional_override([](const AnimationFrame& _) -> std::string {return "AnimationFrame";}))    
-    // TODO: assign cc.Class.extend to cc.AnimationFrame.extend
+    .allow_subclass<emscripten::wrapper<AnimationFrame>>("_subclass.cc.AnimationFrame")
     ;
 
 
@@ -709,7 +722,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
       }))
     .function("getRestoreOriginalFrame", &Animation::getRestoreOriginalFrame)
     .function("addSpriteFrameWithTexture", &Animation::addSpriteFrameWithTexture, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<Animation>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("createWithAnimationFrames", select_overload<cocos2d::Animation*(const cocos2d::Vector<cocos2d::AnimationFrame *>&, float, unsigned int)>(&Animation::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("createWithAnimationFrames", select_overload<cocos2d::Animation*()>(&Animation::create), allow_raw_pointers())
@@ -723,7 +736,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         return Animation::createWithSpriteFrames(arg0, arg1);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const Animation& _) -> std::string {return "Animation";}))    
-    // TODO: assign cc.Class.extend to cc.Animation.extend
+    .allow_subclass<emscripten::wrapper<Animation>>("_subclass.cc.Animation")
     ;
 
   class_<ActionInterval, base<FiniteTimeAction>>("cc.ActionInterval")
@@ -739,9 +752,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("init", &Sequence::init)
     .function("initWithTwoActions", &Sequence::initWithTwoActions, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<Sequence>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const Sequence& _) -> std::string {return "Sequence";}))    
-    // TODO: assign cc.Class.extend to cc.Sequence.extend
+    .allow_subclass<emscripten::wrapper<Sequence>>("_subclass.cc.Sequence")
     ;
 
 
@@ -750,10 +763,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setInnerAction", &Repeat::setInnerAction, allow_raw_pointers())
     .function("initWithAction", &Repeat::initWithAction, allow_raw_pointers())
     .function("getInnerAction", &Repeat::getInnerAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<Repeat>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Repeat::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Repeat& _) -> std::string {return "Repeat";}))    
-    // TODO: assign cc.Class.extend to cc.Repeat.extend
+    .allow_subclass<emscripten::wrapper<Repeat>>("_subclass.cc.Repeat")
     ;
 
 
@@ -762,10 +775,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setInnerAction", &RepeatForever::setInnerAction, allow_raw_pointers())
     .function("initWithAction", &RepeatForever::initWithAction, allow_raw_pointers())
     .function("getInnerAction", &RepeatForever::getInnerAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<RepeatForever>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RepeatForever::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RepeatForever& _) -> std::string {return "RepeatForever";}))    
-    // TODO: assign cc.Class.extend to cc.RepeatForever.extend
+    .allow_subclass<emscripten::wrapper<RepeatForever>>("_subclass.cc.RepeatForever")
     ;
 
 
@@ -773,9 +786,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("init", &Spawn::init)
     .function("initWithTwoActions", &Spawn::initWithTwoActions, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<Spawn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const Spawn& _) -> std::string {return "Spawn";}))    
-    // TODO: assign cc.Class.extend to cc.Spawn.extend
+    .allow_subclass<emscripten::wrapper<Spawn>>("_subclass.cc.Spawn")
     ;
 
 
@@ -783,12 +796,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("initWithDuration", select_overload<bool(float, const cocos2d::Vec3&)>(&RotateTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateTo::initWithDuration))
-    .function("ctor", &cc_bindings_ctor<RotateTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RotateTo*(float, float)>(&RotateTo::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RotateTo*(float, float, float)>(&RotateTo::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const RotateTo& _) -> std::string {return "RotateTo";}))    
-    // TODO: assign cc.Class.extend to cc.RotateTo.extend
+    .allow_subclass<emscripten::wrapper<RotateTo>>("_subclass.cc.RotateTo")
     ;
 
 
@@ -797,12 +810,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateBy::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float)>(&RotateBy::initWithDuration))
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor<RotateBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RotateBy*(float, float, float)>(&RotateBy::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RotateBy*(float, float)>(&RotateBy::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const RotateBy& _) -> std::string {return "RotateBy";}))    
-    // TODO: assign cc.Class.extend to cc.RotateBy.extend
+    .allow_subclass<emscripten::wrapper<RotateBy>>("_subclass.cc.RotateBy")
     ;
 
 
@@ -810,11 +823,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("initWithDuration", select_overload<bool(float, const cocos2d::Vec3&)>(&MoveBy::initWithDuration))
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor<MoveBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::MoveBy*(float, const cocos2d::Vec3&)>(&MoveBy::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const MoveBy& _) -> std::string {return "MoveBy";}))    
-    // TODO: assign cc.Class.extend to cc.MoveBy.extend
+    .allow_subclass<emscripten::wrapper<MoveBy>>("_subclass.cc.MoveBy")
     ;
 
 
@@ -822,67 +835,67 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("initWithDuration", select_overload<bool(float, const cocos2d::Vec3&)>(&MoveTo::initWithDuration))
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor<MoveTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::MoveTo*(float, const cocos2d::Vec3&)>(&MoveTo::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const MoveTo& _) -> std::string {return "MoveTo";}))    
-    // TODO: assign cc.Class.extend to cc.MoveTo.extend
+    .allow_subclass<emscripten::wrapper<MoveTo>>("_subclass.cc.MoveTo")
     ;
 
 
   class_<SkewTo, base<ActionInterval>>("cc.SkewTo")
     .constructor<>()
     .function("initWithDuration", &SkewTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<SkewTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &SkewTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const SkewTo& _) -> std::string {return "SkewTo";}))    
-    // TODO: assign cc.Class.extend to cc.SkewTo.extend
+    .allow_subclass<emscripten::wrapper<SkewTo>>("_subclass.cc.SkewTo")
     ;
 
 
   class_<SkewBy, base<SkewTo>>("cc.SkewBy")
     .constructor<>()
     .function("initWithDuration", &SkewBy::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<SkewBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &SkewBy::create, allow_raw_pointers())
     .property("_className",  optional_override([](const SkewBy& _) -> std::string {return "SkewBy";}))    
-    // TODO: assign cc.Class.extend to cc.SkewBy.extend
+    .allow_subclass<emscripten::wrapper<SkewBy>>("_subclass.cc.SkewBy")
     ;
 
 
   class_<JumpBy, base<ActionInterval>>("cc.JumpBy")
     .constructor<>()
     .function("initWithDuration", &JumpBy::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<JumpBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &JumpBy::create, allow_raw_pointers())
     .property("_className",  optional_override([](const JumpBy& _) -> std::string {return "JumpBy";}))    
-    // TODO: assign cc.Class.extend to cc.JumpBy.extend
+    .allow_subclass<emscripten::wrapper<JumpBy>>("_subclass.cc.JumpBy")
     ;
 
 
   class_<JumpTo, base<JumpBy>>("cc.JumpTo")
     .constructor<>()
     .function("initWithDuration", &JumpTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<JumpTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &JumpTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const JumpTo& _) -> std::string {return "JumpTo";}))    
-    // TODO: assign cc.Class.extend to cc.JumpTo.extend
+    .allow_subclass<emscripten::wrapper<JumpTo>>("_subclass.cc.JumpTo")
     ;
 
 
   class_<BezierBy, base<ActionInterval>>("cc.BezierBy")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<BezierBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const BezierBy& _) -> std::string {return "BezierBy";}))    
-    // TODO: assign cc.Class.extend to cc.BezierBy.extend
+    .allow_subclass<emscripten::wrapper<BezierBy>>("_subclass.cc.BezierBy")
     ;
 
 
   class_<BezierTo, base<BezierBy>>("cc.BezierTo")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<BezierTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const BezierTo& _) -> std::string {return "BezierTo";}))    
-    // TODO: assign cc.Class.extend to cc.BezierTo.extend
+    .allow_subclass<emscripten::wrapper<BezierTo>>("_subclass.cc.BezierTo")
     ;
 
 
@@ -891,103 +904,103 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("initWithDuration", select_overload<bool(float, float, float)>(&ScaleTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float)>(&ScaleTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float, float, float)>(&ScaleTo::initWithDuration))
-    .function("ctor", &cc_bindings_ctor<ScaleTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ScaleTo*(float, float, float)>(&ScaleTo::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ScaleTo*(float, float)>(&ScaleTo::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ScaleTo*(float, float, float, float)>(&ScaleTo::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ScaleTo& _) -> std::string {return "ScaleTo";}))    
-    // TODO: assign cc.Class.extend to cc.ScaleTo.extend
+    .allow_subclass<emscripten::wrapper<ScaleTo>>("_subclass.cc.ScaleTo")
     ;
 
 
   class_<ScaleBy, base<ScaleTo>>("cc.ScaleBy")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<ScaleBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ScaleBy*(float, float, float)>(&ScaleBy::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ScaleBy*(float, float)>(&ScaleBy::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ScaleBy*(float, float, float, float)>(&ScaleBy::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ScaleBy& _) -> std::string {return "ScaleBy";}))    
-    // TODO: assign cc.Class.extend to cc.ScaleBy.extend
+    .allow_subclass<emscripten::wrapper<ScaleBy>>("_subclass.cc.ScaleBy")
     ;
 
 
   class_<Blink, base<ActionInterval>>("cc.Blink")
     .constructor<>()
     .function("initWithDuration", &Blink::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<Blink>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Blink::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Blink& _) -> std::string {return "Blink";}))    
-    // TODO: assign cc.Class.extend to cc.Blink.extend
+    .allow_subclass<emscripten::wrapper<Blink>>("_subclass.cc.Blink")
     ;
 
 
   class_<FadeTo, base<ActionInterval>>("cc.FadeTo")
     .constructor<>()
     .function("initWithDuration", &FadeTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<FadeTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeTo& _) -> std::string {return "FadeTo";}))    
-    // TODO: assign cc.Class.extend to cc.FadeTo.extend
+    .allow_subclass<emscripten::wrapper<FadeTo>>("_subclass.cc.FadeTo")
     ;
 
 
   class_<FadeIn, base<FadeTo>>("cc.FadeIn")
     .constructor<>()
     .function("setReverseAction", &FadeIn::setReverseAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<FadeIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeIn& _) -> std::string {return "FadeIn";}))    
-    // TODO: assign cc.Class.extend to cc.FadeIn.extend
+    .allow_subclass<emscripten::wrapper<FadeIn>>("_subclass.cc.FadeIn")
     ;
 
 
   class_<FadeOut, base<FadeTo>>("cc.FadeOut")
     .constructor<>()
     .function("setReverseAction", &FadeOut::setReverseAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<FadeOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOut& _) -> std::string {return "FadeOut";}))    
-    // TODO: assign cc.Class.extend to cc.FadeOut.extend
+    .allow_subclass<emscripten::wrapper<FadeOut>>("_subclass.cc.FadeOut")
     ;
 
 
   class_<TintTo, base<ActionInterval>>("cc.TintTo")
     .constructor<>()
     .function("initWithDuration", &TintTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<TintTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TintTo*(float, const cocos2d::Color3B&)>(&TintTo::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TintTo*(float, unsigned char, unsigned char, unsigned char)>(&TintTo::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TintTo& _) -> std::string {return "TintTo";}))    
-    // TODO: assign cc.Class.extend to cc.TintTo.extend
+    .allow_subclass<emscripten::wrapper<TintTo>>("_subclass.cc.TintTo")
     ;
 
 
   class_<TintBy, base<ActionInterval>>("cc.TintBy")
     .constructor<>()
     .function("initWithDuration", &TintBy::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<TintBy>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TintBy::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TintBy& _) -> std::string {return "TintBy";}))    
-    // TODO: assign cc.Class.extend to cc.TintBy.extend
+    .allow_subclass<emscripten::wrapper<TintBy>>("_subclass.cc.TintBy")
     ;
 
 
   class_<DelayTime, base<ActionInterval>>("cc.DelayTime")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<DelayTime>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &DelayTime::create, allow_raw_pointers())
     .property("_className",  optional_override([](const DelayTime& _) -> std::string {return "DelayTime";}))    
-    // TODO: assign cc.Class.extend to cc.DelayTime.extend
+    .allow_subclass<emscripten::wrapper<DelayTime>>("_subclass.cc.DelayTime")
     ;
 
 
   class_<ReverseTime, base<ActionInterval>>("cc.ReverseTime")
     .constructor<>()
     .function("initWithAction", &ReverseTime::initWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<ReverseTime>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ReverseTime::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ReverseTime& _) -> std::string {return "ReverseTime";}))    
-    // TODO: assign cc.Class.extend to cc.ReverseTime.extend
+    .allow_subclass<emscripten::wrapper<ReverseTime>>("_subclass.cc.ReverseTime")
     ;
 
 
@@ -998,10 +1011,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getCurrentFrameIndex", &Animate::getCurrentFrameIndex)
     .function("setAnimation", &Animate::setAnimation, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<Animate>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Animate::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Animate& _) -> std::string {return "Animate";}))    
-    // TODO: assign cc.Class.extend to cc.Animate.extend
+    .allow_subclass<emscripten::wrapper<Animate>>("_subclass.cc.Animate")
     ;
 
 
@@ -1011,20 +1024,20 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("initWithTarget", &TargetedAction::initWithTarget, allow_raw_pointers())
     .function("setForcedTarget", &TargetedAction::setForcedTarget, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TargetedAction>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TargetedAction::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TargetedAction& _) -> std::string {return "TargetedAction";}))    
-    // TODO: assign cc.Class.extend to cc.TargetedAction.extend
+    .allow_subclass<emscripten::wrapper<TargetedAction>>("_subclass.cc.TargetedAction")
     ;
 
 
   class_<ActionFloat, base<ActionInterval>>("cc.ActionFloat")
     .constructor<>()
     .function("initWithDuration", &ActionFloat::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<ActionFloat>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ActionFloat::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionFloat& _) -> std::string {return "ActionFloat";}))    
-    // TODO: assign cc.Class.extend to cc.ActionFloat.extend
+    .allow_subclass<emscripten::wrapper<ActionFloat>>("_subclass.cc.ActionFloat")
     ;
 
   class_<Configuration>("cc.Configuration")
@@ -1357,9 +1370,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getCenter", &ActionCamera::getCenter)
     .function("setCenter", &ActionCamera::setCenter)
     .function("getUp", &ActionCamera::getUp)
-    .function("ctor", &cc_bindings_ctor<ActionCamera>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionCamera& _) -> std::string {return "ActionCamera";}))    
-    // TODO: assign cc.Class.extend to cc.ActionCamera.extend
+    .allow_subclass<emscripten::wrapper<ActionCamera>>("_subclass.cc.ActionCamera")
     ;
 
 
@@ -1367,10 +1380,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("sphericalRadius", &OrbitCamera::sphericalRadius, allow_raw_pointers())
     .function("initWithDuration", &OrbitCamera::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<OrbitCamera>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &OrbitCamera::create, allow_raw_pointers())
     .property("_className",  optional_override([](const OrbitCamera& _) -> std::string {return "OrbitCamera";}))    
-    // TODO: assign cc.Class.extend to cc.OrbitCamera.extend
+    .allow_subclass<emscripten::wrapper<OrbitCamera>>("_subclass.cc.OrbitCamera")
     ;
 
 
@@ -1412,55 +1425,55 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<EaseExponentialIn, base<ActionEase>>("cc.EaseExponentialIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseExponentialIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseExponentialIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseExponentialIn& _) -> std::string {return "EaseExponentialIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseExponentialIn.extend
+    .allow_subclass<emscripten::wrapper<EaseExponentialIn>>("_subclass.cc.EaseExponentialIn")
     ;
 
 
   class_<EaseExponentialOut, base<ActionEase>>("cc.EaseExponentialOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseExponentialOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseExponentialOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseExponentialOut& _) -> std::string {return "EaseExponentialOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseExponentialOut.extend
+    .allow_subclass<emscripten::wrapper<EaseExponentialOut>>("_subclass.cc.EaseExponentialOut")
     ;
 
 
   class_<EaseExponentialInOut, base<ActionEase>>("cc.EaseExponentialInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseExponentialInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseExponentialInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseExponentialInOut& _) -> std::string {return "EaseExponentialInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseExponentialInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseExponentialInOut>>("_subclass.cc.EaseExponentialInOut")
     ;
 
 
   class_<EaseSineIn, base<ActionEase>>("cc.EaseSineIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseSineIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseSineIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseSineIn& _) -> std::string {return "EaseSineIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseSineIn.extend
+    .allow_subclass<emscripten::wrapper<EaseSineIn>>("_subclass.cc.EaseSineIn")
     ;
 
 
   class_<EaseSineOut, base<ActionEase>>("cc.EaseSineOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseSineOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseSineOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseSineOut& _) -> std::string {return "EaseSineOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseSineOut.extend
+    .allow_subclass<emscripten::wrapper<EaseSineOut>>("_subclass.cc.EaseSineOut")
     ;
 
 
   class_<EaseSineInOut, base<ActionEase>>("cc.EaseSineInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseSineInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseSineInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseSineInOut& _) -> std::string {return "EaseSineInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseSineInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseSineInOut>>("_subclass.cc.EaseSineInOut")
     ;
 
   class_<EaseBounce, base<ActionEase>>("cc.EaseBounce")
@@ -1470,217 +1483,217 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<EaseBounceIn, base<ActionEase>>("cc.EaseBounceIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseBounceIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBounceIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBounceIn& _) -> std::string {return "EaseBounceIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBounceIn.extend
+    .allow_subclass<emscripten::wrapper<EaseBounceIn>>("_subclass.cc.EaseBounceIn")
     ;
 
 
   class_<EaseBounceOut, base<ActionEase>>("cc.EaseBounceOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseBounceOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBounceOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBounceOut& _) -> std::string {return "EaseBounceOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBounceOut.extend
+    .allow_subclass<emscripten::wrapper<EaseBounceOut>>("_subclass.cc.EaseBounceOut")
     ;
 
 
   class_<EaseBounceInOut, base<ActionEase>>("cc.EaseBounceInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseBounceInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBounceInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBounceInOut& _) -> std::string {return "EaseBounceInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBounceInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseBounceInOut>>("_subclass.cc.EaseBounceInOut")
     ;
 
 
   class_<EaseBackIn, base<ActionEase>>("cc.EaseBackIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseBackIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBackIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBackIn& _) -> std::string {return "EaseBackIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBackIn.extend
+    .allow_subclass<emscripten::wrapper<EaseBackIn>>("_subclass.cc.EaseBackIn")
     ;
 
 
   class_<EaseBackOut, base<ActionEase>>("cc.EaseBackOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseBackOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBackOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBackOut& _) -> std::string {return "EaseBackOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBackOut.extend
+    .allow_subclass<emscripten::wrapper<EaseBackOut>>("_subclass.cc.EaseBackOut")
     ;
 
 
   class_<EaseBackInOut, base<ActionEase>>("cc.EaseBackInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseBackInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBackInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBackInOut& _) -> std::string {return "EaseBackInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBackInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseBackInOut>>("_subclass.cc.EaseBackInOut")
     ;
 
 
   class_<EaseQuadraticActionIn, base<ActionEase>>("cc.EaseQuadraticActionIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuadraticActionIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuadraticActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuadraticActionIn& _) -> std::string {return "EaseQuadraticActionIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuadraticActionIn.extend
+    .allow_subclass<emscripten::wrapper<EaseQuadraticActionIn>>("_subclass.cc.EaseQuadraticActionIn")
     ;
 
 
   class_<EaseQuadraticActionOut, base<ActionEase>>("cc.EaseQuadraticActionOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuadraticActionOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuadraticActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuadraticActionOut& _) -> std::string {return "EaseQuadraticActionOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuadraticActionOut.extend
+    .allow_subclass<emscripten::wrapper<EaseQuadraticActionOut>>("_subclass.cc.EaseQuadraticActionOut")
     ;
 
 
   class_<EaseQuadraticActionInOut, base<ActionEase>>("cc.EaseQuadraticActionInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuadraticActionInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuadraticActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuadraticActionInOut& _) -> std::string {return "EaseQuadraticActionInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuadraticActionInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseQuadraticActionInOut>>("_subclass.cc.EaseQuadraticActionInOut")
     ;
 
 
   class_<EaseQuarticActionIn, base<ActionEase>>("cc.EaseQuarticActionIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuarticActionIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuarticActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuarticActionIn& _) -> std::string {return "EaseQuarticActionIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuarticActionIn.extend
+    .allow_subclass<emscripten::wrapper<EaseQuarticActionIn>>("_subclass.cc.EaseQuarticActionIn")
     ;
 
 
   class_<EaseQuarticActionOut, base<ActionEase>>("cc.EaseQuarticActionOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuarticActionOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuarticActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuarticActionOut& _) -> std::string {return "EaseQuarticActionOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuarticActionOut.extend
+    .allow_subclass<emscripten::wrapper<EaseQuarticActionOut>>("_subclass.cc.EaseQuarticActionOut")
     ;
 
 
   class_<EaseQuarticActionInOut, base<ActionEase>>("cc.EaseQuarticActionInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuarticActionInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuarticActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuarticActionInOut& _) -> std::string {return "EaseQuarticActionInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuarticActionInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseQuarticActionInOut>>("_subclass.cc.EaseQuarticActionInOut")
     ;
 
 
   class_<EaseQuinticActionIn, base<ActionEase>>("cc.EaseQuinticActionIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuinticActionIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuinticActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuinticActionIn& _) -> std::string {return "EaseQuinticActionIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuinticActionIn.extend
+    .allow_subclass<emscripten::wrapper<EaseQuinticActionIn>>("_subclass.cc.EaseQuinticActionIn")
     ;
 
 
   class_<EaseQuinticActionOut, base<ActionEase>>("cc.EaseQuinticActionOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuinticActionOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuinticActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuinticActionOut& _) -> std::string {return "EaseQuinticActionOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuinticActionOut.extend
+    .allow_subclass<emscripten::wrapper<EaseQuinticActionOut>>("_subclass.cc.EaseQuinticActionOut")
     ;
 
 
   class_<EaseQuinticActionInOut, base<ActionEase>>("cc.EaseQuinticActionInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseQuinticActionInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseQuinticActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuinticActionInOut& _) -> std::string {return "EaseQuinticActionInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseQuinticActionInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseQuinticActionInOut>>("_subclass.cc.EaseQuinticActionInOut")
     ;
 
 
   class_<EaseCircleActionIn, base<ActionEase>>("cc.EaseCircleActionIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseCircleActionIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseCircleActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCircleActionIn& _) -> std::string {return "EaseCircleActionIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseCircleActionIn.extend
+    .allow_subclass<emscripten::wrapper<EaseCircleActionIn>>("_subclass.cc.EaseCircleActionIn")
     ;
 
 
   class_<EaseCircleActionOut, base<ActionEase>>("cc.EaseCircleActionOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseCircleActionOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseCircleActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCircleActionOut& _) -> std::string {return "EaseCircleActionOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseCircleActionOut.extend
+    .allow_subclass<emscripten::wrapper<EaseCircleActionOut>>("_subclass.cc.EaseCircleActionOut")
     ;
 
 
   class_<EaseCircleActionInOut, base<ActionEase>>("cc.EaseCircleActionInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseCircleActionInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseCircleActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCircleActionInOut& _) -> std::string {return "EaseCircleActionInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseCircleActionInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseCircleActionInOut>>("_subclass.cc.EaseCircleActionInOut")
     ;
 
 
   class_<EaseCubicActionIn, base<ActionEase>>("cc.EaseCubicActionIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseCubicActionIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseCubicActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCubicActionIn& _) -> std::string {return "EaseCubicActionIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseCubicActionIn.extend
+    .allow_subclass<emscripten::wrapper<EaseCubicActionIn>>("_subclass.cc.EaseCubicActionIn")
     ;
 
 
   class_<EaseCubicActionOut, base<ActionEase>>("cc.EaseCubicActionOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseCubicActionOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseCubicActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCubicActionOut& _) -> std::string {return "EaseCubicActionOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseCubicActionOut.extend
+    .allow_subclass<emscripten::wrapper<EaseCubicActionOut>>("_subclass.cc.EaseCubicActionOut")
     ;
 
 
   class_<EaseCubicActionInOut, base<ActionEase>>("cc.EaseCubicActionInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseCubicActionInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseCubicActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCubicActionInOut& _) -> std::string {return "EaseCubicActionInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseCubicActionInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseCubicActionInOut>>("_subclass.cc.EaseCubicActionInOut")
     ;
 
 
   class_<EaseIn, base<EaseRateAction>>("cc.EaseIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseIn& _) -> std::string {return "EaseIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseIn.extend
+    .allow_subclass<emscripten::wrapper<EaseIn>>("_subclass.cc.EaseIn")
     ;
 
 
   class_<EaseOut, base<EaseRateAction>>("cc.EaseOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseOut& _) -> std::string {return "EaseOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseOut.extend
+    .allow_subclass<emscripten::wrapper<EaseOut>>("_subclass.cc.EaseOut")
     ;
 
 
   class_<EaseInOut, base<EaseRateAction>>("cc.EaseInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseInOut& _) -> std::string {return "EaseInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseInOut>>("_subclass.cc.EaseInOut")
     ;
 
   class_<EaseElastic, base<ActionEase>>("cc.EaseElastic")
@@ -1697,50 +1710,50 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<EaseElasticIn, base<EaseElastic>>("cc.EaseElasticIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseElasticIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseElasticIn::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](cocos2d::ActionInterval* arg0){
         return EaseElasticIn::create(arg0);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const EaseElasticIn& _) -> std::string {return "EaseElasticIn";}))    
-    // TODO: assign cc.Class.extend to cc.EaseElasticIn.extend
+    .allow_subclass<emscripten::wrapper<EaseElasticIn>>("_subclass.cc.EaseElasticIn")
     ;
 
 
   class_<EaseElasticOut, base<EaseElastic>>("cc.EaseElasticOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseElasticOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseElasticOut::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](cocos2d::ActionInterval* arg0){
         return EaseElasticOut::create(arg0);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const EaseElasticOut& _) -> std::string {return "EaseElasticOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseElasticOut.extend
+    .allow_subclass<emscripten::wrapper<EaseElasticOut>>("_subclass.cc.EaseElasticOut")
     ;
 
 
   class_<EaseElasticInOut, base<EaseElastic>>("cc.EaseElasticInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<EaseElasticInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseElasticInOut::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](cocos2d::ActionInterval* arg0){
         return EaseElasticInOut::create(arg0);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const EaseElasticInOut& _) -> std::string {return "EaseElasticInOut";}))    
-    // TODO: assign cc.Class.extend to cc.EaseElasticInOut.extend
+    .allow_subclass<emscripten::wrapper<EaseElasticInOut>>("_subclass.cc.EaseElasticInOut")
     ;
 
 
   class_<EaseBezierAction, base<ActionEase>>("cc.EaseBezierAction")
     .constructor<>()
     .function("setBezierParamer", &EaseBezierAction::setBezierParamer)
-    .function("ctor", &cc_bindings_ctor<EaseBezierAction>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &EaseBezierAction::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBezierAction& _) -> std::string {return "EaseBezierAction";}))    
-    // TODO: assign cc.Class.extend to cc.EaseBezierAction.extend
+    .allow_subclass<emscripten::wrapper<EaseBezierAction>>("_subclass.cc.EaseBezierAction")
     ;
 
   class_<ActionInstant, base<FiniteTimeAction>>("cc.ActionInstant")
@@ -1750,19 +1763,19 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<Show, base<ActionInstant>>("cc.Show")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<Show>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Show::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Show& _) -> std::string {return "Show";}))    
-    // TODO: assign cc.Class.extend to cc.Show.extend
+    .allow_subclass<emscripten::wrapper<Show>>("_subclass.cc.Show")
     ;
 
 
   class_<Hide, base<ActionInstant>>("cc.Hide")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<Hide>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Hide::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Hide& _) -> std::string {return "Hide";}))    
-    // TODO: assign cc.Class.extend to cc.Hide.extend
+    .allow_subclass<emscripten::wrapper<Hide>>("_subclass.cc.Hide")
     ;
 
 
@@ -1788,47 +1801,47 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
   class_<FlipX, base<ActionInstant>>("cc.FlipX")
     .constructor<>()
     .function("initWithFlipX", &FlipX::initWithFlipX)
-    .function("ctor", &cc_bindings_ctor<FlipX>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FlipX::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipX& _) -> std::string {return "FlipX";}))    
-    // TODO: assign cc.Class.extend to cc.FlipX.extend
+    .allow_subclass<emscripten::wrapper<FlipX>>("_subclass.cc.FlipX")
     ;
 
 
   class_<FlipY, base<ActionInstant>>("cc.FlipY")
     .constructor<>()
     .function("initWithFlipY", &FlipY::initWithFlipY)
-    .function("ctor", &cc_bindings_ctor<FlipY>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FlipY::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipY& _) -> std::string {return "FlipY";}))    
-    // TODO: assign cc.Class.extend to cc.FlipY.extend
+    .allow_subclass<emscripten::wrapper<FlipY>>("_subclass.cc.FlipY")
     ;
 
 
   class_<Place, base<ActionInstant>>("cc.Place")
     .constructor<>()
     .function("initWithPosition", &Place::initWithPosition)
-    .function("ctor", &cc_bindings_ctor<Place>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Place::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Place& _) -> std::string {return "Place";}))    
-    // TODO: assign cc.Class.extend to cc.Place.extend
+    .allow_subclass<emscripten::wrapper<Place>>("_subclass.cc.Place")
     ;
 
 
   class_<CallFunc, base<ActionInstant>>("cc._CallFunc")
     .constructor<>()
     .function("execute", &CallFunc::execute)
-    .function("ctor", &cc_bindings_ctor<CallFunc>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const CallFunc& _) -> std::string {return "CallFunc";}))    
-    // TODO: assign cc.Class.extend to cc._CallFunc.extend
+    .allow_subclass<emscripten::wrapper<CallFunc>>("_subclass.cc._CallFunc")
     ;
 
 
   class_<CallFuncN, base<CallFunc>>("cc.CallFunc")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<CallFuncN>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const CallFuncN& _) -> std::string {return "CallFuncN";}))    
-    // TODO: assign cc.Class.extend to cc.CallFunc.extend
+    .allow_subclass<emscripten::wrapper<CallFuncN>>("_subclass.cc.CallFunc")
     ;
 
   class_<GridAction, base<ActionInterval>>("cc.GridAction")
@@ -1878,19 +1891,19 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("initWithSize", &FlipX3D::initWithSize)
     .function("initWithDuration", &FlipX3D::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<FlipX3D>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FlipX3D::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipX3D& _) -> std::string {return "FlipX3D";}))    
-    // TODO: assign cc.Class.extend to cc.FlipX3D.extend
+    .allow_subclass<emscripten::wrapper<FlipX3D>>("_subclass.cc.FlipX3D")
     ;
 
 
   class_<FlipY3D, base<FlipX3D>>("cc.FlipY3D")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<FlipY3D>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FlipY3D::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipY3D& _) -> std::string {return "FlipY3D";}))    
-    // TODO: assign cc.Class.extend to cc.FlipY3D.extend
+    .allow_subclass<emscripten::wrapper<FlipY3D>>("_subclass.cc.FlipY3D")
     ;
 
 
@@ -1985,9 +1998,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("update", &ActionManager::update)
     .function("removeAllActionsByTag", &ActionManager::removeAllActionsByTag, allow_raw_pointers())
     .function("getNumberOfRunningActionsInTargetByTag", &ActionManager::getNumberOfRunningActionsInTargetByTag, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<ActionManager>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionManager& _) -> std::string {return "ActionManager";}))    
-    // TODO: assign cc.Class.extend to cc.ActionManager.extend
+    .allow_subclass<emscripten::wrapper<ActionManager>>("_subclass.cc.ActionManager")
     ;
 
   class_<PageTurn3D, base<Grid3DAction>>("cc.PageTurn3D")
@@ -1999,20 +2012,20 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
   class_<ProgressTo, base<ActionInterval>>("cc.ProgressTo")
     .constructor<>()
     .function("initWithDuration", &ProgressTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<ProgressTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ProgressTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressTo& _) -> std::string {return "ProgressTo";}))    
-    // TODO: assign cc.Class.extend to cc.ProgressTo.extend
+    .allow_subclass<emscripten::wrapper<ProgressTo>>("_subclass.cc.ProgressTo")
     ;
 
 
   class_<ProgressFromTo, base<ActionInterval>>("cc.ProgressFromTo")
     .constructor<>()
     .function("initWithDuration", &ProgressFromTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor<ProgressFromTo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ProgressFromTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressFromTo& _) -> std::string {return "ProgressFromTo";}))    
-    // TODO: assign cc.Class.extend to cc.ProgressFromTo.extend
+    .allow_subclass<emscripten::wrapper<ProgressFromTo>>("_subclass.cc.ProgressFromTo")
     ;
 
 
@@ -2049,37 +2062,37 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("turnOffTile", &FadeOutTRTiles::turnOffTile)
     .function("transformTile", &FadeOutTRTiles::transformTile)
     .function("testFunc", &FadeOutTRTiles::testFunc)
-    .function("ctor", &cc_bindings_ctor<FadeOutTRTiles>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeOutTRTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutTRTiles& _) -> std::string {return "FadeOutTRTiles";}))    
-    // TODO: assign cc.Class.extend to cc.FadeOutTRTiles.extend
+    .allow_subclass<emscripten::wrapper<FadeOutTRTiles>>("_subclass.cc.FadeOutTRTiles")
     ;
 
 
   class_<FadeOutBLTiles, base<FadeOutTRTiles>>("cc.FadeOutBLTiles")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<FadeOutBLTiles>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeOutBLTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutBLTiles& _) -> std::string {return "FadeOutBLTiles";}))    
-    // TODO: assign cc.Class.extend to cc.FadeOutBLTiles.extend
+    .allow_subclass<emscripten::wrapper<FadeOutBLTiles>>("_subclass.cc.FadeOutBLTiles")
     ;
 
 
   class_<FadeOutUpTiles, base<FadeOutTRTiles>>("cc.FadeOutUpTiles")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<FadeOutUpTiles>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeOutUpTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutUpTiles& _) -> std::string {return "FadeOutUpTiles";}))    
-    // TODO: assign cc.Class.extend to cc.FadeOutUpTiles.extend
+    .allow_subclass<emscripten::wrapper<FadeOutUpTiles>>("_subclass.cc.FadeOutUpTiles")
     ;
 
 
   class_<FadeOutDownTiles, base<FadeOutUpTiles>>("cc.FadeOutDownTiles")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<FadeOutDownTiles>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &FadeOutDownTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutDownTiles& _) -> std::string {return "FadeOutDownTiles";}))    
-    // TODO: assign cc.Class.extend to cc.FadeOutDownTiles.extend
+    .allow_subclass<emscripten::wrapper<FadeOutDownTiles>>("_subclass.cc.FadeOutDownTiles")
     ;
 
 
@@ -2114,10 +2127,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getAmplitude", &JumpTiles3D::getAmplitude)
     .function("getAmplitudeRate", &JumpTiles3D::getAmplitudeRate)
     .function("setAmplitude", &JumpTiles3D::setAmplitude)
-    .function("ctor", &cc_bindings_ctor<JumpTiles3D>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &JumpTiles3D::create, allow_raw_pointers())
     .property("_className",  optional_override([](const JumpTiles3D& _) -> std::string {return "JumpTiles3D";}))    
-    // TODO: assign cc.Class.extend to cc.JumpTiles3D.extend
+    .allow_subclass<emscripten::wrapper<JumpTiles3D>>("_subclass.cc.JumpTiles3D")
     ;
 
 
@@ -2140,7 +2153,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("initWithDuration", &ActionTween::initWithDuration)
     .class_function("create", &ActionTween::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionTween& _) -> std::string {return "ActionTween";}))    
-    // TODO: assign cc.Class.extend to cc.ActionTween.extend
+    .allow_subclass<emscripten::wrapper<ActionTween>>("_subclass.cc.ActionTween")
     ;
 
 
@@ -2208,14 +2221,14 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("drawPoint", &DrawNode::drawPoint)
     .function("isIsolated", &DrawNode::isIsolated)
     .function("drawCubicBezier", &DrawNode::drawCubicBezier)
-    .function("ctor", &cc_bindings_ctor<DrawNode>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &DrawNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](){
         return DrawNode::create();
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const DrawNode& _) -> std::string {return "DrawNode";}))    
-    // TODO: assign cc.Class.extend to cc.DrawNode.extend
+    .allow_subclass<emscripten::wrapper<DrawNode>>("_subclass.cc.DrawNode")
     ;
 
 
@@ -2319,7 +2332,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setAlignment", select_overload<void(cocos2d::TextHAlignment)>(&Label::setAlignment))
     .function("requestSystemFontRefresh", &Label::requestSystemFontRefresh)
     .function("setBMFontSize", &Label::setBMFontSize)
-    .function("ctor", &cc_bindings_ctor<Label>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("createWithBMFont", select_overload<cocos2d::Label*(const std::string&, const std::string&, const cocos2d::TextHAlignment&, int, const cocos2d::Rect&, bool)>(&Label::createWithBMFont), allow_raw_pointers())
     .class_function("createWithBMFont", select_overload<cocos2d::Label*(const std::string&, const std::string&, const cocos2d::TextHAlignment&, int)>(&Label::createWithBMFont), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -2342,7 +2355,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         return Label::createWithSystemFont(arg0, arg1, arg2, arg3, arg4);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const Label& _) -> std::string {return "Label";}))    
-    // TODO: assign cc.Class.extend to cc.Label.extend
+    .allow_subclass<emscripten::wrapper<Label>>("_subclass.cc.Label")
     ;
 
 
@@ -2353,12 +2366,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("initWithString", select_overload<bool(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::initWithString))
     // TODO: Only support function overloading with different number of parameters
     .function("getString", &LabelAtlas::getString)
-    .function("ctor", &cc_bindings_ctor<LabelAtlas>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("_create", select_overload<cocos2d::LabelAtlas*(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<cocos2d::LabelAtlas*()>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<cocos2d::LabelAtlas*(const std::string&, const std::string&)>(&LabelAtlas::create), allow_raw_pointers())
     .property("_className",  optional_override([](const LabelAtlas& _) -> std::string {return "LabelAtlas";}))    
-    // TODO: assign cc.Class.extend to cc.LabelAtlas.extend
+    .allow_subclass<emscripten::wrapper<LabelAtlas>>("_subclass.cc.LabelAtlas")
     ;
 
 
@@ -2389,14 +2402,14 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setAlignment", &LabelBMFont::setAlignment)
     .function("setWidth", &LabelBMFont::setWidth)
-    .function("ctor", &cc_bindings_ctor<LabelBMFont>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LabelBMFont*()>(&LabelBMFont::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LabelBMFont*(const std::string&, const std::string&, float, cocos2d::TextHAlignment, const cocos2d::Vec2&)>(&LabelBMFont::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const LabelBMFont& _) -> std::string {return "LabelBMFont";}))    
-    // TODO: assign cc.Class.extend to cc.LabelBMFont.extend
+    .allow_subclass<emscripten::wrapper<LabelBMFont>>("_subclass.cc.LabelBMFont")
     ;
 
 
@@ -2459,7 +2472,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         [](LabelTTF& this_){
         return this_.disableStroke();
       }))
-    .function("ctor", &cc_bindings_ctor<LabelTTF>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LabelTTF*()>(&LabelTTF::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LabelTTF*(const std::string&, const std::string&, float, const cocos2d::Size&, cocos2d::TextHAlignment, cocos2d::TextVAlignment)>(&LabelTTF::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -2467,16 +2480,16 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .class_function("createWithFontDefinition", &LabelTTF::createWithFontDefinition, allow_raw_pointers())
     .property("_className",  optional_override([](const LabelTTF& _) -> std::string {return "LabelTTF";}))    
-    // TODO: assign cc.Class.extend to cc.LabelTTF.extend
+    .allow_subclass<emscripten::wrapper<LabelTTF>>("_subclass.cc.LabelTTF")
     ;
 
 
   class_<Layer, base<Node>>("cc.Layer")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<Layer>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Layer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Layer& _) -> std::string {return "Layer";}))    
-    // TODO: assign cc.Class.extend to cc.Layer.extend
+    .allow_subclass<emscripten::wrapper<Layer>>("_subclass.cc.Layer")
     ;
 
 
@@ -2496,12 +2509,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("init", select_overload<bool(const cocos2d::Color4B&)>(&LayerColor::initWithColor))
     .function("init", select_overload<bool(const cocos2d::Color4B&, float, float)>(&LayerColor::initWithColor))
     .function("changeHeight", &LayerColor::changeHeight)
-    .function("ctor", &cc_bindings_ctor<LayerColor>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerColor*(const cocos2d::Color4B&, float, float)>(&LayerColor::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerColor*()>(&LayerColor::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerColor*(const cocos2d::Color4B&)>(&LayerColor::create), allow_raw_pointers())
     .property("_className",  optional_override([](const LayerColor& _) -> std::string {return "LayerColor";}))    
-    // TODO: assign cc.Class.extend to cc.LayerColor.extend
+    .allow_subclass<emscripten::wrapper<LayerColor>>("_subclass.cc.LayerColor")
     ;
 
 
@@ -2521,12 +2534,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getEndColor", &LayerGradient::getEndColor)
     .function("getEndOpacity", &LayerGradient::getEndOpacity)
     .function("setStartColor", &LayerGradient::setStartColor)
-    .function("ctor", &cc_bindings_ctor<LayerGradient>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerGradient*(const cocos2d::Color4B&, const cocos2d::Color4B&)>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerGradient*()>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerGradient*(const cocos2d::Color4B&, const cocos2d::Color4B&, const cocos2d::Vec2&)>(&LayerGradient::create), allow_raw_pointers())
     .property("_className",  optional_override([](const LayerGradient& _) -> std::string {return "LayerGradient";}))    
-    // TODO: assign cc.Class.extend to cc.LayerGradient.extend
+    .allow_subclass<emscripten::wrapper<LayerGradient>>("_subclass.cc.LayerGradient")
     ;
 
 
@@ -2553,11 +2566,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getExpand", &LayerRadialGradient::getExpand)
     .function("setBlendFunc", &LayerRadialGradient::setBlendFunc)
     .function("getRadius", &LayerRadialGradient::getRadius)
-    .function("ctor", &cc_bindings_ctor<LayerRadialGradient>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerRadialGradient*()>(&LayerRadialGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::LayerRadialGradient*(const cocos2d::Color4B&, const cocos2d::Color4B&, float, const cocos2d::Vec2&, float)>(&LayerRadialGradient::create), allow_raw_pointers())
     .property("_className",  optional_override([](const LayerRadialGradient& _) -> std::string {return "LayerRadialGradient";}))    
-    // TODO: assign cc.Class.extend to cc.LayerRadialGradient.extend
+    .allow_subclass<emscripten::wrapper<LayerRadialGradient>>("_subclass.cc.LayerRadialGradient")
     ;
 
 
@@ -2568,9 +2581,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("addLayer", &LayerMultiplex::addLayer, allow_raw_pointers())
     .function("switchTo", select_overload<void(int, bool)>(&LayerMultiplex::switchTo))
     .function("switchTo", select_overload<void(int)>(&LayerMultiplex::switchTo))
-    .function("ctor", &cc_bindings_ctor<LayerMultiplex>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const LayerMultiplex& _) -> std::string {return "LayerMultiplex";}))    
-    // TODO: assign cc.Class.extend to cc.LayerMultiplex.extend
+    .allow_subclass<emscripten::wrapper<LayerMultiplex>>("_subclass.cc.LayerMultiplex")
     ;
 
 
@@ -2585,9 +2598,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setCallback", &MenuItem::setCallback)
     .function("unselected", &MenuItem::unselected)
     .function("rect", &MenuItem::rect)
-    .function("ctor", &cc_bindings_ctor<MenuItem>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItem& _) -> std::string {return "MenuItem";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItem.extend
+    .allow_subclass<emscripten::wrapper<MenuItem>>("_subclass.cc.MenuItem")
     ;
 
 
@@ -2599,25 +2612,25 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setString", &MenuItemLabel::setString)
     .function("setDisabledColor", &MenuItemLabel::setDisabledColor)
     .function("getLabel", &MenuItemLabel::getLabel, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<MenuItemLabel>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItemLabel& _) -> std::string {return "MenuItemLabel";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItemLabel.extend
+    .allow_subclass<emscripten::wrapper<MenuItemLabel>>("_subclass.cc.MenuItemLabel")
     ;
 
 
   class_<MenuItemAtlasFont, base<MenuItemLabel>>("cc.MenuItemAtlasFont")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<MenuItemAtlasFont>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItemAtlasFont& _) -> std::string {return "MenuItemAtlasFont";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItemAtlasFont.extend
+    .allow_subclass<emscripten::wrapper<MenuItemAtlasFont>>("_subclass.cc.MenuItemAtlasFont")
     ;
 
 
   class_<MenuItemFont, base<MenuItemLabel>>("cc.MenuItemFont")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<MenuItemFont>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItemFont& _) -> std::string {return "MenuItemFont";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItemFont.extend
+    .allow_subclass<emscripten::wrapper<MenuItemFont>>("_subclass.cc.MenuItemFont")
     ;
 
 
@@ -2632,9 +2645,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getSelectedImage", &MenuItemSprite::getSelectedImage, allow_raw_pointers())
     .function("getNormalImage", &MenuItemSprite::getNormalImage, allow_raw_pointers())
     .function("unselected", &MenuItemSprite::unselected)
-    .function("ctor", &cc_bindings_ctor<MenuItemSprite>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItemSprite& _) -> std::string {return "MenuItemSprite";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItemSprite.extend
+    .allow_subclass<emscripten::wrapper<MenuItemSprite>>("_subclass.cc.MenuItemSprite")
     ;
 
 
@@ -2644,9 +2657,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setSelectedSpriteFrame", &MenuItemImage::setSelectedSpriteFrame, allow_raw_pointers())
     .function("setNormalSpriteFrame", &MenuItemImage::setNormalSpriteFrame, allow_raw_pointers())
     .function("init", &MenuItemImage::init)
-    .function("ctor", &cc_bindings_ctor<MenuItemImage>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItemImage& _) -> std::string {return "MenuItemImage";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItemImage.extend
+    .allow_subclass<emscripten::wrapper<MenuItemImage>>("_subclass.cc.MenuItemImage")
     ;
 
 
@@ -2658,9 +2671,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("addSubItem", &MenuItemToggle::addSubItem, allow_raw_pointers())
     .function("getSelectedItem", &MenuItemToggle::getSelectedItem, allow_raw_pointers())
     .function("setSelectedIndex", &MenuItemToggle::setSelectedIndex)
-    .function("ctor", &cc_bindings_ctor<MenuItemToggle>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const MenuItemToggle& _) -> std::string {return "MenuItemToggle";}))    
-    // TODO: assign cc.Class.extend to cc.MenuItemToggle.extend
+    .allow_subclass<emscripten::wrapper<MenuItemToggle>>("_subclass.cc.MenuItemToggle")
     ;
 
 
@@ -2673,9 +2686,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("alignItemsHorizontally", &Menu::alignItemsHorizontally)
     .function("alignItemsHorizontallyWithPadding", &Menu::alignItemsHorizontallyWithPadding)
     .function("alignItemsVerticallyWithPadding", &Menu::alignItemsVerticallyWithPadding)
-    .function("ctor", &cc_bindings_ctor<Menu>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const Menu& _) -> std::string {return "Menu";}))    
-    // TODO: assign cc.Class.extend to cc.Menu.extend
+    .allow_subclass<emscripten::wrapper<Menu>>("_subclass.cc.Menu")
     ;
 
 
@@ -2695,11 +2708,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setFastMode", &MotionStreak::setFastMode)
     .function("setStroke", &MotionStreak::setStroke)
-    .function("ctor", &cc_bindings_ctor<MotionStreak>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::MotionStreak*(float, float, float, const cocos2d::Color3B&, cocos2d::Texture2D*)>(&MotionStreak::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const MotionStreak& _) -> std::string {return "MotionStreak";}))    
-    // TODO: assign cc.Class.extend to cc.MotionStreak.extend
+    .allow_subclass<emscripten::wrapper<MotionStreak>>("_subclass.cc.MotionStreak")
     ;
 
 
@@ -2729,7 +2742,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getBlendFunc", &ParticleBatchNode::getBlendFunc)
     .function("insertChild", &ParticleBatchNode::insertChild, allow_raw_pointers())
     .function("removeChildAtIndex", &ParticleBatchNode::removeChildAtIndex)
-    .function("ctor", &cc_bindings_ctor<ParticleBatchNode>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ParticleBatchNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](const std::string& arg0){
@@ -2741,7 +2754,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         return ParticleBatchNode::createWithTexture(arg0);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const ParticleBatchNode& _) -> std::string {return "ParticleBatchNode";}))    
-    // TODO: assign cc.Class.extend to cc.ParticleBatchNode.extend
+    .allow_subclass<emscripten::wrapper<ParticleBatchNode>>("_subclass.cc.ParticleBatchNode")
     ;
 
 
@@ -2865,12 +2878,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setBlendFunc", &ParticleSystem::setBlendFunc)
     .function("getEndRadiusVar", &ParticleSystem::getEndRadiusVar)
     .function("getStartColorVar", &ParticleSystem::getStartColorVar)
-    .function("ctor", &cc_bindings_ctor<ParticleSystem>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ParticleSystem::create, allow_raw_pointers())
     .class_function("createWithTotalParticles", &ParticleSystem::createWithTotalParticles, allow_raw_pointers())
     .class_function("getAllParticleSystems", &ParticleSystem::getAllParticleSystems, allow_raw_pointers())
     .property("_className",  optional_override([](const ParticleSystem& _) -> std::string {return "ParticleSystem";}))    
-    // TODO: assign cc.Class.extend to cc.ParticleSystem.extend
+    .allow_subclass<emscripten::wrapper<ParticleSystem>>("_subclass.cc.ParticleSystem")
     ;
 
 
@@ -3009,10 +3022,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getMidpoint", &ProgressTimer::getMidpoint)
     .function("setPercentage", &ProgressTimer::setPercentage)
     .function("setType", &ProgressTimer::setType)
-    .function("ctor", &cc_bindings_ctor<ProgressTimer>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ProgressTimer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressTimer& _) -> std::string {return "ProgressTimer";}))    
-    // TODO: assign cc.Class.extend to cc.ProgressTimer.extend
+    .allow_subclass<emscripten::wrapper<ProgressTimer>>("_subclass.cc.ProgressTimer")
     ;
 
 
@@ -3091,9 +3104,9 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("isFlippedX", &Sprite::isFlippedX)
     .function("isFlippedY", &Sprite::isFlippedY)
     .function("setVertexRect", &Sprite::setVertexRect)
-    .function("ctor", &cc_bindings_ctor<Sprite>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const Sprite& _) -> std::string {return "Sprite";}))    
-    // TODO: assign cc.Class.extend to cc.Sprite.extend
+    .allow_subclass<emscripten::wrapper<Sprite>>("_subclass.cc.Sprite")
     ;
 
 
@@ -3128,12 +3141,12 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setClearDepth", &RenderTexture::setClearDepth)
     .function("initWithWidthAndHeight", select_overload<bool(int, int, cocos2d::Texture2D::PixelFormat, unsigned int)>(&RenderTexture::initWithWidthAndHeight))
     .function("initWithWidthAndHeight", select_overload<bool(int, int, cocos2d::Texture2D::PixelFormat)>(&RenderTexture::initWithWidthAndHeight))
-    .function("ctor", &cc_bindings_ctor<RenderTexture>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RenderTexture*(int, int, cocos2d::Texture2D::PixelFormat)>(&RenderTexture::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RenderTexture*(int, int, cocos2d::Texture2D::PixelFormat, unsigned int)>(&RenderTexture::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::RenderTexture*(int, int)>(&RenderTexture::create), allow_raw_pointers())
     .property("_className",  optional_override([](const RenderTexture& _) -> std::string {return "RenderTexture";}))    
-    // TODO: assign cc.Class.extend to cc.RenderTexture.extend
+    .allow_subclass<emscripten::wrapper<RenderTexture>>("_subclass.cc.RenderTexture")
     ;
 
   class_<TransitionEaseScene>("cc.TransitionEaseScene")
@@ -3149,38 +3162,38 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("initWithDuration", &TransitionScene::initWithDuration, allow_raw_pointers())
     .function("getDuration", &TransitionScene::getDuration)
     .function("hideOutShowIn", &TransitionScene::hideOutShowIn)
-    .function("ctor", &cc_bindings_ctor<TransitionScene>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionScene::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionScene& _) -> std::string {return "TransitionScene";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionScene.extend
+    .allow_subclass<emscripten::wrapper<TransitionScene>>("_subclass.cc.TransitionScene")
     ;
 
 
   class_<TransitionSceneOriented, base<TransitionScene>>("cc.TransitionSceneOriented")
     .constructor<>()
     .function("initWithDuration", &TransitionSceneOriented::initWithDuration, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionSceneOriented>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSceneOriented::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSceneOriented& _) -> std::string {return "TransitionSceneOriented";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSceneOriented.extend
+    .allow_subclass<emscripten::wrapper<TransitionSceneOriented>>("_subclass.cc.TransitionSceneOriented")
     ;
 
 
   class_<TransitionRotoZoom, base<TransitionScene>>("cc.TransitionRotoZoom")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionRotoZoom>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionRotoZoom::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionRotoZoom& _) -> std::string {return "TransitionRotoZoom";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionRotoZoom.extend
+    .allow_subclass<emscripten::wrapper<TransitionRotoZoom>>("_subclass.cc.TransitionRotoZoom")
     ;
 
 
   class_<TransitionJumpZoom, base<TransitionScene>>("cc.TransitionJumpZoom")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionJumpZoom>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionJumpZoom::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionJumpZoom& _) -> std::string {return "TransitionJumpZoom";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionJumpZoom.extend
+    .allow_subclass<emscripten::wrapper<TransitionJumpZoom>>("_subclass.cc.TransitionJumpZoom")
     ;
 
 
@@ -3188,37 +3201,37 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("action", &TransitionMoveInL::action, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionMoveInL::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionMoveInL>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionMoveInL::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInL& _) -> std::string {return "TransitionMoveInL";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionMoveInL.extend
+    .allow_subclass<emscripten::wrapper<TransitionMoveInL>>("_subclass.cc.TransitionMoveInL")
     ;
 
 
   class_<TransitionMoveInR, base<TransitionMoveInL>>("cc.TransitionMoveInR")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionMoveInR>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionMoveInR::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInR& _) -> std::string {return "TransitionMoveInR";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionMoveInR.extend
+    .allow_subclass<emscripten::wrapper<TransitionMoveInR>>("_subclass.cc.TransitionMoveInR")
     ;
 
 
   class_<TransitionMoveInT, base<TransitionMoveInL>>("cc.TransitionMoveInT")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionMoveInT>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionMoveInT::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInT& _) -> std::string {return "TransitionMoveInT";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionMoveInT.extend
+    .allow_subclass<emscripten::wrapper<TransitionMoveInT>>("_subclass.cc.TransitionMoveInT")
     ;
 
 
   class_<TransitionMoveInB, base<TransitionMoveInL>>("cc.TransitionMoveInB")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionMoveInB>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionMoveInB::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInB& _) -> std::string {return "TransitionMoveInB";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionMoveInB.extend
+    .allow_subclass<emscripten::wrapper<TransitionMoveInB>>("_subclass.cc.TransitionMoveInB")
     ;
 
 
@@ -3226,107 +3239,107 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("action", &TransitionSlideInL::action, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionSlideInL::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionSlideInL>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSlideInL::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInL& _) -> std::string {return "TransitionSlideInL";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSlideInL.extend
+    .allow_subclass<emscripten::wrapper<TransitionSlideInL>>("_subclass.cc.TransitionSlideInL")
     ;
 
 
   class_<TransitionSlideInR, base<TransitionSlideInL>>("cc.TransitionSlideInR")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionSlideInR>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSlideInR::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInR& _) -> std::string {return "TransitionSlideInR";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSlideInR.extend
+    .allow_subclass<emscripten::wrapper<TransitionSlideInR>>("_subclass.cc.TransitionSlideInR")
     ;
 
 
   class_<TransitionSlideInB, base<TransitionSlideInL>>("cc.TransitionSlideInB")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionSlideInB>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSlideInB::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInB& _) -> std::string {return "TransitionSlideInB";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSlideInB.extend
+    .allow_subclass<emscripten::wrapper<TransitionSlideInB>>("_subclass.cc.TransitionSlideInB")
     ;
 
 
   class_<TransitionSlideInT, base<TransitionSlideInL>>("cc.TransitionSlideInT")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionSlideInT>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSlideInT::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInT& _) -> std::string {return "TransitionSlideInT";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSlideInT.extend
+    .allow_subclass<emscripten::wrapper<TransitionSlideInT>>("_subclass.cc.TransitionSlideInT")
     ;
 
 
   class_<TransitionShrinkGrow, base<TransitionScene>>("cc.TransitionShrinkGrow")
     .constructor<>()
     .function("easeActionWithAction", &TransitionShrinkGrow::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionShrinkGrow>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionShrinkGrow::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionShrinkGrow& _) -> std::string {return "TransitionShrinkGrow";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionShrinkGrow.extend
+    .allow_subclass<emscripten::wrapper<TransitionShrinkGrow>>("_subclass.cc.TransitionShrinkGrow")
     ;
 
 
   class_<TransitionFlipX, base<TransitionSceneOriented>>("cc.TransitionFlipX")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionFlipX>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFlipX*(float, cocos2d::Scene*)>(&TransitionFlipX::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFlipX*(float, cocos2d::Scene*, cocos2d::TransitionScene::Orientation)>(&TransitionFlipX::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFlipX& _) -> std::string {return "TransitionFlipX";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFlipX.extend
+    .allow_subclass<emscripten::wrapper<TransitionFlipX>>("_subclass.cc.TransitionFlipX")
     ;
 
 
   class_<TransitionFlipY, base<TransitionSceneOriented>>("cc.TransitionFlipY")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionFlipY>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFlipY*(float, cocos2d::Scene*)>(&TransitionFlipY::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFlipY*(float, cocos2d::Scene*, cocos2d::TransitionScene::Orientation)>(&TransitionFlipY::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFlipY& _) -> std::string {return "TransitionFlipY";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFlipY.extend
+    .allow_subclass<emscripten::wrapper<TransitionFlipY>>("_subclass.cc.TransitionFlipY")
     ;
 
 
   class_<TransitionFlipAngular, base<TransitionSceneOriented>>("cc.TransitionFlipAngular")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionFlipAngular>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFlipAngular*(float, cocos2d::Scene*)>(&TransitionFlipAngular::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFlipAngular*(float, cocos2d::Scene*, cocos2d::TransitionScene::Orientation)>(&TransitionFlipAngular::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFlipAngular& _) -> std::string {return "TransitionFlipAngular";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFlipAngular.extend
+    .allow_subclass<emscripten::wrapper<TransitionFlipAngular>>("_subclass.cc.TransitionFlipAngular")
     ;
 
 
   class_<TransitionZoomFlipX, base<TransitionSceneOriented>>("cc.TransitionZoomFlipX")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionZoomFlipX>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionZoomFlipX*(float, cocos2d::Scene*)>(&TransitionZoomFlipX::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionZoomFlipX*(float, cocos2d::Scene*, cocos2d::TransitionScene::Orientation)>(&TransitionZoomFlipX::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionZoomFlipX& _) -> std::string {return "TransitionZoomFlipX";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionZoomFlipX.extend
+    .allow_subclass<emscripten::wrapper<TransitionZoomFlipX>>("_subclass.cc.TransitionZoomFlipX")
     ;
 
 
   class_<TransitionZoomFlipY, base<TransitionSceneOriented>>("cc.TransitionZoomFlipY")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionZoomFlipY>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionZoomFlipY*(float, cocos2d::Scene*)>(&TransitionZoomFlipY::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionZoomFlipY*(float, cocos2d::Scene*, cocos2d::TransitionScene::Orientation)>(&TransitionZoomFlipY::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionZoomFlipY& _) -> std::string {return "TransitionZoomFlipY";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionZoomFlipY.extend
+    .allow_subclass<emscripten::wrapper<TransitionZoomFlipY>>("_subclass.cc.TransitionZoomFlipY")
     ;
 
 
   class_<TransitionZoomFlipAngular, base<TransitionSceneOriented>>("cc.TransitionZoomFlipAngular")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionZoomFlipAngular>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionZoomFlipAngular*(float, cocos2d::Scene*)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionZoomFlipAngular*(float, cocos2d::Scene*, cocos2d::TransitionScene::Orientation)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionZoomFlipAngular& _) -> std::string {return "TransitionZoomFlipAngular";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionZoomFlipAngular.extend
+    .allow_subclass<emscripten::wrapper<TransitionZoomFlipAngular>>("_subclass.cc.TransitionZoomFlipAngular")
     ;
 
 
@@ -3334,30 +3347,30 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("initWithDuration", select_overload<bool(float, cocos2d::Scene*)>(&TransitionFade::initWithDuration), allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, cocos2d::Scene*, const cocos2d::Color3B&)>(&TransitionFade::initWithDuration), allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionFade>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFade*(float, cocos2d::Scene*)>(&TransitionFade::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TransitionFade*(float, cocos2d::Scene*, const cocos2d::Color3B&)>(&TransitionFade::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFade& _) -> std::string {return "TransitionFade";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFade.extend
+    .allow_subclass<emscripten::wrapper<TransitionFade>>("_subclass.cc.TransitionFade")
     ;
 
 
   class_<TransitionCrossFade, base<TransitionScene>>("cc.TransitionCrossFade")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionCrossFade>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionCrossFade::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionCrossFade& _) -> std::string {return "TransitionCrossFade";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionCrossFade.extend
+    .allow_subclass<emscripten::wrapper<TransitionCrossFade>>("_subclass.cc.TransitionCrossFade")
     ;
 
 
   class_<TransitionTurnOffTiles, base<TransitionScene>>("cc.TransitionTurnOffTiles")
     .constructor<>()
     .function("easeActionWithAction", &TransitionTurnOffTiles::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionTurnOffTiles>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionTurnOffTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionTurnOffTiles& _) -> std::string {return "TransitionTurnOffTiles";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionTurnOffTiles.extend
+    .allow_subclass<emscripten::wrapper<TransitionTurnOffTiles>>("_subclass.cc.TransitionTurnOffTiles")
     ;
 
 
@@ -3365,19 +3378,19 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("action", &TransitionSplitCols::action, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionSplitCols::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionSplitCols>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSplitCols::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSplitCols& _) -> std::string {return "TransitionSplitCols";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSplitCols.extend
+    .allow_subclass<emscripten::wrapper<TransitionSplitCols>>("_subclass.cc.TransitionSplitCols")
     ;
 
 
   class_<TransitionSplitRows, base<TransitionSplitCols>>("cc.TransitionSplitRows")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionSplitRows>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionSplitRows::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSplitRows& _) -> std::string {return "TransitionSplitRows";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionSplitRows.extend
+    .allow_subclass<emscripten::wrapper<TransitionSplitRows>>("_subclass.cc.TransitionSplitRows")
     ;
 
 
@@ -3385,37 +3398,37 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("easeActionWithAction", &TransitionFadeTR::easeActionWithAction, allow_raw_pointers())
     .function("actionWithSize", &TransitionFadeTR::actionWithSize, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionFadeTR>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionFadeTR::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeTR& _) -> std::string {return "TransitionFadeTR";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFadeTR.extend
+    .allow_subclass<emscripten::wrapper<TransitionFadeTR>>("_subclass.cc.TransitionFadeTR")
     ;
 
 
   class_<TransitionFadeBL, base<TransitionFadeTR>>("cc.TransitionFadeBL")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionFadeBL>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionFadeBL::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeBL& _) -> std::string {return "TransitionFadeBL";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFadeBL.extend
+    .allow_subclass<emscripten::wrapper<TransitionFadeBL>>("_subclass.cc.TransitionFadeBL")
     ;
 
 
   class_<TransitionFadeUp, base<TransitionFadeTR>>("cc.TransitionFadeUp")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionFadeUp>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionFadeUp::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeUp& _) -> std::string {return "TransitionFadeUp";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFadeUp.extend
+    .allow_subclass<emscripten::wrapper<TransitionFadeUp>>("_subclass.cc.TransitionFadeUp")
     ;
 
 
   class_<TransitionFadeDown, base<TransitionFadeTR>>("cc.TransitionFadeDown")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionFadeDown>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionFadeDown::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeDown& _) -> std::string {return "TransitionFadeDown";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionFadeDown.extend
+    .allow_subclass<emscripten::wrapper<TransitionFadeDown>>("_subclass.cc.TransitionFadeDown")
     ;
 
 
@@ -3423,73 +3436,73 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("actionWithSize", &TransitionPageTurn::actionWithSize, allow_raw_pointers())
     .function("initWithDuration", &TransitionPageTurn::initWithDuration, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TransitionPageTurn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionPageTurn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionPageTurn& _) -> std::string {return "TransitionPageTurn";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionPageTurn.extend
+    .allow_subclass<emscripten::wrapper<TransitionPageTurn>>("_subclass.cc.TransitionPageTurn")
     ;
 
 
   class_<TransitionProgress, base<TransitionScene>>("cc.TransitionProgress")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgress>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgress::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgress& _) -> std::string {return "TransitionProgress";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgress.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgress>>("_subclass.cc.TransitionProgress")
     ;
 
 
   class_<TransitionProgressRadialCCW, base<TransitionProgress>>("cc.TransitionProgressRadialCCW")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgressRadialCCW>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgressRadialCCW::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressRadialCCW& _) -> std::string {return "TransitionProgressRadialCCW";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgressRadialCCW.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgressRadialCCW>>("_subclass.cc.TransitionProgressRadialCCW")
     ;
 
 
   class_<TransitionProgressRadialCW, base<TransitionProgress>>("cc.TransitionProgressRadialCW")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgressRadialCW>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgressRadialCW::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressRadialCW& _) -> std::string {return "TransitionProgressRadialCW";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgressRadialCW.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgressRadialCW>>("_subclass.cc.TransitionProgressRadialCW")
     ;
 
 
   class_<TransitionProgressHorizontal, base<TransitionProgress>>("cc.TransitionProgressHorizontal")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgressHorizontal>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgressHorizontal::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressHorizontal& _) -> std::string {return "TransitionProgressHorizontal";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgressHorizontal.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgressHorizontal>>("_subclass.cc.TransitionProgressHorizontal")
     ;
 
 
   class_<TransitionProgressVertical, base<TransitionProgress>>("cc.TransitionProgressVertical")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgressVertical>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgressVertical::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressVertical& _) -> std::string {return "TransitionProgressVertical";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgressVertical.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgressVertical>>("_subclass.cc.TransitionProgressVertical")
     ;
 
 
   class_<TransitionProgressInOut, base<TransitionProgress>>("cc.TransitionProgressInOut")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgressInOut>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgressInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressInOut& _) -> std::string {return "TransitionProgressInOut";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgressInOut.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgressInOut>>("_subclass.cc.TransitionProgressInOut")
     ;
 
 
   class_<TransitionProgressOutIn, base<TransitionProgress>>("cc.TransitionProgressOutIn")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TransitionProgressOutIn>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TransitionProgressOutIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressOutIn& _) -> std::string {return "TransitionProgressOutIn";}))    
-    // TODO: assign cc.Class.extend to cc.TransitionProgressOutIn.extend
+    .allow_subclass<emscripten::wrapper<TransitionProgressOutIn>>("_subclass.cc.TransitionProgressOutIn")
     ;
 
 
@@ -3616,7 +3629,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .class_function("create", select_overload<cocos2d::GridBase*(const cocos2d::Size&)>(&GridBase::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::GridBase*(const cocos2d::Size&, cocos2d::Texture2D*, bool)>(&GridBase::create), allow_raw_pointers())
     .property("_className",  optional_override([](const GridBase& _) -> std::string {return "GridBase";}))    
-    // TODO: assign cc.Class.extend to cc.GridBase.extend
+    .allow_subclass<emscripten::wrapper<GridBase>>("_subclass.cc.GridBase")
     ;
 
 
@@ -3624,25 +3637,25 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .constructor<>()
     .function("getNeedDepthTestForBlit", &Grid3D::getNeedDepthTestForBlit)
     .function("setNeedDepthTestForBlit", &Grid3D::setNeedDepthTestForBlit)
-    .function("ctor", &cc_bindings_ctor<Grid3D>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Grid3D*(const cocos2d::Size&, const cocos2d::Rect&)>(&Grid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Grid3D*(const cocos2d::Size&)>(&Grid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Grid3D*(const cocos2d::Size&, cocos2d::Texture2D*, bool)>(&Grid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Grid3D*(const cocos2d::Size&, cocos2d::Texture2D*, bool, const cocos2d::Rect&)>(&Grid3D::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Grid3D& _) -> std::string {return "Grid3D";}))    
-    // TODO: assign cc.Class.extend to cc.Grid3D.extend
+    .allow_subclass<emscripten::wrapper<Grid3D>>("_subclass.cc.Grid3D")
     ;
 
 
   class_<TiledGrid3D, base<GridBase>>("cc.TiledGrid3D")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<TiledGrid3D>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TiledGrid3D*(const cocos2d::Size&, const cocos2d::Rect&)>(&TiledGrid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TiledGrid3D*(const cocos2d::Size&)>(&TiledGrid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TiledGrid3D*(const cocos2d::Size&, cocos2d::Texture2D*, bool)>(&TiledGrid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TiledGrid3D*(const cocos2d::Size&, cocos2d::Texture2D*, bool, const cocos2d::Rect&)>(&TiledGrid3D::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TiledGrid3D& _) -> std::string {return "TiledGrid3D";}))    
-    // TODO: assign cc.Class.extend to cc.TiledGrid3D.extend
+    .allow_subclass<emscripten::wrapper<TiledGrid3D>>("_subclass.cc.TiledGrid3D")
     ;
 
   class_<BaseLight, base<Node>>("cc.BaseLight")
@@ -3731,7 +3744,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("setUniformLocationWith4i", &GLProgram::setUniformLocationWith4i)
     .function("setUniformLocationI32", &GLProgram::setUniformLocationWith1i)
     .function("setUniformLocationWith2i", &GLProgram::setUniformLocationWith2i)
-    .function("ctor", &cc_bindings_ctor<GLProgram>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<cocos2d::GLProgram*(const char*, const char*, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<cocos2d::GLProgram*(const char*, const char*)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<cocos2d::GLProgram*(const char*, const char*, const std::string&, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
@@ -3739,7 +3752,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .class_function("createWithFilenames", select_overload<cocos2d::GLProgram*(const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
     .class_function("createWithFilenames", select_overload<cocos2d::GLProgram*(const std::string&, const std::string&, const std::string&, const std::string&)>(&GLProgram::createWithFilenames), allow_raw_pointers())
     .property("_className",  optional_override([](const GLProgram& _) -> std::string {return "GLProgram";}))    
-    // TODO: assign cc.Class.extend to cc.GLProgram.extend
+    .allow_subclass<emscripten::wrapper<GLProgram>>("_subclass.cc.GLProgram")
     ;
 
 
@@ -3879,11 +3892,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("addAnimationsWithDictionary", &AnimationCache::addAnimationsWithDictionary)
     .function("removeAnimation", &AnimationCache::removeAnimation)
     .function("addAnimations", &AnimationCache::addAnimationsWithFile)
-    .function("ctor", &cc_bindings_ctor<AnimationCache>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("destroyInstance", &AnimationCache::destroyInstance, allow_raw_pointers())
     .class_function("getInstance", &AnimationCache::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const AnimationCache& _) -> std::string {return "AnimationCache";}))    
-    // TODO: assign cc.Class.extend to cc.AnimationCache.extend
+    .allow_subclass<emscripten::wrapper<AnimationCache>>("_subclass.cc.AnimationCache")
     ;
 
 
@@ -3917,7 +3930,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("rebuildIndexInOrder", &SpriteBatchNode::rebuildIndexInOrder, allow_raw_pointers())
     .function("getTextureAtlas", &SpriteBatchNode::getTextureAtlas, allow_raw_pointers())
     .function("highestAtlasIndexInChild", &SpriteBatchNode::highestAtlasIndexInChild, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<SpriteBatchNode>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &SpriteBatchNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](const std::string& arg0){
@@ -3929,7 +3942,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
         return SpriteBatchNode::createWithTexture(arg0);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const SpriteBatchNode& _) -> std::string {return "SpriteBatchNode";}))    
-    // TODO: assign cc.Class.extend to cc.SpriteBatchNode.extend
+    .allow_subclass<emscripten::wrapper<SpriteBatchNode>>("_subclass.cc.SpriteBatchNode")
     ;
 
   class_<SpriteFrameCache>("cc.SpriteFrameCache")
@@ -3975,11 +3988,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getPlaceHolder", &TextFieldTTF::getPlaceHolder)
     .function("setCursorPosition", &TextFieldTTF::setCursorPosition)
     .function("attachWithIME", &TextFieldTTF::attachWithIME)
-    .function("ctor", &cc_bindings_ctor<TextFieldTTF>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TextFieldTTF*(const std::string&, const std::string&, float)>(&TextFieldTTF::textFieldWithPlaceHolder), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::TextFieldTTF*(const std::string&, const cocos2d::Size&, cocos2d::TextHAlignment, const std::string&, float)>(&TextFieldTTF::textFieldWithPlaceHolder), allow_raw_pointers())
     .property("_className",  optional_override([](const TextFieldTTF& _) -> std::string {return "TextFieldTTF";}))    
-    // TODO: assign cc.Class.extend to cc.TextFieldTTF.extend
+    .allow_subclass<emscripten::wrapper<TextFieldTTF>>("_subclass.cc.TextFieldTTF")
     ;
 
 
@@ -3989,10 +4002,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("removeAllChildrenWithCleanup", &ParallaxNode::removeAllChildrenWithCleanup)
     .function("setParallaxArray", &ParallaxNode::setParallaxArray, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<ParallaxNode>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ParallaxNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ParallaxNode& _) -> std::string {return "ParallaxNode";}))    
-    // TODO: assign cc.Class.extend to cc.ParallaxNode.extend
+    .allow_subclass<emscripten::wrapper<ParallaxNode>>("_subclass.cc.ParallaxNode")
     ;
 
 
@@ -4074,11 +4087,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getStaggerIndex", &TMXMapInfo::getStaggerIndex)
     .function("setLayerAttribs", &TMXMapInfo::setLayerAttribs)
-    .function("ctor", &cc_bindings_ctor<TMXMapInfo>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TMXMapInfo::create, allow_raw_pointers())
     .class_function("createWithXML", &TMXMapInfo::createWithXML, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXMapInfo& _) -> std::string {return "TMXMapInfo";}))    
-    // TODO: assign cc.Class.extend to cc.TMXMapInfo.extend
+    .allow_subclass<emscripten::wrapper<TMXMapInfo>>("_subclass.cc.TMXMapInfo")
     ;
 
 
@@ -4115,10 +4128,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getTileAt", &TMXLayer::getTileAt, allow_raw_pointers())
     .function("getTileAnimManager", &TMXLayer::getTileAnimManager, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TMXLayer>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TMXLayer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXLayer& _) -> std::string {return "TMXLayer";}))    
-    // TODO: assign cc.Class.extend to cc.TMXLayer.extend
+    .allow_subclass<emscripten::wrapper<TMXLayer>>("_subclass.cc.TMXLayer")
     ;
 
 
@@ -4165,11 +4178,11 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getLayer", &TMXTiledMap::getLayer, allow_raw_pointers())
     .function("getMapOrientation", &TMXTiledMap::getMapOrientation)
     .function("setMapOrientation", &TMXTiledMap::setMapOrientation)
-    .function("ctor", &cc_bindings_ctor<TMXTiledMap>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TMXTiledMap::create, allow_raw_pointers())
     .class_function("createWithXML", &TMXTiledMap::createWithXML, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXTiledMap& _) -> std::string {return "TMXTiledMap";}))    
-    // TODO: assign cc.Class.extend to cc.TMXTiledMap.extend
+    .allow_subclass<emscripten::wrapper<TMXTiledMap>>("_subclass.cc.TMXTiledMap")
     ;
 
 
@@ -4181,10 +4194,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .function("getTileAt", &TileMapAtlas::getTileAt)
     .function("setTile", &TileMapAtlas::setTile)
     .function("setTGAInfo", &TileMapAtlas::setTGAInfo, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TileMapAtlas>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TileMapAtlas::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TileMapAtlas& _) -> std::string {return "TileMapAtlas";}))    
-    // TODO: assign cc.Class.extend to cc.TileMapAtlas.extend
+    .allow_subclass<emscripten::wrapper<TileMapAtlas>>("_subclass.cc.TileMapAtlas")
     ;
 
   class_<SimpleAudioEngine>("cc.AudioEngine")

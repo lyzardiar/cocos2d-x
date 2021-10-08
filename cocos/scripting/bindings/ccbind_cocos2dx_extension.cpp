@@ -71,14 +71,14 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("initWithLabelAndBackgroundSprite", &ControlButton::initWithLabelAndBackgroundSprite, allow_raw_pointers())
     .function("getZoomOnTouchDown", &ControlButton::getZoomOnTouchDown)
     .function("getTitleForState", &ControlButton::getTitleForState)
-    .function("ctor", &cc_bindings_ctor<ControlButton>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*()>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::Node*, cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(const std::string&, const std::string&, float)>(&ControlButton::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ControlButton& _) -> std::string {return "ControlButton";}))    
-    // TODO: assign cc.Class.extend to cc.ControlButton.extend
+    .allow_subclass<emscripten::wrapper<ControlButton>>("_subclass.cc.ControlButton")
     ;
 
 
@@ -124,10 +124,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("colourSliderValueChanged", &ControlColourPicker::colourSliderValueChanged, allow_raw_pointers())
     .function("setHuePicker", &ControlColourPicker::setHuePicker, allow_raw_pointers())
     .function("getBackground", &ControlColourPicker::getBackground, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<ControlColourPicker>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ControlColourPicker::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlColourPicker& _) -> std::string {return "ControlColourPicker";}))    
-    // TODO: assign cc.Class.extend to cc.ControlColourPicker.extend
+    .allow_subclass<emscripten::wrapper<ControlColourPicker>>("_subclass.cc.ControlColourPicker")
     ;
 
 
@@ -151,10 +151,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("getThumbSprite", &ControlPotentiometer::getThumbSprite, allow_raw_pointers())
     .function("initWithTrackSprite_ProgressTimer_ThumbSprite", &ControlPotentiometer::initWithTrackSprite_ProgressTimer_ThumbSprite, allow_raw_pointers())
     .function("potentiometerMoved", &ControlPotentiometer::potentiometerMoved)
-    .function("ctor", &cc_bindings_ctor<ControlPotentiometer>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ControlPotentiometer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlPotentiometer& _) -> std::string {return "ControlPotentiometer";}))    
-    // TODO: assign cc.Class.extend to cc.ControlPotentiometer.extend
+    .allow_subclass<emscripten::wrapper<ControlPotentiometer>>("_subclass.cc.ControlPotentiometer")
     ;
 
 
@@ -181,13 +181,13 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("getProgressSprite", &ControlSlider::getProgressSprite, allow_raw_pointers())
     .function("setSelectedThumbSprite", &ControlSlider::setSelectedThumbSprite, allow_raw_pointers())
     .function("setMaximumAllowedValue", &ControlSlider::setMaximumAllowedValue)
-    .function("ctor", &cc_bindings_ctor<ControlSlider>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlSlider*(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*)>(&ControlSlider::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::extension::ControlSlider*(const char*, const char*, const char*, const char*)>(&ControlSlider::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ControlSlider& _) -> std::string {return "ControlSlider";}))    
-    // TODO: assign cc.Class.extend to cc.ControlSlider.extend
+    .allow_subclass<emscripten::wrapper<ControlSlider>>("_subclass.cc.ControlSlider")
     ;
 
 
@@ -213,10 +213,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("getPlusSprite", &ControlStepper::getPlusSprite, allow_raw_pointers())
     .function("setPlusSprite", &ControlStepper::setPlusSprite, allow_raw_pointers())
     .function("setMinusSprite", &ControlStepper::setMinusSprite, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<ControlStepper>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ControlStepper::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlStepper& _) -> std::string {return "ControlStepper";}))    
-    // TODO: assign cc.Class.extend to cc.ControlStepper.extend
+    .allow_subclass<emscripten::wrapper<ControlStepper>>("_subclass.cc.ControlStepper")
     ;
 
 
@@ -229,11 +229,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("initWithMaskSprite", select_overload<bool(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Label*, cocos2d::Label*)>(&ControlSwitch::initWithMaskSprite), allow_raw_pointers())
     .function("initWithMaskSprite", select_overload<bool(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*)>(&ControlSwitch::initWithMaskSprite), allow_raw_pointers())
     .function("hasMoved", &ControlSwitch::hasMoved)
-    .function("ctor", &cc_bindings_ctor<ControlSwitch>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlSwitch*(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*)>(&ControlSwitch::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlSwitch*(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Label*, cocos2d::Label*)>(&ControlSwitch::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ControlSwitch& _) -> std::string {return "ControlSwitch";}))    
-    // TODO: assign cc.Class.extend to cc.ControlSwitch.extend
+    .allow_subclass<emscripten::wrapper<ControlSwitch>>("_subclass.cc.ControlSwitch")
     ;
 
 
@@ -281,12 +281,12 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("getDirection", &ScrollView::getDirection)
     .function("setZoomScale", select_overload<void(float, bool)>(&ScrollView::setZoomScale))
     .function("setZoomScale", select_overload<void(float)>(&ScrollView::setZoomScale))
-    .function("ctor", &cc_bindings_ctor<ScrollView>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ScrollView*()>(&ScrollView::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ScrollView*(cocos2d::Size, cocos2d::Node*)>(&ScrollView::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
-    // TODO: assign cc.Class.extend to cc.ScrollView.extend
+    .allow_subclass<emscripten::wrapper<ScrollView>>("_subclass.cc.ScrollView")
     ;
 
 
@@ -295,10 +295,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("reset", &TableViewCell::reset)
     .function("getIdx", &TableViewCell::getIdx)
     .function("setIdx", &TableViewCell::setIdx)
-    .function("ctor", &cc_bindings_ctor<TableViewCell>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TableViewCell::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TableViewCell& _) -> std::string {return "TableViewCell";}))    
-    // TODO: assign cc.Class.extend to cc.TableViewCell.extend
+    .allow_subclass<emscripten::wrapper<TableViewCell>>("_subclass.cc.TableViewCell")
     ;
 
 
@@ -320,9 +320,9 @@ COCOS_BINDINGS(ccbind_cocos2dx_extension) {
     .function("insertCellAtIndex", &TableView::insertCellAtIndex)
     .function("cellAtIndex", &TableView::cellAtIndex, allow_raw_pointers())
     .function("dequeueCell", &TableView::dequeueCell, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<TableView>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const TableView& _) -> std::string {return "TableView";}))    
-    // TODO: assign cc.Class.extend to cc.TableView.extend
+    .allow_subclass<emscripten::wrapper<TableView>>("_subclass.cc.TableView")
     ;
 
 

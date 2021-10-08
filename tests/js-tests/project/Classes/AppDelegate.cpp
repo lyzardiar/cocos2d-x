@@ -84,6 +84,7 @@
 #else
 #include <emscripten.h>
 #include <emscripten/bind.h>
+#include "scripting/bindings/CCScriptEngine.h"
 #endif // CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN
 
 USING_NS_CC;
@@ -194,6 +195,9 @@ bool AppDelegate::applicationDidFinishLaunching()
 
     sc->runScript("main.js");
 #else
+    cocos2d::bindings::CCScriptEngine* sc = cocos2d::bindings::CCScriptEngine::getInstance();
+    ScriptEngineManager::getInstance()->setScriptEngine(sc);
+
     EM_ASM({
         Module.cocosInitialized(UTF8ToString($0), UTF8ToString($1));
     }, "script/jsb_boot.js", "main.js");

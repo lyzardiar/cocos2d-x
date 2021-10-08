@@ -115,11 +115,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setBright", &Widget::setBright)
     .function("setCallbackType", &Widget::setCallbackType)
     .function("isSwallowTouches", &Widget::isSwallowTouches)
-    .function("ctor", &cc_bindings_ctor<Widget>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("enableDpadNavigation", &Widget::enableDpadNavigation, allow_raw_pointers())
     .class_function("create", &Widget::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Widget& _) -> std::string {return "Widget";}))    
-    // TODO: assign cc.Class.extend to ccui.Widget.extend
+    .allow_subclass<emscripten::wrapper<Widget>>("_subclass.ccui.Widget")
     ;
 
 
@@ -164,10 +164,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getBackGroundStartColor", &Layout::getBackGroundStartColor)
     .function("setBackGroundImageScale9Enabled", &Layout::setBackGroundImageScale9Enabled)
     .function("setLayoutType", &Layout::setLayoutType)
-    .function("ctor", &cc_bindings_ctor<Layout>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &Layout::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Layout& _) -> std::string {return "Layout";}))    
-    // TODO: assign cc.Class.extend to ccui.Layout.extend
+    .allow_subclass<emscripten::wrapper<Layout>>("_subclass.ccui.Layout")
     ;
 
 
@@ -217,14 +217,14 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getTitleColor", &Button::getTitleColor)
     .function("setPressedActionEnabled", &Button::setPressedActionEnabled)
     .function("setZoomScale", &Button::setZoomScale)
-    .function("ctor", &cc_bindings_ctor<Button>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Button*(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::Button*()>(&Button::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Button& _) -> std::string {return "Button";}))    
-    // TODO: assign cc.Class.extend to ccui.Button.extend
+    .allow_subclass<emscripten::wrapper<Button>>("_subclass.ccui.Button")
     ;
 
   class_<AbstractCheckButton, base<Widget>>("ccui.AbstractCheckButton")
@@ -254,28 +254,28 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
   class_<CheckBox, base<AbstractCheckButton>>("ccui.CheckBox")
     .constructor<>()
     .function("addEventListener", &CheckBox::addEventListener)
-    .function("ctor", &cc_bindings_ctor<CheckBox>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::CheckBox*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&CheckBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::CheckBox*()>(&CheckBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::CheckBox*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&CheckBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const CheckBox& _) -> std::string {return "CheckBox";}))    
-    // TODO: assign cc.Class.extend to ccui.CheckBox.extend
+    .allow_subclass<emscripten::wrapper<CheckBox>>("_subclass.ccui.CheckBox")
     ;
 
 
   class_<RadioButton, base<AbstractCheckButton>>("ccui.RadioButton")
     .constructor<>()
     .function("addEventListener", &RadioButton::addEventListener)
-    .function("ctor", &cc_bindings_ctor<RadioButton>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::RadioButton*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&RadioButton::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::RadioButton*()>(&RadioButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::RadioButton*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&RadioButton::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const RadioButton& _) -> std::string {return "RadioButton";}))    
-    // TODO: assign cc.Class.extend to ccui.RadioButton.extend
+    .allow_subclass<emscripten::wrapper<RadioButton>>("_subclass.ccui.RadioButton")
     ;
 
 
@@ -294,10 +294,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("addRadioButton", &RadioButtonGroup::addRadioButton, allow_raw_pointers())
     .function("setSelectedButton", select_overload<void(cocos2d::ui::RadioButton*)>(&RadioButtonGroup::setSelectedButton), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor<RadioButtonGroup>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RadioButtonGroup::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RadioButtonGroup& _) -> std::string {return "RadioButtonGroup";}))    
-    // TODO: assign cc.Class.extend to ccui.RadioButtonGroup.extend
+    .allow_subclass<emscripten::wrapper<RadioButtonGroup>>("_subclass.ccui.RadioButtonGroup")
     ;
 
 
@@ -311,12 +311,12 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getRenderFile", &ImageView::getRenderFile)
     .function("getCapInsets", &ImageView::getCapInsets)
     .function("isScale9Enabled", &ImageView::isScale9Enabled)
-    .function("ctor", &cc_bindings_ctor<ImageView>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::ImageView*(const std::string&, cocos2d::ui::Widget::TextureResType)>(&ImageView::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::ImageView*()>(&ImageView::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ImageView& _) -> std::string {return "ImageView";}))    
-    // TODO: assign cc.Class.extend to ccui.ImageView.extend
+    .allow_subclass<emscripten::wrapper<ImageView>>("_subclass.ccui.ImageView")
     ;
 
 
@@ -372,11 +372,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getTextVerticalAlignment", &Text::getTextVerticalAlignment)
     .function("getTextAreaSize", &Text::getTextAreaSize)
     .function("setTextHorizontalAlignment", &Text::setTextHorizontalAlignment)
-    .function("ctor", &cc_bindings_ctor<Text>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Text*(const std::string&, const std::string&, float)>(&Text::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Text*()>(&Text::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Text& _) -> std::string {return "Text";}))    
-    // TODO: assign cc.Class.extend to ccui.Text.extend
+    .allow_subclass<emscripten::wrapper<Text>>("_subclass.ccui.Text")
     ;
 
 
@@ -388,11 +388,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getRenderFile", &TextAtlas::getRenderFile)
     .function("setProperty", &TextAtlas::setProperty)
     .function("adaptRenderers", &TextAtlas::adaptRenderers)
-    .function("ctor", &cc_bindings_ctor<TextAtlas>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextAtlas*(const std::string&, const std::string&, int, int, const std::string&)>(&TextAtlas::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextAtlas*()>(&TextAtlas::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextAtlas& _) -> std::string {return "TextAtlas";}))    
-    // TODO: assign cc.Class.extend to ccui.TextAtlas.extend
+    .allow_subclass<emscripten::wrapper<TextAtlas>>("_subclass.ccui.TextAtlas")
     ;
 
 
@@ -407,14 +407,14 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getCapInsets", &LoadingBar::getCapInsets)
     .function("isScale9Enabled", &LoadingBar::isScale9Enabled)
     .function("getPercent", &LoadingBar::getPercent)
-    .function("ctor", &cc_bindings_ctor<LoadingBar>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, float)>(&LoadingBar::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*()>(&LoadingBar::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, cocos2d::ui::Widget::TextureResType, float)>(&LoadingBar::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const LoadingBar& _) -> std::string {return "LoadingBar";}))    
-    // TODO: assign cc.Class.extend to ccui.LoadingBar.extend
+    .allow_subclass<emscripten::wrapper<LoadingBar>>("_subclass.ccui.LoadingBar")
     ;
 
 
@@ -481,10 +481,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("jumpToRight", &ScrollView::jumpToRight)
     .function("getInnerContainerSize", &ScrollView::getInnerContainerSize)
     .function("jumpToPercentHorizontal", &ScrollView::jumpToPercentHorizontal)
-    .function("ctor", &cc_bindings_ctor<ScrollView>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ScrollView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
-    // TODO: assign cc.Class.extend to ccui.ScrollView.extend
+    .allow_subclass<emscripten::wrapper<ScrollView>>("_subclass.ccui.ScrollView")
     ;
 
 
@@ -533,10 +533,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setItemModel", &ListView::setItemModel, allow_raw_pointers())
     .function("getBottomPadding", &ListView::getBottomPadding)
     .function("insertCustomItem", &ListView::insertCustomItem, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<ListView>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ListView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ListView& _) -> std::string {return "ListView";}))    
-    // TODO: assign cc.Class.extend to ccui.ListView.extend
+    .allow_subclass<emscripten::wrapper<ListView>>("_subclass.ccui.ListView")
     ;
 
 
@@ -579,12 +579,12 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setCapInsets", &Slider::setCapInsets)
     .function("getSlidBallNormalRenderer", &Slider::getSlidBallNormalRenderer, allow_raw_pointers())
     .function("setZoomScale", &Slider::setZoomScale)
-    .function("ctor", &cc_bindings_ctor<Slider>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Slider*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::Slider*()>(&Slider::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Slider& _) -> std::string {return "Slider";}))    
-    // TODO: assign cc.Class.extend to ccui.Slider.extend
+    .allow_subclass<emscripten::wrapper<Slider>>("_subclass.ccui.Slider")
     ;
 
 
@@ -668,11 +668,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setCursorEnabled", &TextField::setCursorEnabled)
     .function("setTouchSize", &TextField::setTouchSize)
     .function("getTouchSize", &TextField::getTouchSize)
-    .function("ctor", &cc_bindings_ctor<TextField>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextField*(const std::string&, const std::string&, int)>(&TextField::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextField*()>(&TextField::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextField& _) -> std::string {return "TextField";}))    
-    // TODO: assign cc.Class.extend to ccui.TextField.extend
+    .allow_subclass<emscripten::wrapper<TextField>>("_subclass.ccui.TextField")
     ;
 
 
@@ -684,11 +684,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getRenderFile", &TextBMFont::getRenderFile)
     .function("setFntFile", &TextBMFont::setFntFile)
     .function("resetRender", &TextBMFont::resetRender)
-    .function("ctor", &cc_bindings_ctor<TextBMFont>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextBMFont*(const std::string&, const std::string&)>(&TextBMFont::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextBMFont*()>(&TextBMFont::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextBMFont& _) -> std::string {return "TextBMFont";}))    
-    // TODO: assign cc.Class.extend to ccui.TextBMFont.extend
+    .allow_subclass<emscripten::wrapper<TextBMFont>>("_subclass.ccui.TextBMFont")
     ;
 
 
@@ -730,10 +730,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("removePageAtIndex", &PageView::removePageAtIndex)
     .function("getIndicatorSpaceBetweenIndexNodes", &PageView::getIndicatorSpaceBetweenIndexNodes)
     .function("addPage", &PageView::addPage, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<PageView>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &PageView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const PageView& _) -> std::string {return "PageView";}))    
-    // TODO: assign cc.Class.extend to ccui.PageView.extend
+    .allow_subclass<emscripten::wrapper<PageView>>("_subclass.ccui.PageView")
     ;
 
   class_<Helper>("ccui.Helper")
@@ -754,9 +754,9 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("equalType", &RichElement::equalType)
     .function("init", &RichElement::init)
     .function("setColor", &RichElement::setColor)
-    .function("ctor", &cc_bindings_ctor<RichElement>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .property("_className",  optional_override([](const RichElement& _) -> std::string {return "RichElement";}))    
-    // TODO: assign cc.Class.extend to ccui.RichElement.extend
+    .allow_subclass<emscripten::wrapper<RichElement>>("_subclass.ccui.RichElement")
     ;
 
 
@@ -787,7 +787,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
         [](RichElementText& this_, int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3, const std::string& arg4, float arg5, unsigned int arg6, const std::string& arg7, const cocos2d::Color3B& arg8, int arg9, const cocos2d::Color3B& arg10, const cocos2d::Size& arg11, int arg12){
         return this_.init(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
       }))
-    .function("ctor", &cc_bindings_ctor<RichElementText>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RichElementText::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3, const std::string& arg4, float arg5){
@@ -822,7 +822,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
         return RichElementText::create(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementText& _) -> std::string {return "RichElementText";}))    
-    // TODO: assign cc.Class.extend to ccui.RichElementText.extend
+    .allow_subclass<emscripten::wrapper<RichElementText>>("_subclass.ccui.RichElementText")
     ;
 
 
@@ -840,7 +840,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
       }))
     .function("setWidth", &RichElementImage::setWidth)
     .function("setUrl", &RichElementImage::setUrl)
-    .function("ctor", &cc_bindings_ctor<RichElementImage>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RichElementImage::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3){
@@ -851,26 +851,26 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
         return RichElementImage::create(arg0, arg1, arg2, arg3, arg4);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementImage& _) -> std::string {return "RichElementImage";}))    
-    // TODO: assign cc.Class.extend to ccui.RichElementImage.extend
+    .allow_subclass<emscripten::wrapper<RichElementImage>>("_subclass.ccui.RichElementImage")
     ;
 
 
   class_<RichElementCustomNode, base<RichElement>>("ccui.RichElementCustomNode")
     .constructor<>()
     .function("init", &RichElementCustomNode::init, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor<RichElementCustomNode>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RichElementCustomNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementCustomNode& _) -> std::string {return "RichElementCustomNode";}))    
-    // TODO: assign cc.Class.extend to ccui.RichElementCustomNode.extend
+    .allow_subclass<emscripten::wrapper<RichElementCustomNode>>("_subclass.ccui.RichElementCustomNode")
     ;
 
 
   class_<RichElementNewLine, base<RichElement>>("ccui.RichElementNewLine")
     .constructor<>()
-    .function("ctor", &cc_bindings_ctor<RichElementNewLine>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RichElementNewLine::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementNewLine& _) -> std::string {return "RichElementNewLine";}))    
-    // TODO: assign cc.Class.extend to ccui.RichElementNewLine.extend
+    .allow_subclass<emscripten::wrapper<RichElementNewLine>>("_subclass.ccui.RichElementNewLine")
     ;
 
 
@@ -951,7 +951,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getWrapMode", &RichText::getWrapMode)
     .function("setAnchorTextUnderline", &RichText::setAnchorTextUnderline)
     .function("color3BWithString", &RichText::color3BWithString)
-    .function("ctor", &cc_bindings_ctor<RichText>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &RichText::create, allow_raw_pointers())
     .class_function("createWithXML", &RichText::createWithXML, allow_raw_pointers())
     .class_function("createWithXML", optional_override(
@@ -959,40 +959,40 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
         return RichText::createWithXML(arg0, arg1);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const RichText& _) -> std::string {return "RichText";}))    
-    // TODO: assign cc.Class.extend to ccui.RichText.extend
+    .allow_subclass<emscripten::wrapper<RichText>>("_subclass.ccui.RichText")
     ;
 
 
   class_<HBox, base<Layout>>("ccui.HBox")
     .constructor<>()
     .function("initWithSize", &HBox::initWithSize)
-    .function("ctor", &cc_bindings_ctor<HBox>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::HBox*(const cocos2d::Size&)>(&HBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::HBox*()>(&HBox::create), allow_raw_pointers())
     .property("_className",  optional_override([](const HBox& _) -> std::string {return "HBox";}))    
-    // TODO: assign cc.Class.extend to ccui.HBox.extend
+    .allow_subclass<emscripten::wrapper<HBox>>("_subclass.ccui.HBox")
     ;
 
 
   class_<VBox, base<Layout>>("ccui.VBox")
     .constructor<>()
     .function("initWithSize", &VBox::initWithSize)
-    .function("ctor", &cc_bindings_ctor<VBox>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::VBox*(const cocos2d::Size&)>(&VBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::VBox*()>(&VBox::create), allow_raw_pointers())
     .property("_className",  optional_override([](const VBox& _) -> std::string {return "VBox";}))    
-    // TODO: assign cc.Class.extend to ccui.VBox.extend
+    .allow_subclass<emscripten::wrapper<VBox>>("_subclass.ccui.VBox")
     ;
 
 
   class_<RelativeBox, base<Layout>>("ccui.RelativeBox")
     .constructor<>()
     .function("initWithSize", &RelativeBox::initWithSize)
-    .function("ctor", &cc_bindings_ctor<RelativeBox>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::RelativeBox*(const cocos2d::Size&)>(&RelativeBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::RelativeBox*()>(&RelativeBox::create), allow_raw_pointers())
     .property("_className",  optional_override([](const RelativeBox& _) -> std::string {return "RelativeBox";}))    
-    // TODO: assign cc.Class.extend to ccui.RelativeBox.extend
+    .allow_subclass<emscripten::wrapper<RelativeBox>>("_subclass.ccui.RelativeBox")
     ;
 
 
@@ -1030,7 +1030,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setCapInsets", &Scale9Sprite::setCapInsets)
     .function("getInsetLeft", &Scale9Sprite::getInsetLeft)
     .function("setInsetRight", &Scale9Sprite::setInsetRight)
-    .function("ctor", &cc_bindings_ctor<Scale9Sprite>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const std::string&, const cocos2d::Rect&, const cocos2d::Rect&)>(&Scale9Sprite::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*()>(&Scale9Sprite::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const cocos2d::Rect&, const std::string&)>(&Scale9Sprite::create), allow_raw_pointers())
@@ -1041,7 +1041,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .class_function("createWithSpriteFrame", select_overload<cocos2d::ui::Scale9Sprite*(cocos2d::SpriteFrame*, const cocos2d::Rect&)>(&Scale9Sprite::createWithSpriteFrame), allow_raw_pointers())
     .class_function("createWithSpriteFrame", select_overload<cocos2d::ui::Scale9Sprite*(cocos2d::SpriteFrame*)>(&Scale9Sprite::createWithSpriteFrame), allow_raw_pointers())
     .property("_className",  optional_override([](const Scale9Sprite& _) -> std::string {return "Scale9Sprite";}))    
-    // TODO: assign cc.Class.extend to ccui.Scale9Sprite.extend
+    .allow_subclass<emscripten::wrapper<Scale9Sprite>>("_subclass.ccui.Scale9Sprite")
     ;
 
 
@@ -1111,7 +1111,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setCapInsets", &EditBox::setCapInsets)
     .function("setFont", &EditBox::setFont, allow_raw_pointers())
     .function("setTextHorizontalAlignment", &EditBox::setTextHorizontalAlignment)
-    .function("ctor", &cc_bindings_ctor<EditBox>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*)>(&EditBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -1121,7 +1121,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const EditBox& _) -> std::string {return "EditBox";}))    
-    // TODO: assign cc.Class.extend to ccui.EditBox.extend
+    .allow_subclass<emscripten::wrapper<EditBox>>("_subclass.ccui.EditBox")
     ;
 
 
@@ -1176,11 +1176,11 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("isStretchHeightEnabled", &LayoutComponent::isStretchHeightEnabled)
     .function("setBottomMargin", &LayoutComponent::setBottomMargin)
     .function("setSize", &LayoutComponent::setSize)
-    .function("ctor", &cc_bindings_ctor<LayoutComponent>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &LayoutComponent::create, allow_raw_pointers())
     .class_function("bindLayoutComponent", &LayoutComponent::bindLayoutComponent, allow_raw_pointers())
     .property("_className",  optional_override([](const LayoutComponent& _) -> std::string {return "LayoutComponent";}))    
-    // TODO: assign cc.Class.extend to ccui.LayoutComponent.extend
+    .allow_subclass<emscripten::wrapper<LayoutComponent>>("_subclass.ccui.LayoutComponent")
     ;
 
 
@@ -1196,14 +1196,14 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getTitleRenderer", &TabHeader::getTitleRenderer, allow_raw_pointers())
     .function("setTitleText", &TabHeader::setTitleText)
     .function("setTitleColor", &TabHeader::setTitleColor)
-    .function("ctor", &cc_bindings_ctor<TabHeader>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TabHeader*(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&TabHeader::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::TabHeader*()>(&TabHeader::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TabHeader*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&TabHeader::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const TabHeader& _) -> std::string {return "TabHeader";}))    
-    // TODO: assign cc.Class.extend to ccui.TabHeader.extend
+    .allow_subclass<emscripten::wrapper<TabHeader>>("_subclass.ccui.TabHeader")
     ;
 
 
@@ -1229,10 +1229,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("getTabContainer", &TabControl::getTabContainer, allow_raw_pointers())
     .function("getHeaderSelectedZoom", &TabControl::getHeaderSelectedZoom)
     .function("getHeaderHeight", &TabControl::getHeaderHeight)
-    .function("ctor", &cc_bindings_ctor<TabControl>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &TabControl::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TabControl& _) -> std::string {return "TabControl";}))    
-    // TODO: assign cc.Class.extend to ccui.TabControl.extend
+    .allow_subclass<emscripten::wrapper<TabControl>>("_subclass.ccui.TabControl")
     ;
 
 
@@ -1247,9 +1247,10 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     .function("setPositionFromCorner", &ScrollViewBar::setPositionFromCorner)
     .function("getAutoHideTime", &ScrollViewBar::getAutoHideTime)
     .function("setWidth", &ScrollViewBar::setWidth)
-    .function("ctor", &cc_bindings_ctor<ScrollViewBar>, allow_raw_pointers())
+    .function("ctor", &cc_bindings_ctor, allow_raw_pointers())
     .class_function("create", &ScrollViewBar::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollViewBar& _) -> std::string {return "ScrollViewBar";}))    
-    // TODO: assign cc.Class.extend to ccui.ScrollViewBar.extend
+    // TODO: I dont understand this compile error
+    // .allow_subclass<emscripten::wrapper<ScrollViewBar>>("_subclass.ccui.ScrollViewBar")
     ;
 }
