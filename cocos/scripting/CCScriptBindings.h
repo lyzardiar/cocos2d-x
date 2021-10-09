@@ -29,7 +29,7 @@
 
 #include "base/ccConfig.h"
 #include <functional>
-#include "scripting/cc-bindings/embind/bind.h"
+#include "scripting/embind/bind.h"
 
 #define CC_ENABLE_COCOS_BINDINGS 1
 #if CC_ENABLE_COCOS_BINDINGS

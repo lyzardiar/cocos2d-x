@@ -158,7 +158,7 @@ if(BUILD_JS_LIBS)
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/js-bindings ${ENGINE_BINARY_PATH}/cocos/js-bindings)
 endif()
 if(BUILD_CCBIND_LIBS)
-    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/cc-bindings ${ENGINE_BINARY_PATH}/cocos/cc-bindings)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting ${ENGINE_BINARY_PATH}/cocos)
 endif()
 
 if(XCODE OR VS)

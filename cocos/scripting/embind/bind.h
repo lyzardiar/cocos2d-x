@@ -18,8 +18,8 @@
 #include <vector>
 #include <map>
 #include <type_traits>
-#include "scripting/cc-bindings/embind/val.h"
-#include "scripting/cc-bindings/embind/wire.h"
+#include "scripting/embind/val.h"
+#include "scripting/embind/wire.h"
 
 #if __has_feature(leak_sanitizer) || __has_feature(address_sanitizer)
 #include <sanitizer/lsan_interface.h>

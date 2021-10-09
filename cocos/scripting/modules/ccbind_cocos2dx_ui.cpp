@@ -1,5 +1,5 @@
-#include "scripting/cc-bindings/CCScriptBindings.h"
-#include "scripting/cc-bindings/modules/ccbind_cocos2dx_ui.hpp"
+#include "scripting/CCScriptBindings.h"
+#include "scripting/modules/ccbind_cocos2dx_ui.hpp"
 #include "ui/CocosGUI.h"
 #include "ui/UIScrollViewBar.h"
 

@@ -28,7 +28,7 @@
 #include "audio/include/SimpleAudioEngine.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
-#include "scripting/cc-bindings/CCScriptEngine.h"
+#include "scripting/CCScriptEngine.h"
 #include <emscripten.h>
 #include "cocos-ext.h"
 #else

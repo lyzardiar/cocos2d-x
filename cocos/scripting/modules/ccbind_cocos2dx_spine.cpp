@@ -1,5 +1,5 @@
-#include "scripting/cc-bindings/CCScriptBindings.h"
-#include "scripting/cc-bindings/modules/ccbind_cocos2dx_spine.hpp"
+#include "scripting/CCScriptBindings.h"
+#include "scripting/modules/ccbind_cocos2dx_spine.hpp"
 #include "editor-support/spine/spine-cocos2dx.h"
 
 using namespace std;

@@ -1,5 +1,5 @@
-#include "scripting/cc-bindings/CCScriptBindings.h"
-#include "scripting/cc-bindings/modules/ccbind_cocos2dx_audioengine.hpp"
+#include "scripting/CCScriptBindings.h"
+#include "scripting/modules/ccbind_cocos2dx_audioengine.hpp"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
 #include "audio/include/AudioEngine.h"
 

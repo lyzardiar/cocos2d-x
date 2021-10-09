@@ -26,7 +26,7 @@
 
 #include "CCScriptEngine.h"
 #include "2d/CCNode.h"
-#include "scripting/cc-bindings/embind/val.h"
+#include "scripting/embind/val.h"
 
 NS_CC_BINDINGS_BEGIN
 

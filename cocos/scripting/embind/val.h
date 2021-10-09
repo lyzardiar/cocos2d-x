@@ -12,7 +12,7 @@
 #endif
 
 #include <stdint.h> // uintptr_t
-#include "scripting/cc-bindings/embind/wire.h"
+#include "scripting/embind/wire.h"
 #include <array>
 #include <vector>
 #include <climits>

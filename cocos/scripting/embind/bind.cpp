@@ -3,14 +3,14 @@
 // University of Illinois/NCSA Open Source License.  Both these licenses can be
 // found in the LICENSE file.
 
-#include "scripting/cc-bindings/embind/bind.h"
+#include "scripting/embind/bind.h"
 #ifdef USE_CXA_DEMANGLE
 #include <../lib/libcxxabi/include/cxxabi.h>
 #endif
 #include <algorithm>
 #include <climits>
 #include <emscripten/emscripten.h>
-#include "scripting/cc-bindings/embind/wire.h"
+#include "scripting/embind/wire.h"
 #include <limits>
 #include <list>
 #include <typeinfo>
