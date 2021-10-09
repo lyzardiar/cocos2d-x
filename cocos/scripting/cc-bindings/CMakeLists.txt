@@ -15,6 +15,7 @@ set(ccbind_bindings_files
     modules/ccbind_cocos2dx_spine.cpp
     modules/ccbind_cocos2dx_studio.cpp
     modules/ccbind_cocos2dx_ui.cpp
+    embind/bind.cpp
     )
 set(ccbind_bindings_headers
     modules/ccbind_cocos2dx.hpp
@@ -31,6 +32,9 @@ set(ccbind_bindings_headers
     modules/ccbind_cocos2dx_spine.hpp
     modules/ccbind_cocos2dx_studio.hpp
     modules/ccbind_cocos2dx_ui.hpp
+    embind/bind.h
+    embind/wire.h
+    embind/val.h
     CCScriptBindings.h
     )
 
