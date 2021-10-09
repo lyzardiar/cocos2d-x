@@ -26,6 +26,12 @@
 
 #include "cocos2d.h"
 #include "audio/include/SimpleAudioEngine.h"
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+#include "scripting/cc-bindings/CCScriptEngine.h"
+#include <emscripten.h>
+#include "cocos-ext.h"
+#else
 #include "scripting/js-bindings/auto/jsb_cocos2dx_3d_auto.hpp"
 #include "scripting/js-bindings/auto/jsb_cocos2dx_3d_extension_auto.hpp"
 #include "scripting/js-bindings/auto/jsb_cocos2dx_auto.hpp"
@@ -77,6 +83,7 @@
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "scripting/js-bindings/auto/jsb_cocos2dx_audioengine_auto.hpp"
 #endif
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -113,7 +120,14 @@ bool AppDelegate::applicationDidFinishLaunching()
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
+#if(CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    auto engine = cocos2d::bindings::CCScriptEngine::getInstance();
+    ScriptEngineManager::getInstance()->setScriptEngine(engine);
 
+    EM_ASM({
+        Module.cocosInitialized(UTF8ToString($0));
+    }, "main.js");
+#else
     ScriptingCore* sc = ScriptingCore::getInstance();
     sc->addRegisterCallback(register_all_cocos2dx);
     sc->addRegisterCallback(register_cocos2dx_js_core);
@@ -185,7 +199,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     ScriptEngineManager::getInstance()->setScriptEngine(sc);
 
     sc->runScript("main.js");
-
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
     return true;
 }
 

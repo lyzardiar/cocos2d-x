@@ -16,6 +16,7 @@ set(ccbind_bindings_files
     modules/ccbind_cocos2dx_studio.cpp
     modules/ccbind_cocos2dx_ui.cpp
     embind/bind.cpp
+    CCScriptEngine.cpp
     )
 set(ccbind_bindings_headers
     modules/ccbind_cocos2dx.hpp
@@ -36,6 +37,7 @@ set(ccbind_bindings_headers
     embind/wire.h
     embind/val.h
     CCScriptBindings.h
+    CCScriptEngine.h
     )
 
 list(APPEND ccbind_bindings_files ${ccbind_bindings_headers})
