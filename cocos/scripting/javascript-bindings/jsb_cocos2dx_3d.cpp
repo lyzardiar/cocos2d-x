@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/modules/ccbind_cocos2dx_3d.hpp"
+#include "scripting/javascript-bindings/jsb_cocos2dx_3d.hpp"
 #include "cocos2d.h"
 #include "3d/CCBundle3D.h"
 

@@ -157,7 +157,7 @@ endif()
 if(BUILD_JS_LIBS)
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/js-bindings ${ENGINE_BINARY_PATH}/cocos/js-bindings)
 endif()
-if(BUILD_CCBIND_LIBS)
+if(BUILD_EMBIND_LIBS)
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting ${ENGINE_BINARY_PATH}/cocos)
 endif()
 

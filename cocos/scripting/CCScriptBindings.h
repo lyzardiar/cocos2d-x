@@ -31,8 +31,6 @@
 #include <functional>
 #include "scripting/embind/bind.h"
 
-#define CC_ENABLE_COCOS_BINDINGS 1
-#if CC_ENABLE_COCOS_BINDINGS
 namespace cocos2d {
   namespace bindings {
     // Rename types from emscripten
@@ -123,5 +121,4 @@ namespace cocos2d {
 #define NS_CC_BINDINGS_END    }}
 #define USING_NS_CC_BINDINGS  using namespace cocos2d::bindings
 
-#endif // CC_ENABLE_COCOS_BINDINGS
 #endif // __CC_SCRIPT_BINDINGS_H__

@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/modules/ccbind_cocos2dx.hpp"
+#include "scripting/javascript-bindings/jsb_cocos2dx.hpp"
 #include "cocos2d.h"
 #include "audio/include/SimpleAudioEngine.h"
 #include "2d/CCProtectedNode.h"

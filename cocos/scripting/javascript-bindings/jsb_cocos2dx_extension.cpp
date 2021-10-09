@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/modules/ccbind_cocos2dx_extension.hpp"
+#include "scripting/javascript-bindings/jsb_cocos2dx_extension.hpp"
 #include "cocos-ext.h"
 
 using namespace std;

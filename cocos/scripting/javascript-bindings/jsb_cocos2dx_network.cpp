@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/modules/ccbind_cocos2dx_network.hpp"
+#include "scripting/javascript-bindings/jsb_cocos2dx_network.hpp"
 #include "network/CCDownloader.h"
 
 using namespace std;

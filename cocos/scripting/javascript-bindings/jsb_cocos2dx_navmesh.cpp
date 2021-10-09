@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/modules/ccbind_cocos2dx_navmesh.hpp"
+#include "scripting/javascript-bindings/jsb_cocos2dx_navmesh.hpp"
 #if CC_USE_NAVMESH
 #include "navmesh/CCNavMesh.h"
 

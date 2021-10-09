@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/modules/ccbind_cocos2dx_builder.hpp"
+#include "scripting/javascript-bindings/jsb_cocos2dx_builder.hpp"
 #include "editor-support/cocosbuilder/CocosBuilder.h"
 
 using namespace std;
