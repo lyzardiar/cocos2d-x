@@ -124,7 +124,7 @@ namespace cocos2d {
 #define CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(T)                       \
 namespace emscripten {                                            \
     namespace internal {                                          \
-        template<> void raw_destructor<T>(T* _) {}          \
+        template<> void raw_destructor<T>(T* _) {}                \
     }                                                             \
 }
 

@@ -4,7 +4,7 @@
 #include "audio/include/SimpleAudioEngine.h"
 #include "2d/CCProtectedNode.h"
 #include "base/CCAsyncTaskPool.h"
-#include "scripting/js-bindings/manual/component/CCComponentJS.h"
+#include "scripting/component/CCComponentJS.h"
 
 using namespace std;
 using namespace std::placeholders;
@@ -12,7 +12,7 @@ using namespace cocos2d;
 using namespace bindings;
 using namespace CocosDenshion;
 
-COCOS_BINDINGS(ccbind_cocos2dx) {
+COCOS_BINDINGS(jsb_cocos2dx) {
 
 
   class_<Texture2D>("cc.Texture2D")
@@ -2921,7 +2921,7 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     ;
 
 
-  class_<ParticleSystem, base<Node>>("cc.ParticleSystem")
+  class_<ParticleSystem, base<Node>>("cc._ParticleSystem")
     .constructor(&cc_bindings_constructor<ParticleSystem>, allow_raw_pointers())
     .function("getStartSizeVar", &ParticleSystem::getStartSizeVar)
     .function("getTexture", &ParticleSystem::getTexture, allow_raw_pointers())
@@ -4083,6 +4083,14 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
 
   class_<SAXParser>("cc.PlistParser")
     .function("init", &SAXParser::init, allow_raw_pointers())
+    // TODO: look at __JSPlistDelegator
+    // .function("parse", &SAXParser::parse, allow_raw_pointers())
+    .class_function("getInstance", optional_override(
+      [](){
+        static auto instance = new (std::nothrow)SAXParser();
+        return instance;
+      }), allow_raw_pointers())
+    // end of TODO
     .property("_className",  optional_override([](const SAXParser& _) -> std::string {return "SAXParser";}))    
     ;
 

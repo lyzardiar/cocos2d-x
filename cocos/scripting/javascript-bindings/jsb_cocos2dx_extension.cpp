@@ -8,7 +8,7 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::extension;
 
-COCOS_BINDINGS(ccbind_cocos2dx_extension) {
+COCOS_BINDINGS(jsb_cocos2dx_extension) {
 
 
   class_<Control, base<Layer>>("cc.Control")

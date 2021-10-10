@@ -254,6 +254,53 @@
             }
           }
         },
+        cocosInitialized: async function(mainSrc) {
+          function loadScript(src){
+            return new Promise(function(resolve, reject){
+              var script = document.createElement('script')
+              script.type = 'text/javascript'
+              script.onload = function() {
+                resolve();
+              };
+              script.onerror = function(error) {
+                reject(error, script);
+              };
+              script.src = src
+              document.body.appendChild(script)
+            })
+          }
+
+          await loadScript("script/jsb_prepare.js")
+
+          for (key in Module) {
+            var index = key.indexOf('$')
+            if (index >= 0) {
+              var clazz = Module[key]
+              var ns = key.substring(0, index)
+              window[ns] = window[ns] || {}
+              window[ns][key.substring(index + 1)] = clazz
+
+              if (clazz.extend) {
+                var subClazz = clazz.extend(key, {})
+                clazz.extend = cc.Class.extend.bind(subClazz)
+              }
+            }
+          }
+          
+          window["_native_js_global_map"] = new Map()
+
+          // see jsb_core.cpp
+          window["__getPlatform"] = Module["__getPlatform"]
+          window["__getOS"] = Module["__getOS"]
+          window["__getVersion"] = Module["__getVersion"]
+          window["__restartVM"] = Module["__restartVM"]
+          window["__cleanScript"] = Module["__cleanScript"]
+          window["__isObjectValid"] = Module["__isObjectValid"]
+          window["close"] = Module["close"]
+
+          await loadScript("script/jsb_boot_bundle.js")
+          await loadScript(mainSrc)
+        },
         hierarchyFind(move) {
           var queryText = document.getElementById('searchBar').value.toLowerCase();
           var items = hierarchyElement.getElementsByTagName('li');

@@ -8,7 +8,7 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::network;
 
-COCOS_BINDINGS(ccbind_cocos2dx_network) {
+COCOS_BINDINGS(jsb_cocos2dx_network) {
 
 
   class_<Downloader>("jsb.Downloader")

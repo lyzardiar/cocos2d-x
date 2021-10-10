@@ -8,7 +8,7 @@ using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
 
-COCOS_BINDINGS(ccbind_cocos2dx_navmesh) {
+COCOS_BINDINGS(jsb_cocos2dx_navmesh) {
 
 
   class_<NavMeshAgent, base<Component>>("jsb.NavMeshAgent")

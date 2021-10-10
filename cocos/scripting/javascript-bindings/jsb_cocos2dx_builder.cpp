@@ -8,7 +8,7 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocosbuilder;
 
-COCOS_BINDINGS(ccbind_cocos2dx_builder) {
+COCOS_BINDINGS(jsb_cocos2dx_builder) {
 
 
   class_<CCBAnimationManager>("cc.BuilderAnimationManager")

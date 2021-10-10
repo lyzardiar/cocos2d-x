@@ -10,7 +10,7 @@ using namespace cocos2d::bindings;
 using namespace cocostudio;
 using namespace cocostudio::timeline;
 
-COCOS_BINDINGS(ccbind_cocos2dx_studio) {
+COCOS_BINDINGS(jsb_cocos2dx_studio) {
 
 
   class_<ActionObject>("ccs.ActionObject")

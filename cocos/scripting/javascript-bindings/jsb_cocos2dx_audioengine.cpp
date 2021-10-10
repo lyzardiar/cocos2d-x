@@ -9,7 +9,7 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::experimental;
 
-COCOS_BINDINGS(ccbind_cocos2dx_audioengine) {
+COCOS_BINDINGS(jsb_cocos2dx_audioengine) {
 
 
   class_<AudioProfile>("jsb.AudioProfile")

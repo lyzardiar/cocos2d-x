@@ -9,7 +9,7 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::ui;
 
-COCOS_BINDINGS(ccbind_cocos2dx_ui) {
+COCOS_BINDINGS(jsb_cocos2dx_ui) {
 
 
   class_<LayoutParameter>("ccui.LayoutParameter")

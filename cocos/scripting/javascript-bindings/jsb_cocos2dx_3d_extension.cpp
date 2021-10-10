@@ -7,7 +7,7 @@ using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
 
-COCOS_BINDINGS(ccbind_cocos2dx_3d_extension) {
+COCOS_BINDINGS(jsb_cocos2dx_3d_extension) {
 
 
   class_<ParticleSystem3D, base<Node>>("jsb.ParticleSystem3D")

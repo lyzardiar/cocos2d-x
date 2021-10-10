@@ -8,7 +8,7 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace spine;
 
-COCOS_BINDINGS(ccbind_cocos2dx_spine) {
+COCOS_BINDINGS(jsb_cocos2dx_spine) {
 
 
   class_<SkeletonRenderer, base<Node>>("sp.Skeleton")
