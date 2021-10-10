@@ -29,7 +29,7 @@
 
 #include "base/ccConfig.h"
 #include <functional>
-#include "scripting/embind/bind.h"
+#include <emscripten/bind.h>
 
 namespace cocos2d {
   namespace bindings {
@@ -109,7 +109,6 @@ namespace cocos2d {
   }
 }
 
-                                                   \
 #define COCOS_BINDINGS(name)                                       \
     static struct CocosBindingInitializer_##name {                 \
         CocosBindingInitializer_##name();                          \
@@ -120,5 +119,13 @@ namespace cocos2d {
 #define NS_CC_BINDINGS_BEGIN  namespace cocos2d{namespace bindings{
 #define NS_CC_BINDINGS_END    }}
 #define USING_NS_CC_BINDINGS  using namespace cocos2d::bindings
+
+// Walkaround for Classes has protected/private desctrctor
+#define CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(T)                       \
+namespace emscripten {                                            \
+    namespace internal {                                          \
+        template<> void raw_destructor<T>(T* _) {}          \
+    }                                                             \
+}
 
 #endif // __CC_SCRIPT_BINDINGS_H__

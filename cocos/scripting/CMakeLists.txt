@@ -1,6 +1,6 @@
 set(cocos_root ${COCOS2DX_ROOT_PATH})
 
-set(embind_bindings_files
+set(bindings_files
     javascript-bindings/jsb_cocos2dx.cpp
     javascript-bindings/jsb_cocos2dx_3d.cpp
     javascript-bindings/jsb_cocos2dx_3d_extension.cpp
@@ -15,10 +15,9 @@ set(embind_bindings_files
     javascript-bindings/jsb_cocos2dx_spine.cpp
     javascript-bindings/jsb_cocos2dx_studio.cpp
     javascript-bindings/jsb_cocos2dx_ui.cpp
-    embind/bind.cpp
     CCScriptEngine.cpp
     )
-set(embind_bindings_headers
+set(bindings_headers
     javascript-bindings/jsb_cocos2dx.hpp
     javascript-bindings/jsb_cocos2dx_3d.hpp
     javascript-bindings/jsb_cocos2dx_3d_extension.hpp
@@ -33,24 +32,21 @@ set(embind_bindings_headers
     javascript-bindings/jsb_cocos2dx_spine.hpp
     javascript-bindings/jsb_cocos2dx_studio.hpp
     javascript-bindings/jsb_cocos2dx_ui.hpp
-    embind/bind.h
-    embind/wire.h
-    embind/val.h
     CCScriptBindings.h
     CCScriptEngine.h
     )
 
-list(APPEND embind_bindings_files ${embind_bindings_headers})
+list(APPEND bindings_files ${bindings_headers})
 
-add_library(embindcocos2d ${embind_bindings_files})
-target_link_libraries(embindcocos2d cocos2d)
-add_dependencies(embindcocos2d cocos2d)
+add_library(cocos2d_scripting ${bindings_files})
+target_link_libraries(cocos2d_scripting cocos2d)
+add_dependencies(cocos2d_scripting cocos2d)
 
-target_include_directories(embindcocos2d
+target_include_directories(cocos2d_scripting
     INTERFACE ${cocos_root}/cocos/scripting/bindings
 )
 
-set_target_properties(embindcocos2d
+set_target_properties(cocos2d_scripting
                       PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

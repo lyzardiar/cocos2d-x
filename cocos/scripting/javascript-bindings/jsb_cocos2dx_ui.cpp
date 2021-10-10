@@ -1503,3 +1503,7 @@ COCOS_BINDINGS(ccbind_cocos2dx_ui) {
     // .allow_subclass<wrapper<ScrollViewBar>>("ccui.ScrollViewBar._extend")
     ;
 }
+
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(AbstractCheckButton);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(TabHeader);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(TabControl);

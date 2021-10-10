@@ -4482,3 +4482,10 @@ COCOS_BINDINGS(ccbind_cocos2dx) {
     .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
     ;
 }
+
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(GLProgramState);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(RenderState);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(Pass);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(Technique);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(Material);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(SimpleAudioEngine);

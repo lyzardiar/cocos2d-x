@@ -379,3 +379,5 @@ COCOS_BINDINGS(ccbind_cocos2dx_physics3d) {
 }
 
 #endif
+
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(Physics3DConstraint);

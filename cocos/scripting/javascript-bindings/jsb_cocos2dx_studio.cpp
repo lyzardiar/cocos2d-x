@@ -801,3 +801,6 @@ COCOS_BINDINGS(ccbind_cocos2dx_studio) {
     .property("_className",  optional_override([](const ComExtensionData& _) -> std::string {return "ComExtensionData";}))    
     ;
 }
+
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(ArmatureDataManager);
+CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(Frame);
