@@ -1,4 +1,5 @@
 #include "scripting/CCScriptBindings.h"
+#include "scripting/CCScriptEngine.h"
 #include "scripting/javascript-bindings/jsb_cocos2dx.hpp"
 #include "cocos2d.h"
 #include "audio/include/SimpleAudioEngine.h"
@@ -328,6 +329,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("stopAction", &Node::stopAction, allow_raw_pointers())
     .function("getActionManager", select_overload<const ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
+
+    // TODO: incomplete bindings come from cocos2d_specifics.cpp
+    .function("onEnter", optional_override([](Node& this_) {
+        CCScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.onEnter();
+    }))
+    .function("onEnterTransitionDidFinish", optional_override([](Node& this_) {
+        CCScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.onEnterTransitionDidFinish();
+    }))
     .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Node::create, allow_raw_pointers())
     .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount)

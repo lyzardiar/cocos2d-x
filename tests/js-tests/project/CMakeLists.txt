@@ -207,4 +207,7 @@ if(EMSCRIPTEN)
     string(APPEND EMSCRIPTEN_LINK_FLAGS " --bind")
 
     set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
+
+    set(APP_RES_DIR "$<TARGET_FILE_DIR:${APP_NAME}>")
+    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR}/script FOLDERS ${res_script_folders})
 endif()
