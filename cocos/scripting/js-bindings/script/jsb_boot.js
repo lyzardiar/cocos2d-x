@@ -1587,12 +1587,47 @@ cc._initDebugSetting = function (mode) {
 cc._engineLoaded = false;
 
 cc.initEngine = function (config, cb) {
-    require("script/jsb.js");
-    cc._renderType = cc.game.RENDER_TYPE_OPENGL;
-    cc._initDebugSetting(config[cc.game.CONFIG_KEY.debugMode]);
-    cc._engineLoaded = true;
-    cc.log(cc.ENGINE_VERSION);
-    if (cb) cb();
+    if (window.require) {
+        require("script/jsb.js");
+        cc._renderType = cc.game.RENDER_TYPE_OPENGL;
+        cc._initDebugSetting(config[cc.game.CONFIG_KEY.debugMode]);
+        cc._engineLoaded = true;
+        cc.log(cc.ENGINE_VERSION);
+        if (cb) cb();
+    } else {
+        // Workaround for missing synchronous loading script on HTML5/wasm
+        var loadScript = function(url) {
+            return new Promise(function(resolve, reject) {
+                var script = document.createElement('script')
+                script.type = 'text/javascript'
+                script.onerror = function(error) {
+                    reject(error, script);
+                };
+                script.onload = function() {
+                    resolve();
+                };
+                script.src = url
+                script.async = false
+                document.body.appendChild(script)
+            });
+        }
+        
+        var scripts = []
+        window.require = function(url) {
+            scripts.push(loadScript(url))
+        }
+        
+        loadScript("script/jsb.js").then(() => {
+            Promise.all(scripts).then(() => {
+                cc._renderType = cc.game.RENDER_TYPE_OPENGL;
+                cc._initDebugSetting(config[cc.game.CONFIG_KEY.debugMode]);
+                cc._engineLoaded = true;
+                cc.log(cc.ENGINE_VERSION);
+                delete window.require;
+                if (cb) cb();
+            });
+        });
+    }
 };
 
 //+++++++++++++++++++++++++something about CCGame begin+++++++++++++++++++++++++++
