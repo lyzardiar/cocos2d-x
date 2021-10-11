@@ -102,7 +102,7 @@ namespace cocos2d {
     }
 
     template<typename T, typename... Args>
-    T* cc_bindings_constructor(Args... args) {
+    T* cc_bindings_constructor(Args&&... args) {
       T *obj = new (std::nothrow) T(std::forward<Args>(args)...);
       return obj;
     }
