@@ -121,7 +121,7 @@ namespace cocos2d {
 #define USING_NS_CC_BINDINGS  using namespace cocos2d::bindings
 
 // Walkaround for Classes has protected/private desctrctor
-#define CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(T)                       \
+#define CC_BINDINGS_BYPASS_DESTRUCTOR(T)                          \
 namespace emscripten {                                            \
     namespace internal {                                          \
         template<> void raw_destructor<T>(T* _) {}                \

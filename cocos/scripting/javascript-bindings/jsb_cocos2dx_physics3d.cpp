@@ -380,4 +380,4 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
 
 #endif
 
-CC_BINDINGS_NO_PUBLIC_DESTRUCTOR(Physics3DConstraint);
+CC_BINDINGS_BYPASS_DESTRUCTOR(Physics3DConstraint);
