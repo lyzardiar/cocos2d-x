@@ -1544,6 +1544,10 @@ var _initSys = function () {
     else if(window.JavaScriptObjCBridge && (cc.sys.os == cc.sys.OS_IOS || cc.sys.os == cc.sys.OS_OSX)){
         jsb.reflection = new JavaScriptObjCBridge();
     }
+
+    if(cc.sys.platform == cc.sys.EMSCRIPTEN){
+        sys.localStorage = window.localStorage;
+    }
 };
 _initSys();
 
