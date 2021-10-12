@@ -16,7 +16,7 @@ set(bindings_files
     javascript-bindings/jsb_cocos2dx_studio.cpp
     javascript-bindings/jsb_cocos2dx_ui.cpp
     javascript-bindings/jsb_conversions.cpp
-    javascript-bindings/jsb_core.cpp
+    javascript-bindings/jsb_global.cpp
     component/CCComponentJS.cpp
     CCScriptEngine.cpp
     )
@@ -36,7 +36,7 @@ set(bindings_headers
     javascript-bindings/jsb_cocos2dx_studio.hpp
     javascript-bindings/jsb_cocos2dx_ui.hpp
     javascript-bindings/jsb_conversions.h
-    javascript-bindings/jsb_core.h
+    javascript-bindings/jsb_global.h
     component/CCComponentJS.h
     CCScriptBindings.h
     CCScriptEngine.h

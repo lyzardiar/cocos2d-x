@@ -1,5 +1,5 @@
 #include "scripting/CCScriptBindings.h"
-#include "scripting/javascript-bindings/jsb_core.h"
+#include "scripting/javascript-bindings/jsb_global.h"
 #include "cocos2d.h"
 
 using namespace std;
@@ -12,21 +12,6 @@ struct __jsc__{
 };
 
 COCOS_BINDINGS(jsb_core) {
-  class_<__jsc__>("__jsc__")
-    .class_function("garbageCollect", optional_override(
-        [](){
-        CCLOG("__jsc__.garbageCollect not implemented");
-      }))
-    .class_function("dumpRoot", optional_override(
-        [](){
-        CCLOG("__jsc__.dumpRoot not implemented");
-      }))
-    .class_function("executeScript", optional_override(
-        [](){
-        CCLOG("__jsc__.executeScript not implemented");
-      }))   
-    ;
-
   cocos2d::bindings::function("__getPlatform", optional_override([](){
     return (int)cocos2d::Application::getInstance()->getTargetPlatform();
   })); 
