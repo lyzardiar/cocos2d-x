@@ -427,10 +427,22 @@ cc.loader = {
         jsList = args[1];
         cb = args[2];
         var ccPath = cc.path;
-        for(var i = 0, li = jsList.length; i < li; ++i){
-            require(ccPath.join(baseDir, jsList[i]));
+        
+        if (window.require) {
+            for(var i = 0, li = jsList.length; i < li; ++i){
+                require(ccPath.join(baseDir, jsList[i]));
+            }
+            if(cb) cb();
+        } else {
+            var scripts = []
+            for(var i = 0, li = jsList.length; i < li; ++i){
+                scripts.push(__loadScript(ccPath.join(baseDir, jsList[i])));
+            }
+            
+            Promise.all(scripts).then(() => {
+                if (cb) cb();
+            });
         }
-        if(cb) cb();
     },
     /**
      * Load js width loading image.
@@ -1599,35 +1611,18 @@ cc.initEngine = function (config, cb) {
         cc.log(cc.ENGINE_VERSION);
         if (cb) cb();
     } else {
-        // Workaround for missing synchronous loading script on HTML5/wasm
-        var loadScript = function(url) {
-            return new Promise(function(resolve, reject) {
-                var script = document.createElement('script')
-                script.type = 'text/javascript'
-                script.onerror = function(error) {
-                    reject(error, script);
-                };
-                script.onload = function() {
-                    resolve();
-                };
-                script.src = url
-                script.async = false
-                document.body.appendChild(script)
-            });
-        }
-        
         var scripts = []
         window.require = function(url) {
-            scripts.push(loadScript(url))
+            scripts.push(__loadScript(url))
         }
         
-        loadScript("script/jsb.js").then(() => {
+        __loadScript("script/jsb.js").then(() => {
             Promise.all(scripts).then(() => {
+                delete window.require;
                 cc._renderType = cc.game.RENDER_TYPE_OPENGL;
                 cc._initDebugSetting(config[cc.game.CONFIG_KEY.debugMode]);
                 cc._engineLoaded = true;
                 cc.log(cc.ENGINE_VERSION);
-                delete window.require;
                 if (cb) cb();
             });
         });

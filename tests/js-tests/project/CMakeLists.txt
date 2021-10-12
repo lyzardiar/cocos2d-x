@@ -49,7 +49,6 @@ set(res_main_files
 # "${COCOS2DX_ROOT_PATH}/tests/cpp-tests/Resources"
 set(res_res_folders
     "${CMAKE_CURRENT_SOURCE_DIR}/../resjs"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../res"
     "${COCOS2DX_ROOT_PATH}/tests/cpp-tests/Resources"
     )
 set(res_src_folders
@@ -200,8 +199,10 @@ if(EMSCRIPTEN)
                         )
     set(EMSCRIPTEN_LINK_FLAGS "-lidbfs.js -s INITIAL_MEMORY=512MB --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/index.html --use-preload-cache")
 
-    foreach(FOLDER IN LISTS GAME_RES_FOLDER)
-        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${FOLDER}/@/")
+    string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../project.json@/")
+    
+    foreach(res_res_folder IN LISTS res_res_folders)
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${res_res_folder}/@/res")
     endforeach()
     
     string(APPEND EMSCRIPTEN_LINK_FLAGS " --bind")
@@ -209,6 +210,7 @@ if(EMSCRIPTEN)
     set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
 
     set(APP_RES_DIR "$<TARGET_FILE_DIR:${APP_NAME}>")
-    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR} FILES ${res_main_files})
+    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR} FILES ${CMAKE_CURRENT_SOURCE_DIR}/../main.js)
+    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR}/src FOLDERS ${res_src_folders})
     cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR}/script FOLDERS ${res_script_folders})
 endif()

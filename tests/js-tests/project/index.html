@@ -255,19 +255,21 @@
           }
         },
         cocosInitialized: async function(mainSrc) {
-          function loadScript(src){
-            return new Promise(function(resolve, reject){
+          // Workaround to load script on HTML5/WebAssembly
+          var loadScript = window.__loadScript = function(url) {
+            return new Promise(function(resolve, reject) {
               var script = document.createElement('script')
               script.type = 'text/javascript'
-              script.onload = function() {
-                resolve();
-              };
               script.onerror = function(error) {
                 reject(error, script);
               };
-              script.src = src
+              script.onload = function() {
+                resolve();
+              };
+              script.src = url
+              script.async = false
               document.body.appendChild(script)
-            })
+            });
           }
 
           await loadScript("script/jsb_prepare.js")
