@@ -203,7 +203,6 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("getSkeleton", &Sprite3D::getSkeleton, allow_raw_pointers())
     .function("setForceDepthWrite", &Sprite3D::setForceDepthWrite)
     .function("getMeshByName", &Sprite3D::getMeshByName, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<cocos2d::Sprite3D*(const std::string&)>(&Sprite3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Sprite3D*()>(&Sprite3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Sprite3D*(const std::string&, const std::string&)>(&Sprite3D::create), allow_raw_pointers())

@@ -367,7 +367,6 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getOffsetPoints", &Armature::getOffsetPoints)
     .function("setBlendFunc", &Armature::setBlendFunc)
     .function("getBoneDic", &Armature::getBoneDic)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<cocostudio::Armature*(const std::string&)>(&Armature::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Armature*()>(&Armature::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Armature*(const std::string&, cocostudio::Bone*)>(&Armature::create), allow_raw_pointers())
@@ -484,7 +483,6 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
 
   class_<ComController, base<Component>>("ccs.ComController")
     .constructor(&cc_bindings_constructor<ComController>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ComController::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ComController& _) -> std::string {return "ComController";}))    
     .allow_subclass<wrapper<ComController>>("ccs.ComController._extend")
@@ -769,7 +767,6 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getDebugDrawLength", &BoneNode::getDebugDrawLength)
     .function("setDebugDrawColor", &BoneNode::setDebugDrawColor)
     .function("getDebugDrawColor", &BoneNode::getDebugDrawColor)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<cocostudio::timeline::BoneNode*(int)>(&BoneNode::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::timeline::BoneNode*()>(&BoneNode::create), allow_raw_pointers())
     .property("_className",  optional_override([](const BoneNode& _) -> std::string {return "BoneNode";}))    
@@ -784,7 +781,6 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     // TODO: Only support function overloading with different number of parameters
     .function("addSkinGroup", &SkeletonNode::addSkinGroup)
     .function("getAllSubBonesMap", &SkeletonNode::getAllSubBonesMap)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &SkeletonNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const SkeletonNode& _) -> std::string {return "SkeletonNode";}))    
     .allow_subclass<wrapper<SkeletonNode>>("ccs.SkeletonNode._extend")

@@ -272,18 +272,8 @@ cc.Class.extend = function (prop) {
             prop[name];
     }
     
-    // On emscripten, *this* is the class extending native binding class
-    // we need to call its constuctor to generate the native object.
-    var that;
-    if (cc.sys.platform === cc.sys.EMSCRIPTEN) {
-        that = this
-    }
-
     Class = function () {
         if (!initializing) {
-            if (that) {
-                that.apply(this, arguments);
-            }
             this.__instanceId = ClassManager.getNewInstanceId();
             this.ctor && this.ctor.apply(this, arguments);
         }

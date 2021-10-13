@@ -283,7 +283,21 @@
               window[ns][key.substring(index + 1)] = clazz
 
               if (clazz.extend) {
+                // NOTE: ctor should always come with allowsubclass(extend)
+                // it's slightly different with spidermonkey bindings 
+                // but I assume it's a bug on that side.
+                // to be specific, check GridBase, ActionTween, TabControl and TabHeader
+                // didn't test but you cannot extend them in spidermonkey even they have extend in prototype
+                // because without ctor, no native object is created, thus will cause problem.
+                // We are planning to use embind to replace spidermonkey bindings and it will be fixed by then
+                
+                // Convert extend from embind
                 var subClazz = clazz.extend(key, {})
+                subClazz.prototype.ctor = function() {
+                  subClazz.apply(this); // Create native object
+                  // TODO: missing autorelease
+                  clazz._ctor && clazz._ctor.apply(this, arguments)
+                }
                 clazz.extend = cc.Class.extend.bind(subClazz)
               }
             }

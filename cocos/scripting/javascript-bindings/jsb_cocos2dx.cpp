@@ -152,7 +152,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("init", &Component::init)
     .function("setOwner", &Component::setOwner, allow_raw_pointers())
     .function("getName", &Component::getName)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Component::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Component& _) -> std::string {return "Component";}))    
     .allow_subclass<wrapper<Component>>("cc.Component._extend")
@@ -339,7 +338,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         CCScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnterTransitionDidFinish();
     }))
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Node::create, allow_raw_pointers())
     .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount)
     .property("_className",  optional_override([](const Node& _) -> std::string {return "Node";}))    
@@ -363,7 +361,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("onProjectionChanged", &Scene::onProjectionChanged, allow_raw_pointers())
     .function("initWithSize", &Scene::initWithSize)
     .function("getDefaultCamera", &Scene::getDefaultCamera, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("createWithSize", &Scene::createWithSize, allow_raw_pointers())
     .class_function("create", &Scene::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Scene& _) -> std::string {return "Scene";}))    
@@ -598,7 +595,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.initWithTargetAndOffset(arg0, arg1, arg2);
       }), allow_raw_pointers())
     .function("isBoundarySet", &Follow::isBoundarySet)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Follow::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](Node* arg0){
@@ -731,7 +727,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getAnchorPoint", &SpriteFrame::getAnchorPoint)
     .function("hasAnchorPoint", &SpriteFrame::hasAnchorPoint)
     .function("getOffsetInPixels", &SpriteFrame::getOffsetInPixels)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<SpriteFrame*(const std::string&, const Rect&, bool, const Vec2&, const Size&)>(&SpriteFrame::create), allow_raw_pointers())
     .class_function("create", select_overload<SpriteFrame*(const std::string&, const Rect&)>(&SpriteFrame::create), allow_raw_pointers())
     .class_function("createWithTexture", select_overload<SpriteFrame*(Texture2D*, const Rect&, bool, const Vec2&, const Size&)>(&SpriteFrame::createWithTexture), allow_raw_pointers())
@@ -752,7 +747,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getDelayUnits", &AnimationFrame::getDelayUnits)
     .function("setUserInfo", &AnimationFrame::setUserInfo)
     .function("initWithSpriteFrame", &AnimationFrame::initWithSpriteFrame, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &AnimationFrame::create, allow_raw_pointers())
     .property("_className",  optional_override([](const AnimationFrame& _) -> std::string {return "AnimationFrame";}))    
     .allow_subclass<wrapper<AnimationFrame>>("cc.AnimationFrame._extend")
@@ -786,7 +780,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }))
     .function("getRestoreOriginalFrame", &Animation::getRestoreOriginalFrame)
     .function("addSpriteFrameWithTexture", &Animation::addSpriteFrameWithTexture, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("createWithAnimationFrames", select_overload<Animation*(const Vector<AnimationFrame *>&, float, unsigned int)>(&Animation::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("createWithAnimationFrames", select_overload<Animation*()>(&Animation::create), allow_raw_pointers())
@@ -816,7 +809,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Sequence>, allow_raw_pointers())
     .function("init", &Sequence::init)
     .function("initWithTwoActions", &Sequence::initWithTwoActions, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const Sequence& _) -> std::string {return "Sequence";}))    
     .allow_subclass<wrapper<Sequence>>("cc.Sequence._extend")
     ;
@@ -827,7 +819,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setInnerAction", &Repeat::setInnerAction, allow_raw_pointers())
     .function("initWithAction", &Repeat::initWithAction, allow_raw_pointers())
     .function("getInnerAction", &Repeat::getInnerAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Repeat::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Repeat& _) -> std::string {return "Repeat";}))    
     .allow_subclass<wrapper<Repeat>>("cc.Repeat._extend")
@@ -839,7 +830,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setInnerAction", &RepeatForever::setInnerAction, allow_raw_pointers())
     .function("initWithAction", &RepeatForever::initWithAction, allow_raw_pointers())
     .function("getInnerAction", &RepeatForever::getInnerAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &RepeatForever::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RepeatForever& _) -> std::string {return "RepeatForever";}))    
     .allow_subclass<wrapper<RepeatForever>>("cc.RepeatForever._extend")
@@ -850,7 +840,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Spawn>, allow_raw_pointers())
     .function("init", &Spawn::init)
     .function("initWithTwoActions", &Spawn::initWithTwoActions, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const Spawn& _) -> std::string {return "Spawn";}))    
     .allow_subclass<wrapper<Spawn>>("cc.Spawn._extend")
     ;
@@ -860,7 +849,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<RotateTo>, allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&RotateTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateTo::initWithDuration))
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<RotateTo*(float, float)>(&RotateTo::create), allow_raw_pointers())
     .class_function("create", select_overload<RotateTo*(float, float, float)>(&RotateTo::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -874,7 +862,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateBy::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float)>(&RotateBy::initWithDuration))
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<RotateBy*(float, float, float)>(&RotateBy::create), allow_raw_pointers())
     .class_function("create", select_overload<RotateBy*(float, float)>(&RotateBy::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -887,7 +874,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<MoveBy>, allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&MoveBy::initWithDuration))
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<MoveBy*(float, const Vec3&)>(&MoveBy::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const MoveBy& _) -> std::string {return "MoveBy";}))    
@@ -899,7 +885,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<MoveTo>, allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&MoveTo::initWithDuration))
     // TODO: Only support function overloading with different number of parameters
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<MoveTo*(float, const Vec3&)>(&MoveTo::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const MoveTo& _) -> std::string {return "MoveTo";}))    
@@ -910,7 +895,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<SkewTo, base<ActionInterval>>("cc.SkewTo")
     .constructor(&cc_bindings_constructor<SkewTo>, allow_raw_pointers())
     .function("initWithDuration", &SkewTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &SkewTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const SkewTo& _) -> std::string {return "SkewTo";}))    
     .allow_subclass<wrapper<SkewTo>>("cc.SkewTo._extend")
@@ -920,7 +904,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<SkewBy, base<SkewTo>>("cc.SkewBy")
     .constructor(&cc_bindings_constructor<SkewBy>, allow_raw_pointers())
     .function("initWithDuration", &SkewBy::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &SkewBy::create, allow_raw_pointers())
     .property("_className",  optional_override([](const SkewBy& _) -> std::string {return "SkewBy";}))    
     .allow_subclass<wrapper<SkewBy>>("cc.SkewBy._extend")
@@ -930,7 +913,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<JumpBy, base<ActionInterval>>("cc.JumpBy")
     .constructor(&cc_bindings_constructor<JumpBy>, allow_raw_pointers())
     .function("initWithDuration", &JumpBy::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &JumpBy::create, allow_raw_pointers())
     .property("_className",  optional_override([](const JumpBy& _) -> std::string {return "JumpBy";}))    
     .allow_subclass<wrapper<JumpBy>>("cc.JumpBy._extend")
@@ -940,7 +922,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<JumpTo, base<JumpBy>>("cc.JumpTo")
     .constructor(&cc_bindings_constructor<JumpTo>, allow_raw_pointers())
     .function("initWithDuration", &JumpTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &JumpTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const JumpTo& _) -> std::string {return "JumpTo";}))    
     .allow_subclass<wrapper<JumpTo>>("cc.JumpTo._extend")
@@ -949,7 +930,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<BezierBy, base<ActionInterval>>("cc.BezierBy")
     .constructor(&cc_bindings_constructor<BezierBy>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const BezierBy& _) -> std::string {return "BezierBy";}))    
     .allow_subclass<wrapper<BezierBy>>("cc.BezierBy._extend")
     ;
@@ -957,7 +937,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<BezierTo, base<BezierBy>>("cc.BezierTo")
     .constructor(&cc_bindings_constructor<BezierTo>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const BezierTo& _) -> std::string {return "BezierTo";}))    
     .allow_subclass<wrapper<BezierTo>>("cc.BezierTo._extend")
     ;
@@ -968,7 +947,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithDuration", select_overload<bool(float, float, float)>(&ScaleTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float)>(&ScaleTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float, float, float)>(&ScaleTo::initWithDuration))
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<ScaleTo*(float, float, float)>(&ScaleTo::create), allow_raw_pointers())
     .class_function("create", select_overload<ScaleTo*(float, float)>(&ScaleTo::create), allow_raw_pointers())
     .class_function("create", select_overload<ScaleTo*(float, float, float, float)>(&ScaleTo::create), allow_raw_pointers())
@@ -979,7 +957,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<ScaleBy, base<ScaleTo>>("cc.ScaleBy")
     .constructor(&cc_bindings_constructor<ScaleBy>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<ScaleBy*(float, float, float)>(&ScaleBy::create), allow_raw_pointers())
     .class_function("create", select_overload<ScaleBy*(float, float)>(&ScaleBy::create), allow_raw_pointers())
     .class_function("create", select_overload<ScaleBy*(float, float, float, float)>(&ScaleBy::create), allow_raw_pointers())
@@ -991,7 +968,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<Blink, base<ActionInterval>>("cc.Blink")
     .constructor(&cc_bindings_constructor<Blink>, allow_raw_pointers())
     .function("initWithDuration", &Blink::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Blink::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Blink& _) -> std::string {return "Blink";}))    
     .allow_subclass<wrapper<Blink>>("cc.Blink._extend")
@@ -1001,7 +977,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<FadeTo, base<ActionInterval>>("cc.FadeTo")
     .constructor(&cc_bindings_constructor<FadeTo>, allow_raw_pointers())
     .function("initWithDuration", &FadeTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeTo& _) -> std::string {return "FadeTo";}))    
     .allow_subclass<wrapper<FadeTo>>("cc.FadeTo._extend")
@@ -1011,7 +986,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<FadeIn, base<FadeTo>>("cc.FadeIn")
     .constructor(&cc_bindings_constructor<FadeIn>, allow_raw_pointers())
     .function("setReverseAction", &FadeIn::setReverseAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeIn& _) -> std::string {return "FadeIn";}))    
     .allow_subclass<wrapper<FadeIn>>("cc.FadeIn._extend")
@@ -1021,7 +995,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<FadeOut, base<FadeTo>>("cc.FadeOut")
     .constructor(&cc_bindings_constructor<FadeOut>, allow_raw_pointers())
     .function("setReverseAction", &FadeOut::setReverseAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOut& _) -> std::string {return "FadeOut";}))    
     .allow_subclass<wrapper<FadeOut>>("cc.FadeOut._extend")
@@ -1031,7 +1004,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<TintTo, base<ActionInterval>>("cc.TintTo")
     .constructor(&cc_bindings_constructor<TintTo>, allow_raw_pointers())
     .function("initWithDuration", &TintTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TintTo*(float, const Color3B&)>(&TintTo::create), allow_raw_pointers())
     .class_function("create", select_overload<TintTo*(float, unsigned char, unsigned char, unsigned char)>(&TintTo::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TintTo& _) -> std::string {return "TintTo";}))    
@@ -1042,7 +1014,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<TintBy, base<ActionInterval>>("cc.TintBy")
     .constructor(&cc_bindings_constructor<TintBy>, allow_raw_pointers())
     .function("initWithDuration", &TintBy::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TintBy::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TintBy& _) -> std::string {return "TintBy";}))    
     .allow_subclass<wrapper<TintBy>>("cc.TintBy._extend")
@@ -1051,7 +1022,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<DelayTime, base<ActionInterval>>("cc.DelayTime")
     .constructor(&cc_bindings_constructor<DelayTime>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &DelayTime::create, allow_raw_pointers())
     .property("_className",  optional_override([](const DelayTime& _) -> std::string {return "DelayTime";}))    
     .allow_subclass<wrapper<DelayTime>>("cc.DelayTime._extend")
@@ -1061,7 +1031,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<ReverseTime, base<ActionInterval>>("cc.ReverseTime")
     .constructor(&cc_bindings_constructor<ReverseTime>, allow_raw_pointers())
     .function("initWithAction", &ReverseTime::initWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ReverseTime::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ReverseTime& _) -> std::string {return "ReverseTime";}))    
     .allow_subclass<wrapper<ReverseTime>>("cc.ReverseTime._extend")
@@ -1075,7 +1044,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getCurrentFrameIndex", &Animate::getCurrentFrameIndex)
     .function("setAnimation", &Animate::setAnimation, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Animate::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Animate& _) -> std::string {return "Animate";}))    
     .allow_subclass<wrapper<Animate>>("cc.Animate._extend")
@@ -1088,7 +1056,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("initWithTarget", &TargetedAction::initWithTarget, allow_raw_pointers())
     .function("setForcedTarget", &TargetedAction::setForcedTarget, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TargetedAction::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TargetedAction& _) -> std::string {return "TargetedAction";}))    
     .allow_subclass<wrapper<TargetedAction>>("cc.TargetedAction._extend")
@@ -1098,7 +1065,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<ActionFloat, base<ActionInterval>>("cc.ActionFloat")
     .constructor(&cc_bindings_constructor<ActionFloat>, allow_raw_pointers())
     .function("initWithDuration", &ActionFloat::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ActionFloat::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionFloat& _) -> std::string {return "ActionFloat";}))    
     .allow_subclass<wrapper<ActionFloat>>("cc.ActionFloat._extend")
@@ -1452,7 +1418,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getCenter", &ActionCamera::getCenter)
     .function("setCenter", &ActionCamera::setCenter)
     .function("getUp", &ActionCamera::getUp)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const ActionCamera& _) -> std::string {return "ActionCamera";}))    
     .allow_subclass<wrapper<ActionCamera>>("cc.ActionCamera._extend")
     ;
@@ -1462,7 +1427,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<OrbitCamera>, allow_raw_pointers())
     .function("sphericalRadius", &OrbitCamera::sphericalRadius, allow_raw_pointers())
     .function("initWithDuration", &OrbitCamera::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &OrbitCamera::create, allow_raw_pointers())
     .property("_className",  optional_override([](const OrbitCamera& _) -> std::string {return "OrbitCamera";}))    
     .allow_subclass<wrapper<OrbitCamera>>("cc.OrbitCamera._extend")
@@ -1507,7 +1471,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseExponentialIn, base<ActionEase>>("cc.EaseExponentialIn")
     .constructor(&cc_bindings_constructor<EaseExponentialIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseExponentialIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseExponentialIn& _) -> std::string {return "EaseExponentialIn";}))    
     .allow_subclass<wrapper<EaseExponentialIn>>("cc.EaseExponentialIn._extend")
@@ -1516,7 +1479,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseExponentialOut, base<ActionEase>>("cc.EaseExponentialOut")
     .constructor(&cc_bindings_constructor<EaseExponentialOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseExponentialOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseExponentialOut& _) -> std::string {return "EaseExponentialOut";}))    
     .allow_subclass<wrapper<EaseExponentialOut>>("cc.EaseExponentialOut._extend")
@@ -1525,7 +1487,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseExponentialInOut, base<ActionEase>>("cc.EaseExponentialInOut")
     .constructor(&cc_bindings_constructor<EaseExponentialInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseExponentialInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseExponentialInOut& _) -> std::string {return "EaseExponentialInOut";}))    
     .allow_subclass<wrapper<EaseExponentialInOut>>("cc.EaseExponentialInOut._extend")
@@ -1534,7 +1495,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseSineIn, base<ActionEase>>("cc.EaseSineIn")
     .constructor(&cc_bindings_constructor<EaseSineIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseSineIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseSineIn& _) -> std::string {return "EaseSineIn";}))    
     .allow_subclass<wrapper<EaseSineIn>>("cc.EaseSineIn._extend")
@@ -1543,7 +1503,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseSineOut, base<ActionEase>>("cc.EaseSineOut")
     .constructor(&cc_bindings_constructor<EaseSineOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseSineOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseSineOut& _) -> std::string {return "EaseSineOut";}))    
     .allow_subclass<wrapper<EaseSineOut>>("cc.EaseSineOut._extend")
@@ -1552,7 +1511,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseSineInOut, base<ActionEase>>("cc.EaseSineInOut")
     .constructor(&cc_bindings_constructor<EaseSineInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseSineInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseSineInOut& _) -> std::string {return "EaseSineInOut";}))    
     .allow_subclass<wrapper<EaseSineInOut>>("cc.EaseSineInOut._extend")
@@ -1565,7 +1523,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseBounceIn, base<ActionEase>>("cc.EaseBounceIn")
     .constructor(&cc_bindings_constructor<EaseBounceIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBounceIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBounceIn& _) -> std::string {return "EaseBounceIn";}))    
     .allow_subclass<wrapper<EaseBounceIn>>("cc.EaseBounceIn._extend")
@@ -1574,7 +1531,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseBounceOut, base<ActionEase>>("cc.EaseBounceOut")
     .constructor(&cc_bindings_constructor<EaseBounceOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBounceOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBounceOut& _) -> std::string {return "EaseBounceOut";}))    
     .allow_subclass<wrapper<EaseBounceOut>>("cc.EaseBounceOut._extend")
@@ -1583,7 +1539,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseBounceInOut, base<ActionEase>>("cc.EaseBounceInOut")
     .constructor(&cc_bindings_constructor<EaseBounceInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBounceInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBounceInOut& _) -> std::string {return "EaseBounceInOut";}))    
     .allow_subclass<wrapper<EaseBounceInOut>>("cc.EaseBounceInOut._extend")
@@ -1592,7 +1547,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseBackIn, base<ActionEase>>("cc.EaseBackIn")
     .constructor(&cc_bindings_constructor<EaseBackIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBackIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBackIn& _) -> std::string {return "EaseBackIn";}))    
     .allow_subclass<wrapper<EaseBackIn>>("cc.EaseBackIn._extend")
@@ -1601,7 +1555,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseBackOut, base<ActionEase>>("cc.EaseBackOut")
     .constructor(&cc_bindings_constructor<EaseBackOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBackOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBackOut& _) -> std::string {return "EaseBackOut";}))    
     .allow_subclass<wrapper<EaseBackOut>>("cc.EaseBackOut._extend")
@@ -1610,7 +1563,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseBackInOut, base<ActionEase>>("cc.EaseBackInOut")
     .constructor(&cc_bindings_constructor<EaseBackInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBackInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBackInOut& _) -> std::string {return "EaseBackInOut";}))    
     .allow_subclass<wrapper<EaseBackInOut>>("cc.EaseBackInOut._extend")
@@ -1619,7 +1571,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuadraticActionIn, base<ActionEase>>("cc.EaseQuadraticActionIn")
     .constructor(&cc_bindings_constructor<EaseQuadraticActionIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuadraticActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuadraticActionIn& _) -> std::string {return "EaseQuadraticActionIn";}))    
     .allow_subclass<wrapper<EaseQuadraticActionIn>>("cc.EaseQuadraticActionIn._extend")
@@ -1628,7 +1579,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuadraticActionOut, base<ActionEase>>("cc.EaseQuadraticActionOut")
     .constructor(&cc_bindings_constructor<EaseQuadraticActionOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuadraticActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuadraticActionOut& _) -> std::string {return "EaseQuadraticActionOut";}))    
     .allow_subclass<wrapper<EaseQuadraticActionOut>>("cc.EaseQuadraticActionOut._extend")
@@ -1637,7 +1587,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuadraticActionInOut, base<ActionEase>>("cc.EaseQuadraticActionInOut")
     .constructor(&cc_bindings_constructor<EaseQuadraticActionInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuadraticActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuadraticActionInOut& _) -> std::string {return "EaseQuadraticActionInOut";}))    
     .allow_subclass<wrapper<EaseQuadraticActionInOut>>("cc.EaseQuadraticActionInOut._extend")
@@ -1646,7 +1595,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuarticActionIn, base<ActionEase>>("cc.EaseQuarticActionIn")
     .constructor(&cc_bindings_constructor<EaseQuarticActionIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuarticActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuarticActionIn& _) -> std::string {return "EaseQuarticActionIn";}))    
     .allow_subclass<wrapper<EaseQuarticActionIn>>("cc.EaseQuarticActionIn._extend")
@@ -1655,7 +1603,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuarticActionOut, base<ActionEase>>("cc.EaseQuarticActionOut")
     .constructor(&cc_bindings_constructor<EaseQuarticActionOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuarticActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuarticActionOut& _) -> std::string {return "EaseQuarticActionOut";}))    
     .allow_subclass<wrapper<EaseQuarticActionOut>>("cc.EaseQuarticActionOut._extend")
@@ -1664,7 +1611,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuarticActionInOut, base<ActionEase>>("cc.EaseQuarticActionInOut")
     .constructor(&cc_bindings_constructor<EaseQuarticActionInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuarticActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuarticActionInOut& _) -> std::string {return "EaseQuarticActionInOut";}))    
     .allow_subclass<wrapper<EaseQuarticActionInOut>>("cc.EaseQuarticActionInOut._extend")
@@ -1673,7 +1619,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuinticActionIn, base<ActionEase>>("cc.EaseQuinticActionIn")
     .constructor(&cc_bindings_constructor<EaseQuinticActionIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuinticActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuinticActionIn& _) -> std::string {return "EaseQuinticActionIn";}))    
     .allow_subclass<wrapper<EaseQuinticActionIn>>("cc.EaseQuinticActionIn._extend")
@@ -1682,7 +1627,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuinticActionOut, base<ActionEase>>("cc.EaseQuinticActionOut")
     .constructor(&cc_bindings_constructor<EaseQuinticActionOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuinticActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuinticActionOut& _) -> std::string {return "EaseQuinticActionOut";}))    
     .allow_subclass<wrapper<EaseQuinticActionOut>>("cc.EaseQuinticActionOut._extend")
@@ -1691,7 +1635,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseQuinticActionInOut, base<ActionEase>>("cc.EaseQuinticActionInOut")
     .constructor(&cc_bindings_constructor<EaseQuinticActionInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseQuinticActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseQuinticActionInOut& _) -> std::string {return "EaseQuinticActionInOut";}))    
     .allow_subclass<wrapper<EaseQuinticActionInOut>>("cc.EaseQuinticActionInOut._extend")
@@ -1700,7 +1643,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseCircleActionIn, base<ActionEase>>("cc.EaseCircleActionIn")
     .constructor(&cc_bindings_constructor<EaseCircleActionIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseCircleActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCircleActionIn& _) -> std::string {return "EaseCircleActionIn";}))    
     .allow_subclass<wrapper<EaseCircleActionIn>>("cc.EaseCircleActionIn._extend")
@@ -1709,7 +1651,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseCircleActionOut, base<ActionEase>>("cc.EaseCircleActionOut")
     .constructor(&cc_bindings_constructor<EaseCircleActionOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseCircleActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCircleActionOut& _) -> std::string {return "EaseCircleActionOut";}))    
     .allow_subclass<wrapper<EaseCircleActionOut>>("cc.EaseCircleActionOut._extend")
@@ -1718,7 +1659,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseCircleActionInOut, base<ActionEase>>("cc.EaseCircleActionInOut")
     .constructor(&cc_bindings_constructor<EaseCircleActionInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseCircleActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCircleActionInOut& _) -> std::string {return "EaseCircleActionInOut";}))    
     .allow_subclass<wrapper<EaseCircleActionInOut>>("cc.EaseCircleActionInOut._extend")
@@ -1727,7 +1667,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseCubicActionIn, base<ActionEase>>("cc.EaseCubicActionIn")
     .constructor(&cc_bindings_constructor<EaseCubicActionIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseCubicActionIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCubicActionIn& _) -> std::string {return "EaseCubicActionIn";}))    
     .allow_subclass<wrapper<EaseCubicActionIn>>("cc.EaseCubicActionIn._extend")
@@ -1736,7 +1675,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseCubicActionOut, base<ActionEase>>("cc.EaseCubicActionOut")
     .constructor(&cc_bindings_constructor<EaseCubicActionOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseCubicActionOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCubicActionOut& _) -> std::string {return "EaseCubicActionOut";}))    
     .allow_subclass<wrapper<EaseCubicActionOut>>("cc.EaseCubicActionOut._extend")
@@ -1745,7 +1683,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseCubicActionInOut, base<ActionEase>>("cc.EaseCubicActionInOut")
     .constructor(&cc_bindings_constructor<EaseCubicActionInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseCubicActionInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseCubicActionInOut& _) -> std::string {return "EaseCubicActionInOut";}))    
     .allow_subclass<wrapper<EaseCubicActionInOut>>("cc.EaseCubicActionInOut._extend")
@@ -1754,7 +1691,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseIn, base<EaseRateAction>>("cc.EaseIn")
     .constructor(&cc_bindings_constructor<EaseIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseIn& _) -> std::string {return "EaseIn";}))    
     .allow_subclass<wrapper<EaseIn>>("cc.EaseIn._extend")
@@ -1763,7 +1699,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseOut, base<EaseRateAction>>("cc.EaseOut")
     .constructor(&cc_bindings_constructor<EaseOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseOut& _) -> std::string {return "EaseOut";}))    
     .allow_subclass<wrapper<EaseOut>>("cc.EaseOut._extend")
@@ -1772,7 +1707,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseInOut, base<EaseRateAction>>("cc.EaseInOut")
     .constructor(&cc_bindings_constructor<EaseInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseInOut& _) -> std::string {return "EaseInOut";}))    
     .allow_subclass<wrapper<EaseInOut>>("cc.EaseInOut._extend")
@@ -1792,7 +1726,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseElasticIn, base<EaseElastic>>("cc.EaseElasticIn")
     .constructor(&cc_bindings_constructor<EaseElasticIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseElasticIn::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](ActionInterval* arg0){
@@ -1805,7 +1738,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseElasticOut, base<EaseElastic>>("cc.EaseElasticOut")
     .constructor(&cc_bindings_constructor<EaseElasticOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseElasticOut::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](ActionInterval* arg0){
@@ -1818,7 +1750,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EaseElasticInOut, base<EaseElastic>>("cc.EaseElasticInOut")
     .constructor(&cc_bindings_constructor<EaseElasticInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseElasticInOut::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](ActionInterval* arg0){
@@ -1832,7 +1763,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EaseBezierAction, base<ActionEase>>("cc.EaseBezierAction")
     .constructor(&cc_bindings_constructor<EaseBezierAction>, allow_raw_pointers())
     .function("setBezierParamer", &EaseBezierAction::setBezierParamer)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &EaseBezierAction::create, allow_raw_pointers())
     .property("_className",  optional_override([](const EaseBezierAction& _) -> std::string {return "EaseBezierAction";}))    
     .allow_subclass<wrapper<EaseBezierAction>>("cc.EaseBezierAction._extend")
@@ -1845,7 +1775,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Show, base<ActionInstant>>("cc.Show")
     .constructor(&cc_bindings_constructor<Show>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Show::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Show& _) -> std::string {return "Show";}))    
     .allow_subclass<wrapper<Show>>("cc.Show._extend")
@@ -1854,7 +1783,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Hide, base<ActionInstant>>("cc.Hide")
     .constructor(&cc_bindings_constructor<Hide>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Hide::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Hide& _) -> std::string {return "Hide";}))    
     .allow_subclass<wrapper<Hide>>("cc.Hide._extend")
@@ -1883,7 +1811,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<FlipX, base<ActionInstant>>("cc.FlipX")
     .constructor(&cc_bindings_constructor<FlipX>, allow_raw_pointers())
     .function("initWithFlipX", &FlipX::initWithFlipX)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FlipX::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipX& _) -> std::string {return "FlipX";}))    
     .allow_subclass<wrapper<FlipX>>("cc.FlipX._extend")
@@ -1893,7 +1820,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<FlipY, base<ActionInstant>>("cc.FlipY")
     .constructor(&cc_bindings_constructor<FlipY>, allow_raw_pointers())
     .function("initWithFlipY", &FlipY::initWithFlipY)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FlipY::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipY& _) -> std::string {return "FlipY";}))    
     .allow_subclass<wrapper<FlipY>>("cc.FlipY._extend")
@@ -1903,7 +1829,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<Place, base<ActionInstant>>("cc.Place")
     .constructor(&cc_bindings_constructor<Place>, allow_raw_pointers())
     .function("initWithPosition", &Place::initWithPosition)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Place::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Place& _) -> std::string {return "Place";}))    
     .allow_subclass<wrapper<Place>>("cc.Place._extend")
@@ -1913,7 +1838,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<CallFunc, base<ActionInstant>>("cc._CallFunc")
     .constructor(&cc_bindings_constructor<CallFunc>, allow_raw_pointers())
     .function("execute", &CallFunc::execute)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const CallFunc& _) -> std::string {return "CallFunc";}))    
     .allow_subclass<wrapper<CallFunc>>("cc._CallFunc._extend")
     ;
@@ -1921,7 +1845,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<CallFuncN, base<CallFunc>>("cc.CallFunc")
     .constructor(&cc_bindings_constructor<CallFuncN>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const CallFuncN& _) -> std::string {return "CallFuncN";}))    
     .allow_subclass<wrapper<CallFuncN>>("cc.CallFunc._extend")
     ;
@@ -1973,7 +1896,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<FlipX3D>, allow_raw_pointers())
     .function("initWithSize", &FlipX3D::initWithSize)
     .function("initWithDuration", &FlipX3D::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FlipX3D::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipX3D& _) -> std::string {return "FlipX3D";}))    
     .allow_subclass<wrapper<FlipX3D>>("cc.FlipX3D._extend")
@@ -1982,7 +1904,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<FlipY3D, base<FlipX3D>>("cc.FlipY3D")
     .constructor(&cc_bindings_constructor<FlipY3D>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FlipY3D::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FlipY3D& _) -> std::string {return "FlipY3D";}))    
     .allow_subclass<wrapper<FlipY3D>>("cc.FlipY3D._extend")
@@ -2080,7 +2001,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("update", &ActionManager::update)
     .function("removeAllActionsByTag", &ActionManager::removeAllActionsByTag, allow_raw_pointers())
     .function("getNumberOfRunningActionsInTargetByTag", &ActionManager::getNumberOfRunningActionsInTargetByTag, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const ActionManager& _) -> std::string {return "ActionManager";}))    
     .allow_subclass<wrapper<ActionManager>>("cc.ActionManager._extend")
     ;
@@ -2094,7 +2014,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<ProgressTo, base<ActionInterval>>("cc.ProgressTo")
     .constructor(&cc_bindings_constructor<ProgressTo>, allow_raw_pointers())
     .function("initWithDuration", &ProgressTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ProgressTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressTo& _) -> std::string {return "ProgressTo";}))    
     .allow_subclass<wrapper<ProgressTo>>("cc.ProgressTo._extend")
@@ -2104,7 +2023,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<ProgressFromTo, base<ActionInterval>>("cc.ProgressFromTo")
     .constructor(&cc_bindings_constructor<ProgressFromTo>, allow_raw_pointers())
     .function("initWithDuration", &ProgressFromTo::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ProgressFromTo::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressFromTo& _) -> std::string {return "ProgressFromTo";}))    
     .allow_subclass<wrapper<ProgressFromTo>>("cc.ProgressFromTo._extend")
@@ -2144,7 +2062,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("turnOffTile", &FadeOutTRTiles::turnOffTile)
     .function("transformTile", &FadeOutTRTiles::transformTile)
     .function("testFunc", &FadeOutTRTiles::testFunc)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeOutTRTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutTRTiles& _) -> std::string {return "FadeOutTRTiles";}))    
     .allow_subclass<wrapper<FadeOutTRTiles>>("cc.FadeOutTRTiles._extend")
@@ -2153,7 +2070,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<FadeOutBLTiles, base<FadeOutTRTiles>>("cc.FadeOutBLTiles")
     .constructor(&cc_bindings_constructor<FadeOutBLTiles>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeOutBLTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutBLTiles& _) -> std::string {return "FadeOutBLTiles";}))    
     .allow_subclass<wrapper<FadeOutBLTiles>>("cc.FadeOutBLTiles._extend")
@@ -2162,7 +2078,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<FadeOutUpTiles, base<FadeOutTRTiles>>("cc.FadeOutUpTiles")
     .constructor(&cc_bindings_constructor<FadeOutUpTiles>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeOutUpTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutUpTiles& _) -> std::string {return "FadeOutUpTiles";}))    
     .allow_subclass<wrapper<FadeOutUpTiles>>("cc.FadeOutUpTiles._extend")
@@ -2171,7 +2086,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<FadeOutDownTiles, base<FadeOutUpTiles>>("cc.FadeOutDownTiles")
     .constructor(&cc_bindings_constructor<FadeOutDownTiles>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &FadeOutDownTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const FadeOutDownTiles& _) -> std::string {return "FadeOutDownTiles";}))    
     .allow_subclass<wrapper<FadeOutDownTiles>>("cc.FadeOutDownTiles._extend")
@@ -2209,7 +2123,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getAmplitude", &JumpTiles3D::getAmplitude)
     .function("getAmplitudeRate", &JumpTiles3D::getAmplitudeRate)
     .function("setAmplitude", &JumpTiles3D::setAmplitude)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &JumpTiles3D::create, allow_raw_pointers())
     .property("_className",  optional_override([](const JumpTiles3D& _) -> std::string {return "JumpTiles3D";}))    
     .allow_subclass<wrapper<JumpTiles3D>>("cc.JumpTiles3D._extend")
@@ -2234,7 +2147,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<ActionTween, base<ActionInterval>>("cc.ActionTween")
     .constructor(&cc_bindings_constructor<ActionTween>, allow_raw_pointers())
     .function("initWithDuration", &ActionTween::initWithDuration)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ActionTween::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionTween& _) -> std::string {return "ActionTween";}))    
     .allow_subclass<wrapper<ActionTween>>("cc.ActionTween._extend")
@@ -2305,7 +2217,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("drawPoint", &DrawNode::drawPoint)
     .function("isIsolated", &DrawNode::isIsolated)
     .function("drawCubicBezier", &DrawNode::drawCubicBezier)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &DrawNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](){
@@ -2458,7 +2369,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         }))
     .function("requestSystemFontRefresh", &Label::requestSystemFontRefresh)
     .function("setBMFontSize", &Label::setBMFontSize)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("createWithBMFont", optional_override(
         [](const std::string& arg0, const std::string& arg1, int32_t arg2, int arg3, const Rect& arg4, bool arg5){
             return Label::createWithBMFont(arg0, arg1, (const TextHAlignment&)arg2, arg3, arg4, arg5);
@@ -2504,7 +2414,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithString", select_overload<bool(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::initWithString))
     // TODO: Only support function overloading with different number of parameters
     .function("getString", &LabelAtlas::getString)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<LabelAtlas*()>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&)>(&LabelAtlas::create), allow_raw_pointers())
@@ -2546,7 +2455,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.setAlignment((TextHAlignment)arg0);
       }))
     .function("setWidth", &LabelBMFont::setWidth)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<LabelBMFont*()>(&LabelBMFont::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const std::string& arg0, const std::string& arg1, float arg2, int32_t arg3, const Vec2& arg4){
@@ -2634,7 +2542,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](LabelTTF& this_){
         return this_.disableStroke();
       }))
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<LabelTTF*()>(&LabelTTF::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5){
@@ -2651,7 +2558,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Layer, base<Node>>("cc.Layer")
     .constructor(&cc_bindings_constructor<Layer>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &Layer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Layer& _) -> std::string {return "Layer";}))    
     .allow_subclass<wrapper<Layer>>("cc.Layer._extend")
@@ -2674,7 +2580,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("init", select_overload<bool(const Color4B&)>(&LayerColor::initWithColor))
     .function("init", select_overload<bool(const Color4B&, float, float)>(&LayerColor::initWithColor))
     .function("changeHeight", &LayerColor::changeHeight)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<LayerColor*(const Color4B&, float, float)>(&LayerColor::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerColor*()>(&LayerColor::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerColor*(const Color4B&)>(&LayerColor::create), allow_raw_pointers())
@@ -2699,7 +2604,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getEndColor", &LayerGradient::getEndColor)
     .function("getEndOpacity", &LayerGradient::getEndOpacity)
     .function("setStartColor", &LayerGradient::setStartColor)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<LayerGradient*(const Color4B&, const Color4B&)>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerGradient*()>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerGradient*(const Color4B&, const Color4B&, const Vec2&)>(&LayerGradient::create), allow_raw_pointers())
@@ -2731,7 +2635,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getExpand", &LayerRadialGradient::getExpand)
     .function("setBlendFunc", &LayerRadialGradient::setBlendFunc)
     .function("getRadius", &LayerRadialGradient::getRadius)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<LayerRadialGradient*()>(&LayerRadialGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerRadialGradient*(const Color4B&, const Color4B&, float, const Vec2&, float)>(&LayerRadialGradient::create), allow_raw_pointers())
     .property("_className",  optional_override([](const LayerRadialGradient& _) -> std::string {return "LayerRadialGradient";}))    
@@ -2746,7 +2649,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("addLayer", &LayerMultiplex::addLayer, allow_raw_pointers())
     .function("switchTo", select_overload<void(int, bool)>(&LayerMultiplex::switchTo))
     .function("switchTo", select_overload<void(int)>(&LayerMultiplex::switchTo))
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const LayerMultiplex& _) -> std::string {return "LayerMultiplex";}))    
     .allow_subclass<wrapper<LayerMultiplex>>("cc.LayerMultiplex._extend")
     ;
@@ -2763,7 +2665,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setCallback", &MenuItem::setCallback)
     .function("unselected", &MenuItem::unselected)
     .function("rect", &MenuItem::rect)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItem& _) -> std::string {return "MenuItem";}))    
     .allow_subclass<wrapper<MenuItem>>("cc.MenuItem._extend")
     ;
@@ -2777,7 +2678,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setString", &MenuItemLabel::setString)
     .function("setDisabledColor", &MenuItemLabel::setDisabledColor)
     .function("getLabel", &MenuItemLabel::getLabel, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItemLabel& _) -> std::string {return "MenuItemLabel";}))    
     .allow_subclass<wrapper<MenuItemLabel>>("cc.MenuItemLabel._extend")
     ;
@@ -2785,7 +2685,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MenuItemAtlasFont, base<MenuItemLabel>>("cc.MenuItemAtlasFont")
     .constructor(&cc_bindings_constructor<MenuItemAtlasFont>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItemAtlasFont& _) -> std::string {return "MenuItemAtlasFont";}))    
     .allow_subclass<wrapper<MenuItemAtlasFont>>("cc.MenuItemAtlasFont._extend")
     ;
@@ -2793,7 +2692,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MenuItemFont, base<MenuItemLabel>>("cc.MenuItemFont")
     .constructor(&cc_bindings_constructor<MenuItemFont>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItemFont& _) -> std::string {return "MenuItemFont";}))    
     .allow_subclass<wrapper<MenuItemFont>>("cc.MenuItemFont._extend")
     ;
@@ -2810,7 +2708,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getSelectedImage", &MenuItemSprite::getSelectedImage, allow_raw_pointers())
     .function("getNormalImage", &MenuItemSprite::getNormalImage, allow_raw_pointers())
     .function("unselected", &MenuItemSprite::unselected)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItemSprite& _) -> std::string {return "MenuItemSprite";}))    
     .allow_subclass<wrapper<MenuItemSprite>>("cc.MenuItemSprite._extend")
     ;
@@ -2822,7 +2719,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setSelectedSpriteFrame", &MenuItemImage::setSelectedSpriteFrame, allow_raw_pointers())
     .function("setNormalSpriteFrame", &MenuItemImage::setNormalSpriteFrame, allow_raw_pointers())
     .function("init", &MenuItemImage::init)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItemImage& _) -> std::string {return "MenuItemImage";}))    
     .allow_subclass<wrapper<MenuItemImage>>("cc.MenuItemImage._extend")
     ;
@@ -2836,7 +2732,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("addSubItem", &MenuItemToggle::addSubItem, allow_raw_pointers())
     .function("getSelectedItem", &MenuItemToggle::getSelectedItem, allow_raw_pointers())
     .function("setSelectedIndex", &MenuItemToggle::setSelectedIndex)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const MenuItemToggle& _) -> std::string {return "MenuItemToggle";}))    
     .allow_subclass<wrapper<MenuItemToggle>>("cc.MenuItemToggle._extend")
     ;
@@ -2851,7 +2746,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("alignItemsHorizontally", &Menu::alignItemsHorizontally)
     .function("alignItemsHorizontallyWithPadding", &Menu::alignItemsHorizontallyWithPadding)
     .function("alignItemsVerticallyWithPadding", &Menu::alignItemsVerticallyWithPadding)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const Menu& _) -> std::string {return "Menu";}))    
     .allow_subclass<wrapper<Menu>>("cc.Menu._extend")
     ;
@@ -2873,7 +2767,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setFastMode", &MotionStreak::setFastMode)
     .function("setStroke", &MotionStreak::setStroke)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<MotionStreak*(float, float, float, const Color3B&, Texture2D*)>(&MotionStreak::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const MotionStreak& _) -> std::string {return "MotionStreak";}))    
@@ -2907,7 +2800,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getBlendFunc", &ParticleBatchNode::getBlendFunc)
     .function("insertChild", &ParticleBatchNode::insertChild, allow_raw_pointers())
     .function("removeChildAtIndex", &ParticleBatchNode::removeChildAtIndex)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ParticleBatchNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](const std::string& arg0){
@@ -3055,7 +2947,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setBlendFunc", &ParticleSystem::setBlendFunc)
     .function("getEndRadiusVar", &ParticleSystem::getEndRadiusVar)
     .function("getStartColorVar", &ParticleSystem::getStartColorVar)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ParticleSystem::create, allow_raw_pointers())
     .class_function("createWithTotalParticles", &ParticleSystem::createWithTotalParticles, allow_raw_pointers())
     .class_function("getAllParticleSystems", &ParticleSystem::getAllParticleSystems)
@@ -3205,7 +3096,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](ProgressTimer& this_, int32_t arg0){
         return this_.setType((ProgressTimer::Type)arg0);
       }))
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ProgressTimer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressTimer& _) -> std::string {return "ProgressTimer";}))    
     .allow_subclass<wrapper<ProgressTimer>>("cc.ProgressTimer._extend")
@@ -3287,7 +3177,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isFlippedX", &Sprite::isFlippedX)
     .function("isFlippedY", &Sprite::isFlippedY)
     .function("setVertexRect", &Sprite::setVertexRect)
-    .function("ctor", &cc_bindings_ctor)
     .property("_className",  optional_override([](const Sprite& _) -> std::string {return "Sprite";}))    
     .allow_subclass<wrapper<Sprite>>("cc.Sprite._extend")
     ;
@@ -3330,7 +3219,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](RenderTexture& this_, int arg0, int arg1, int32_t arg2){
             return this_.initWithWidthAndHeight(arg0, arg1, (Texture2D::PixelFormat)arg2);
         }))
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", optional_override(
         [](int arg0, int arg1, int32_t arg2){
             return RenderTexture::create(arg0, arg1, (Texture2D::PixelFormat)arg2);
@@ -3357,7 +3245,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithDuration", &TransitionScene::initWithDuration, allow_raw_pointers())
     .function("getDuration", &TransitionScene::getDuration)
     .function("hideOutShowIn", &TransitionScene::hideOutShowIn)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionScene::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionScene& _) -> std::string {return "TransitionScene";}))    
     .allow_subclass<wrapper<TransitionScene>>("cc.TransitionScene._extend")
@@ -3370,7 +3257,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](TransitionSceneOriented& this_, float arg0, Scene* arg1, int32_t arg2){
         return this_.initWithDuration(arg0, arg1, (TransitionScene::Orientation)arg2);
       }), allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", optional_override(
       [](float arg0, Scene* arg1, int32_t arg2){
         return TransitionSceneOriented::create(arg0, arg1, (TransitionScene::Orientation)arg2);
@@ -3382,7 +3268,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionRotoZoom, base<TransitionScene>>("cc.TransitionRotoZoom")
     .constructor(&cc_bindings_constructor<TransitionRotoZoom>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionRotoZoom::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionRotoZoom& _) -> std::string {return "TransitionRotoZoom";}))    
     .allow_subclass<wrapper<TransitionRotoZoom>>("cc.TransitionRotoZoom._extend")
@@ -3391,7 +3276,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionJumpZoom, base<TransitionScene>>("cc.TransitionJumpZoom")
     .constructor(&cc_bindings_constructor<TransitionJumpZoom>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionJumpZoom::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionJumpZoom& _) -> std::string {return "TransitionJumpZoom";}))    
     .allow_subclass<wrapper<TransitionJumpZoom>>("cc.TransitionJumpZoom._extend")
@@ -3402,7 +3286,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<TransitionMoveInL>, allow_raw_pointers())
     .function("action", &TransitionMoveInL::action, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionMoveInL::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionMoveInL::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInL& _) -> std::string {return "TransitionMoveInL";}))    
     .allow_subclass<wrapper<TransitionMoveInL>>("cc.TransitionMoveInL._extend")
@@ -3411,7 +3294,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionMoveInR, base<TransitionMoveInL>>("cc.TransitionMoveInR")
     .constructor(&cc_bindings_constructor<TransitionMoveInR>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionMoveInR::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInR& _) -> std::string {return "TransitionMoveInR";}))    
     .allow_subclass<wrapper<TransitionMoveInR>>("cc.TransitionMoveInR._extend")
@@ -3420,7 +3302,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionMoveInT, base<TransitionMoveInL>>("cc.TransitionMoveInT")
     .constructor(&cc_bindings_constructor<TransitionMoveInT>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionMoveInT::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInT& _) -> std::string {return "TransitionMoveInT";}))    
     .allow_subclass<wrapper<TransitionMoveInT>>("cc.TransitionMoveInT._extend")
@@ -3429,7 +3310,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionMoveInB, base<TransitionMoveInL>>("cc.TransitionMoveInB")
     .constructor(&cc_bindings_constructor<TransitionMoveInB>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionMoveInB::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionMoveInB& _) -> std::string {return "TransitionMoveInB";}))    
     .allow_subclass<wrapper<TransitionMoveInB>>("cc.TransitionMoveInB._extend")
@@ -3440,7 +3320,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<TransitionSlideInL>, allow_raw_pointers())
     .function("action", &TransitionSlideInL::action, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionSlideInL::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionSlideInL::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInL& _) -> std::string {return "TransitionSlideInL";}))    
     .allow_subclass<wrapper<TransitionSlideInL>>("cc.TransitionSlideInL._extend")
@@ -3449,7 +3328,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionSlideInR, base<TransitionSlideInL>>("cc.TransitionSlideInR")
     .constructor(&cc_bindings_constructor<TransitionSlideInR>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionSlideInR::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInR& _) -> std::string {return "TransitionSlideInR";}))    
     .allow_subclass<wrapper<TransitionSlideInR>>("cc.TransitionSlideInR._extend")
@@ -3458,7 +3336,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionSlideInB, base<TransitionSlideInL>>("cc.TransitionSlideInB")
     .constructor(&cc_bindings_constructor<TransitionSlideInB>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionSlideInB::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInB& _) -> std::string {return "TransitionSlideInB";}))    
     .allow_subclass<wrapper<TransitionSlideInB>>("cc.TransitionSlideInB._extend")
@@ -3467,7 +3344,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionSlideInT, base<TransitionSlideInL>>("cc.TransitionSlideInT")
     .constructor(&cc_bindings_constructor<TransitionSlideInT>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionSlideInT::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSlideInT& _) -> std::string {return "TransitionSlideInT";}))    
     .allow_subclass<wrapper<TransitionSlideInT>>("cc.TransitionSlideInT._extend")
@@ -3477,7 +3353,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<TransitionShrinkGrow, base<TransitionScene>>("cc.TransitionShrinkGrow")
     .constructor(&cc_bindings_constructor<TransitionShrinkGrow>, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionShrinkGrow::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionShrinkGrow::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionShrinkGrow& _) -> std::string {return "TransitionShrinkGrow";}))    
     .allow_subclass<wrapper<TransitionShrinkGrow>>("cc.TransitionShrinkGrow._extend")
@@ -3486,7 +3361,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionFlipX, base<TransitionSceneOriented>>("cc.TransitionFlipX")
     .constructor(&cc_bindings_constructor<TransitionFlipX>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionFlipX*(float, Scene*)>(&TransitionFlipX::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](float arg0, Scene* arg1, int32_t arg2){
@@ -3499,7 +3373,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionFlipY, base<TransitionSceneOriented>>("cc.TransitionFlipY")
     .constructor(&cc_bindings_constructor<TransitionFlipY>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionFlipY*(float, Scene*)>(&TransitionFlipY::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](float arg0, Scene* arg1, int32_t arg2){
@@ -3512,7 +3385,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionFlipAngular, base<TransitionSceneOriented>>("cc.TransitionFlipAngular")
     .constructor(&cc_bindings_constructor<TransitionFlipAngular>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionFlipAngular*(float, Scene*)>(&TransitionFlipAngular::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](float arg0, Scene* arg1, int32_t arg2){
@@ -3525,7 +3397,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionZoomFlipX, base<TransitionSceneOriented>>("cc.TransitionZoomFlipX")
     .constructor(&cc_bindings_constructor<TransitionZoomFlipX>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionZoomFlipX*(float, Scene*)>(&TransitionZoomFlipX::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](float arg0, Scene* arg1, int32_t arg2){
@@ -3538,7 +3409,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionZoomFlipY, base<TransitionSceneOriented>>("cc.TransitionZoomFlipY")
     .constructor(&cc_bindings_constructor<TransitionZoomFlipY>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionZoomFlipY*(float, Scene*)>(&TransitionZoomFlipY::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](float arg0, Scene* arg1, int32_t arg2){
@@ -3551,7 +3421,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionZoomFlipAngular, base<TransitionSceneOriented>>("cc.TransitionZoomFlipAngular")
     .constructor(&cc_bindings_constructor<TransitionZoomFlipAngular>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionZoomFlipAngular*(float, Scene*)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](float arg0, Scene* arg1, int32_t arg2){
@@ -3566,7 +3435,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<TransitionFade>, allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, Scene*)>(&TransitionFade::initWithDuration), allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, Scene*, const Color3B&)>(&TransitionFade::initWithDuration), allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TransitionFade*(float, Scene*)>(&TransitionFade::create), allow_raw_pointers())
     .class_function("create", select_overload<TransitionFade*(float, Scene*, const Color3B&)>(&TransitionFade::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFade& _) -> std::string {return "TransitionFade";}))    
@@ -3576,7 +3444,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionCrossFade, base<TransitionScene>>("cc.TransitionCrossFade")
     .constructor(&cc_bindings_constructor<TransitionCrossFade>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionCrossFade::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionCrossFade& _) -> std::string {return "TransitionCrossFade";}))    
     .allow_subclass<wrapper<TransitionCrossFade>>("cc.TransitionCrossFade._extend")
@@ -3586,7 +3453,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<TransitionTurnOffTiles, base<TransitionScene>>("cc.TransitionTurnOffTiles")
     .constructor(&cc_bindings_constructor<TransitionTurnOffTiles>, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionTurnOffTiles::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionTurnOffTiles::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionTurnOffTiles& _) -> std::string {return "TransitionTurnOffTiles";}))    
     .allow_subclass<wrapper<TransitionTurnOffTiles>>("cc.TransitionTurnOffTiles._extend")
@@ -3597,7 +3463,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<TransitionSplitCols>, allow_raw_pointers())
     .function("action", &TransitionSplitCols::action, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionSplitCols::easeActionWithAction, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionSplitCols::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSplitCols& _) -> std::string {return "TransitionSplitCols";}))    
     .allow_subclass<wrapper<TransitionSplitCols>>("cc.TransitionSplitCols._extend")
@@ -3606,7 +3471,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionSplitRows, base<TransitionSplitCols>>("cc.TransitionSplitRows")
     .constructor(&cc_bindings_constructor<TransitionSplitRows>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionSplitRows::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSplitRows& _) -> std::string {return "TransitionSplitRows";}))    
     .allow_subclass<wrapper<TransitionSplitRows>>("cc.TransitionSplitRows._extend")
@@ -3617,7 +3481,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<TransitionFadeTR>, allow_raw_pointers())
     .function("easeActionWithAction", &TransitionFadeTR::easeActionWithAction, allow_raw_pointers())
     .function("actionWithSize", &TransitionFadeTR::actionWithSize, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionFadeTR::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeTR& _) -> std::string {return "TransitionFadeTR";}))    
     .allow_subclass<wrapper<TransitionFadeTR>>("cc.TransitionFadeTR._extend")
@@ -3626,7 +3489,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionFadeBL, base<TransitionFadeTR>>("cc.TransitionFadeBL")
     .constructor(&cc_bindings_constructor<TransitionFadeBL>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionFadeBL::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeBL& _) -> std::string {return "TransitionFadeBL";}))    
     .allow_subclass<wrapper<TransitionFadeBL>>("cc.TransitionFadeBL._extend")
@@ -3635,7 +3497,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionFadeUp, base<TransitionFadeTR>>("cc.TransitionFadeUp")
     .constructor(&cc_bindings_constructor<TransitionFadeUp>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionFadeUp::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeUp& _) -> std::string {return "TransitionFadeUp";}))    
     .allow_subclass<wrapper<TransitionFadeUp>>("cc.TransitionFadeUp._extend")
@@ -3644,7 +3505,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionFadeDown, base<TransitionFadeTR>>("cc.TransitionFadeDown")
     .constructor(&cc_bindings_constructor<TransitionFadeDown>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionFadeDown::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFadeDown& _) -> std::string {return "TransitionFadeDown";}))    
     .allow_subclass<wrapper<TransitionFadeDown>>("cc.TransitionFadeDown._extend")
@@ -3655,7 +3515,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<TransitionPageTurn>, allow_raw_pointers())
     .function("actionWithSize", &TransitionPageTurn::actionWithSize, allow_raw_pointers())
     .function("initWithDuration", &TransitionPageTurn::initWithDuration, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionPageTurn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionPageTurn& _) -> std::string {return "TransitionPageTurn";}))    
     .allow_subclass<wrapper<TransitionPageTurn>>("cc.TransitionPageTurn._extend")
@@ -3664,7 +3523,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgress, base<TransitionScene>>("cc.TransitionProgress")
     .constructor(&cc_bindings_constructor<TransitionProgress>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgress::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgress& _) -> std::string {return "TransitionProgress";}))    
     .allow_subclass<wrapper<TransitionProgress>>("cc.TransitionProgress._extend")
@@ -3673,7 +3531,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgressRadialCCW, base<TransitionProgress>>("cc.TransitionProgressRadialCCW")
     .constructor(&cc_bindings_constructor<TransitionProgressRadialCCW>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgressRadialCCW::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressRadialCCW& _) -> std::string {return "TransitionProgressRadialCCW";}))    
     .allow_subclass<wrapper<TransitionProgressRadialCCW>>("cc.TransitionProgressRadialCCW._extend")
@@ -3682,7 +3539,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgressRadialCW, base<TransitionProgress>>("cc.TransitionProgressRadialCW")
     .constructor(&cc_bindings_constructor<TransitionProgressRadialCW>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgressRadialCW::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressRadialCW& _) -> std::string {return "TransitionProgressRadialCW";}))    
     .allow_subclass<wrapper<TransitionProgressRadialCW>>("cc.TransitionProgressRadialCW._extend")
@@ -3691,7 +3547,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgressHorizontal, base<TransitionProgress>>("cc.TransitionProgressHorizontal")
     .constructor(&cc_bindings_constructor<TransitionProgressHorizontal>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgressHorizontal::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressHorizontal& _) -> std::string {return "TransitionProgressHorizontal";}))    
     .allow_subclass<wrapper<TransitionProgressHorizontal>>("cc.TransitionProgressHorizontal._extend")
@@ -3700,7 +3555,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgressVertical, base<TransitionProgress>>("cc.TransitionProgressVertical")
     .constructor(&cc_bindings_constructor<TransitionProgressVertical>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgressVertical::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressVertical& _) -> std::string {return "TransitionProgressVertical";}))    
     .allow_subclass<wrapper<TransitionProgressVertical>>("cc.TransitionProgressVertical._extend")
@@ -3709,7 +3563,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgressInOut, base<TransitionProgress>>("cc.TransitionProgressInOut")
     .constructor(&cc_bindings_constructor<TransitionProgressInOut>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgressInOut::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressInOut& _) -> std::string {return "TransitionProgressInOut";}))    
     .allow_subclass<wrapper<TransitionProgressInOut>>("cc.TransitionProgressInOut._extend")
@@ -3718,7 +3571,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TransitionProgressOutIn, base<TransitionProgress>>("cc.TransitionProgressOutIn")
     .constructor(&cc_bindings_constructor<TransitionProgressOutIn>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TransitionProgressOutIn::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionProgressOutIn& _) -> std::string {return "TransitionProgressOutIn";}))    
     .allow_subclass<wrapper<TransitionProgressOutIn>>("cc.TransitionProgressOutIn._extend")
@@ -3858,7 +3710,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setReuseGrid", &GridBase::setReuseGrid)
     .function("isActive", &GridBase::isActive)
     .function("reuse", &GridBase::reuse)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<GridBase*(const Size&)>(&GridBase::create), allow_raw_pointers())
     .class_function("create", select_overload<GridBase*(const Size&, Texture2D*, bool)>(&GridBase::create), allow_raw_pointers())
     .property("_className",  optional_override([](const GridBase& _) -> std::string {return "GridBase";}))    
@@ -3870,7 +3721,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Grid3D>, allow_raw_pointers())
     .function("getNeedDepthTestForBlit", &Grid3D::getNeedDepthTestForBlit)
     .function("setNeedDepthTestForBlit", &Grid3D::setNeedDepthTestForBlit)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<Grid3D*(const Size&, const Rect&)>(&Grid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<Grid3D*(const Size&)>(&Grid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<Grid3D*(const Size&, Texture2D*, bool)>(&Grid3D::create), allow_raw_pointers())
@@ -3882,7 +3732,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<TiledGrid3D, base<GridBase>>("cc.TiledGrid3D")
     .constructor(&cc_bindings_constructor<TiledGrid3D>, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TiledGrid3D*(const Size&, const Rect&)>(&TiledGrid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<TiledGrid3D*(const Size&)>(&TiledGrid3D::create), allow_raw_pointers())
     .class_function("create", select_overload<TiledGrid3D*(const Size&, Texture2D*, bool)>(&TiledGrid3D::create), allow_raw_pointers())
@@ -3986,7 +3835,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setUniformLocationWith4i", &GLProgram::setUniformLocationWith4i)
     .function("setUniformLocationI32", &GLProgram::setUniformLocationWith1i)
     .function("setUniformLocationWith2i", &GLProgram::setUniformLocationWith2i)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("createWithByteArrays", select_overload<GLProgram*(const char*, const char*, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const char*, const char*)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const char*, const char*, const std::string&, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
@@ -4133,7 +3981,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("addAnimationsWithDictionary", &AnimationCache::addAnimationsWithDictionary)
     .function("removeAnimation", &AnimationCache::removeAnimation)
     .function("addAnimations", &AnimationCache::addAnimationsWithFile)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("destroyInstance", &AnimationCache::destroyInstance)
     .class_function("getInstance", &AnimationCache::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const AnimationCache& _) -> std::string {return "AnimationCache";}))    
@@ -4171,7 +4018,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("rebuildIndexInOrder", &SpriteBatchNode::rebuildIndexInOrder, allow_raw_pointers())
     .function("getTextureAtlas", &SpriteBatchNode::getTextureAtlas, allow_raw_pointers())
     .function("highestAtlasIndexInChild", &SpriteBatchNode::highestAtlasIndexInChild, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &SpriteBatchNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](const std::string& arg0){
@@ -4232,7 +4078,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getPlaceHolder", &TextFieldTTF::getPlaceHolder)
     .function("setCursorPosition", &TextFieldTTF::setCursorPosition)
     .function("attachWithIME", &TextFieldTTF::attachWithIME)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<TextFieldTTF*(const std::string&, const std::string&, float)>(&TextFieldTTF::textFieldWithPlaceHolder), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const std::string& arg0, const Size& arg1, int32_t arg2, const std::string& arg3, float arg4){
@@ -4249,7 +4094,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("removeAllChildrenWithCleanup", &ParallaxNode::removeAllChildrenWithCleanup)
     .function("setParallaxArray", &ParallaxNode::setParallaxArray, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ParallaxNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ParallaxNode& _) -> std::string {return "ParallaxNode";}))    
     .allow_subclass<wrapper<ParallaxNode>>("cc.ParallaxNode._extend")
@@ -4334,7 +4178,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getStaggerIndex", &TMXMapInfo::getStaggerIndex)
     .function("setLayerAttribs", &TMXMapInfo::setLayerAttribs)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TMXMapInfo::create, allow_raw_pointers())
     .class_function("createWithXML", &TMXMapInfo::createWithXML, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXMapInfo& _) -> std::string {return "TMXMapInfo";}))    
@@ -4378,7 +4221,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getTileAt", &TMXLayer::getTileAt, allow_raw_pointers())
     .function("getTileAnimManager", &TMXLayer::getTileAnimManager, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TMXLayer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXLayer& _) -> std::string {return "TMXLayer";}))    
     .allow_subclass<wrapper<TMXLayer>>("cc.TMXLayer._extend")
@@ -4428,7 +4270,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getLayer", &TMXTiledMap::getLayer, allow_raw_pointers())
     .function("getMapOrientation", &TMXTiledMap::getMapOrientation)
     .function("setMapOrientation", &TMXTiledMap::setMapOrientation)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TMXTiledMap::create, allow_raw_pointers())
     .class_function("createWithXML", &TMXTiledMap::createWithXML, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXTiledMap& _) -> std::string {return "TMXTiledMap";}))    
@@ -4444,7 +4285,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getTileAt", &TileMapAtlas::getTileAt)
     .function("setTile", &TileMapAtlas::setTile)
     .function("setTGAInfo", &TileMapAtlas::setTGAInfo, allow_raw_pointers())
-    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &TileMapAtlas::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TileMapAtlas& _) -> std::string {return "TileMapAtlas";}))    
     .allow_subclass<wrapper<TileMapAtlas>>("cc.TileMapAtlas._extend")

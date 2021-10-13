@@ -97,7 +97,6 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     .function("clearTracks", &SkeletonAnimation::clearTracks)
     .function("setTrackEndListener", &SkeletonAnimation::setTrackEndListener, allow_raw_pointers())
     .function("setStartListener", &SkeletonAnimation::setStartListener)
-    .function("ctor", &cc_bindings_ctor)
     .class_function("createWithBinaryFile", select_overload<spine::SkeletonAnimation*(const std::string&, const std::string&, float)>(&SkeletonAnimation::createWithBinaryFile), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
