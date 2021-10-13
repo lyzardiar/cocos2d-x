@@ -2232,7 +2232,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<ActionTween, base<ActionInterval>>("cc.ActionTween")
+    .constructor(&cc_bindings_constructor<ActionTween>, allow_raw_pointers())
     .function("initWithDuration", &ActionTween::initWithDuration)
+    .function("ctor", &cc_bindings_ctor)
     .class_function("create", &ActionTween::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionTween& _) -> std::string {return "ActionTween";}))    
     .allow_subclass<wrapper<ActionTween>>("cc.ActionTween._extend")
@@ -3831,6 +3833,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<GridBase>("cc.GridBase")
+    .constructor(&cc_bindings_constructor<GridBase>, allow_raw_pointers())
     .function("setGridSize", &GridBase::setGridSize)
     .function("setGridRect", &GridBase::setGridRect)
     .function("afterBlit", &GridBase::afterBlit)
@@ -3855,6 +3858,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setReuseGrid", &GridBase::setReuseGrid)
     .function("isActive", &GridBase::isActive)
     .function("reuse", &GridBase::reuse)
+    .function("ctor", &cc_bindings_ctor)
     .class_function("create", select_overload<GridBase*(const Size&)>(&GridBase::create), allow_raw_pointers())
     .class_function("create", select_overload<GridBase*(const Size&, Texture2D*, bool)>(&GridBase::create), allow_raw_pointers())
     .property("_className",  optional_override([](const GridBase& _) -> std::string {return "GridBase";}))    

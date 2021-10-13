@@ -1446,7 +1446,6 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         }), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const TabHeader& _) -> std::string {return "TabHeader";}))    
-    .allow_subclass<wrapper<TabHeader>>("ccui.TabHeader._extend")
     ;
 
   class_<TabControl, base<Widget>>("ccui.TabControl")
@@ -1478,7 +1477,6 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getHeaderHeight", &TabControl::getHeaderHeight)
     .class_function("create", &TabControl::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TabControl& _) -> std::string {return "TabControl";}))    
-    .allow_subclass<wrapper<TabControl>>("ccui.TabControl._extend")
     ;
 
 
