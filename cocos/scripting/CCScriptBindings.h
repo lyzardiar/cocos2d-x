@@ -95,12 +95,6 @@ namespace cocos2d {
       return R;
     }
 
-    static bool cc_bindings_ctor(const emscripten::val& obj) {   
-        int ptr = obj["$$"]["ptr"].as<int>();
-        emscripten::val::global("_native_js_global_map").call<void>("set", val(ptr), obj);
-        return true;
-    }
-
     template<typename T, typename... Args>
     T* cc_bindings_constructor(Args&&... args) {
       T *obj = new (std::nothrow) T(std::forward<Args>(args)...);

@@ -274,14 +274,15 @@
 
           await loadScript("script/jsb_prepare.js")
 
+          // Rename binding classes
           for (key in Module) {
             var index = key.indexOf('$')
             if (index >= 0) {
               var clazz = Module[key]
-              var ns = key.substring(0, index)
-              window[ns] = window[ns] || {}
-              window[ns][key.substring(index + 1)] = clazz
-
+              var nsName = key.substring(0, index)
+              var clazzName = key.substring(index + 1)
+              var ns = window[nsName] = window[nsName] || {}
+              
               if (clazz.extend) {
                 // NOTE: ctor should always come with allowsubclass(extend)
                 // it's slightly different with spidermonkey bindings 
@@ -291,20 +292,29 @@
                 // because without ctor, no native object is created, thus will cause problem.
                 // We are planning to use embind to replace spidermonkey bindings and it will be fixed by then
                 
-                // Convert extend from embind
+                // Convert embind extend to cocos extend
                 var subClazz = clazz.extend(key, {})
-                subClazz.prototype.ctor = function() {
+                var ctor = function() {
                   subClazz.apply(this); // Create native object
                   // TODO: missing autorelease
                   clazz._ctor && clazz._ctor.apply(this, arguments)
                 }
-                clazz.extend = cc.Class.extend.bind(subClazz)
+                ctor.prototype = subClazz.prototype
+                // Copy static functions
+                for (var prop of Object.keys(clazz)) {
+                  ctor[prop] = clazz[prop]
+                }
+
+                // Assign extend 
+                ctor.extend = cc.Class.extend.bind(subClazz)
+
+                ns[clazzName] = subClazz.prototype.ctor = ctor
+              } else {
+                ns[clazzName] = clazz
               }
             }
           }
           
-          window["_native_js_global_map"] = new Map()
-
           // see jsb_core.cpp
           window["__getPlatform"] = Module["__getPlatform"]
           window["__getOS"] = Module["__getOS"]

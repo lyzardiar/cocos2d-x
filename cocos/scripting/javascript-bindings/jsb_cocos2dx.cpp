@@ -2187,7 +2187,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
 
   class_<DrawNode, base<Node>>("cc.DrawNode")
-    .constructor(&cc_bindings_constructor<DrawNode, float>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<DrawNode>, allow_raw_pointers())
     .function("drawLine", &DrawNode::drawLine)
     .function("drawPoints", select_overload<void(const Vec2*, unsigned int, const float, const Color4F&)>(&DrawNode::drawPoints), allow_raw_pointers())
     .function("drawPoints", select_overload<void(const Vec2*, unsigned int, const Color4F&)>(&DrawNode::drawPoints), allow_raw_pointers())
@@ -2228,7 +2228,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
 
   class_<Label, base<Node>>("cc.Label")
-    .constructor(&cc_bindings_constructor<Label, TextHAlignment, TextVAlignment>, allow_raw_pointers())
+    .constructor(&cc_bindings_constructor<Label>, allow_raw_pointers())
     .function("isClipMarginEnabled", &Label::isClipMarginEnabled)
     .function("enableShadow", &Label::enableShadow)
     .function("enableShadow", optional_override(

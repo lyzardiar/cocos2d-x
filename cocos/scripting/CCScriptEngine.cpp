@@ -105,7 +105,7 @@ int CCScriptEngine::handleNodeEvent(void* data)
     if (NULL == basicScriptData->nativeObject || NULL == basicScriptData->value)
         return 0;
     
-    val handler = emscripten::val::global("_native_js_global_map").call<val>("get", val((int)basicScriptData->nativeObject));
+    val handler = emscripten::val::global("Module")["registeredInstances"][(int)basicScriptData->nativeObject];
     
     if (handler.isUndefined())
         return 0;
