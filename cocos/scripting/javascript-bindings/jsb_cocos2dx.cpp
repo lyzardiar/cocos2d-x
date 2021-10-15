@@ -89,6 +89,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Touch>("cc.Touch")
     .constructor(&cc_bindings_constructor<Touch>, allow_raw_pointers())
+    .constructor(optional_override([](int arg0, float arg1, float arg2) {
+      Touch *obj = new (std::nothrow) Touch();
+      if (obj)
+      {
+        obj->autorelease();
+        obj->setTouchInfo(arg0, arg1, arg2);
+      }
+      return obj;
+    }), allow_raw_pointers())
     .function("getPreviousLocationInView", &Touch::getPreviousLocationInView)
     .function("getLocation", &Touch::getLocation)
     .function("getDelta", &Touch::getDelta)
@@ -120,6 +129,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EventTouch, base<Event>>("cc.EventTouch")
     .constructor(&cc_bindings_constructor<EventTouch>, allow_raw_pointers())
+    .constructor(optional_override([](const std::vector<Touch*>& touches) {
+      EventTouch *obj = new (std::nothrow) EventTouch();
+      if (obj)
+      {
+        obj->autorelease();
+        obj->setTouches(touches);
+      }
+      return obj;
+    }), allow_raw_pointers())
     .function("getEventCode", optional_override(
         [](EventTouch& this_){
         return (int32_t)this_.getEventCode();
@@ -128,6 +146,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](EventTouch& this_, int32_t arg0){
         return this_.setEventCode((EventTouch::EventCode)arg0);
       }))
+    .function("setTouches", &EventTouch::setTouches, allow_raw_pointers()) // from cocos2d_specifics
     .property("_className",  optional_override([](const EventTouch& _) -> std::string {return "EventTouch";}))    
     ;
 
@@ -571,6 +590,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Speed, base<Action>>("cc.Speed")
     .constructor(&cc_bindings_constructor<Speed>, allow_raw_pointers())
+    .constructor(&Speed::create, allow_raw_pointers())
     .function("setInnerAction", &Speed::setInnerAction, allow_raw_pointers())
     .function("_getSpeed", &Speed::getSpeed)
     .function("_setSpeed", &Speed::setSpeed)

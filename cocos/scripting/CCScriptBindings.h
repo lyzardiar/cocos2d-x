@@ -128,9 +128,22 @@ namespace emscripten {                                            \
     }                                                             \
 }
 
-// Custom marshal vector<T> to JSArray
+// Custom marshal vector<T> to JSArray, T can be raw pointers
 namespace emscripten {
 namespace internal {
+
+template <typename T>
+std::vector<T> vecFromJSArrayAllowRawPointers(const val& v) {
+    const size_t l = v["length"].as<size_t>();
+
+    std::vector<T> rv;
+    rv.reserve(l);
+    for (size_t i = 0; i < l; ++i) {
+        rv.push_back(v[i].as<T>(allow_raw_pointers()));
+    }
+
+    return rv;
+}
 
 template <typename T, typename Allocator>
 struct BindingType<std::vector<T, Allocator>> {
@@ -142,7 +155,7 @@ struct BindingType<std::vector<T, Allocator>> {
     }
 
     static std::vector<T, Allocator> fromWireType(WireType value) {
-        return vecFromJSArray<T>(ValBinding::fromWireType(value));
+        return vecFromJSArrayAllowRawPointers<T>(ValBinding::fromWireType(value));
     }
 };
 
