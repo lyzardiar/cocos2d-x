@@ -119,6 +119,7 @@
       for(var i = 0; i < 20; i++) {
         nodeProperties[i] = document.getElementById('nodeProperty' + i);
       }
+      var sysSetInterval = window.setInterval; // Cocos will override window.setInterval
       var Module = {
         preRun: [],
         postRun: [],
@@ -293,11 +294,11 @@
                 // We are planning to use embind to replace spidermonkey bindings and it will be fixed by then
                 
                 // Convert embind extend to cocos extend
-                var subClazz = clazz.extend(key, {})
-                var ctor = function() {
+                let subClazz = clazz.extend(key, {})
+                let ctor = function() {
                   subClazz.apply(this); // Create native object
                   // TODO: missing autorelease
-                  clazz._ctor && clazz._ctor.apply(this, arguments)
+                  ctor.prototype._ctor && ctor.prototype._ctor.apply(this, arguments)
                 }
                 ctor.prototype = subClazz.prototype
                 // Copy static functions
@@ -382,7 +383,7 @@
         },
         initializeDevTools() {
           var nodeSelect = Module.cwrap('cocos_ccnode_select', null, ['number']);
-          setInterval(function() { 
+          sysSetInterval(function() { 
             if (Module.hierarchySelect.selected) {
               nodeSelect(Number(Module.hierarchySelect.selected));
             }

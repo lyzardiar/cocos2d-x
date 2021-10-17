@@ -2613,10 +2613,30 @@ cc.Texture2D.prototype.handleLoadedTexture = function (premultiplied) {};
 // 
 // MenuItem setCallback support target
 //
-cc.MenuItem.prototype._setCallback = cc.MenuItem.prototype.setCallback;
-cc.MenuItem.prototype.setCallback = function (callback, target) {
-    this._setCallback(callback.bind(target));
-};
+if (cc.sys.platform == cc.sys.EMSCRIPTEN) {
+    cc.MenuItem.prototype._setCallback = cc.MenuItem.prototype.setCallback;
+    cc.MenuItemLabel.prototype._setCallback = cc.MenuItemLabel.prototype.setCallback;
+    cc.MenuItemAtlasFont.prototype._setCallback = cc.MenuItemAtlasFont.prototype.setCallback;
+    cc.MenuItemFont.prototype._setCallback = cc.MenuItemFont.prototype.setCallback;
+    cc.MenuItemSprite.prototype._setCallback = cc.MenuItemSprite.prototype.setCallback;
+    cc.MenuItemImage.prototype._setCallback = cc.MenuItemImage.prototype.setCallback;
+    cc.MenuItemToggle.prototype._setCallback = cc.MenuItemToggle.prototype.setCallback;
+
+    cc.MenuItem.prototype.setCallback =
+    cc.MenuItemLabel.prototype.setCallback =
+    cc.MenuItemAtlasFont.prototype.setCallback =
+    cc.MenuItemFont.prototype.setCallback =
+    cc.MenuItemSprite.prototype.setCallback =
+    cc.MenuItemImage.prototype.setCallback =
+    cc.MenuItemToggle.prototype.setCallback = function (callback, target) {
+        this._setCallback(callback.bind(target));
+    };
+} else {
+    cc.MenuItem.prototype._setCallback = cc.MenuItem.prototype.setCallback;
+    cc.MenuItem.prototype.setCallback = function (callback, target) {
+        this._setCallback(callback.bind(target));
+    };
+}
 
 //
 // MenuItemImage support sprite frame name as parameter

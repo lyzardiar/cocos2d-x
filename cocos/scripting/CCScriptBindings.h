@@ -28,6 +28,7 @@
 #define __CC_SCRIPT_BINDINGS_H__
 
 #include "base/ccConfig.h"
+#include "base/CCVector.h"
 #include <functional>
 #include <emscripten/bind.h>
 
@@ -126,6 +127,33 @@ namespace emscripten {                                            \
 namespace emscripten {
 namespace internal {
 
+template <typename T>
+std::vector<T> stdvecFromJSArray(const val& v) {
+    const size_t l = v["length"].as<size_t>();
+
+    std::vector<T> rv;
+    rv.reserve(l);
+    for (size_t i = 0; i < l; ++i) {
+        rv.push_back(v[i].as<T>(allow_raw_pointers()));
+    }
+
+    return rv;
+};
+
+template <typename T>
+cocos2d::Vector<T> ccvecFromJSArray(const val& v) {
+    const size_t l = v["length"].as<size_t>();
+
+    cocos2d::Vector<T> rv;
+    rv.reserve(l);
+    for (size_t i = 0; i < l; ++i) {
+        rv.pushBack(v[i].as<T>(allow_raw_pointers()));
+    }
+
+    return rv;
+};
+
+// std::vector auto binding
 template <typename T, typename Allocator>
 struct BindingType<std::vector<T, Allocator>> {
     using ValBinding = BindingType<val>;
@@ -136,7 +164,7 @@ struct BindingType<std::vector<T, Allocator>> {
     }
 
     static std::vector<T, Allocator> fromWireType(WireType value) {
-        return vecFromJSArray<T>(ValBinding::fromWireType(value));
+        return stdvecFromJSArray<T>(ValBinding::fromWireType(value));
     }
 };
 
@@ -147,6 +175,30 @@ struct TypeID<T,
                   typename Canonicalized<T>::type,
                   std::vector<typename Canonicalized<T>::type::value_type,
                               typename Canonicalized<T>::type::allocator_type>>::value>::type> {
+    static constexpr TYPEID get() { return TypeID<val>::get(); }
+};
+
+// CCVector auto binding
+template <typename T>
+struct BindingType<cocos2d::Vector<T>> {
+    using ValBinding = BindingType<val>;
+    using WireType = ValBinding::WireType;
+
+    static WireType toWireType(const cocos2d::Vector<T> &vec) {
+        return ValBinding::toWireType(val::array(vec.begin(), vec.end()));
+    }
+
+    static cocos2d::Vector<T> fromWireType(WireType value) {
+        return ccvecFromJSArray<T>(ValBinding::fromWireType(value));
+    }
+};
+
+
+template <typename T>
+struct TypeID<T,
+              typename std::enable_if<std::is_same<
+                  typename Canonicalized<T>::type,
+                  cocos2d::Vector<typename Canonicalized<T>::type::value_type>>::value>::type> {
     static constexpr TYPEID get() { return TypeID<val>::get(); }
 };
 

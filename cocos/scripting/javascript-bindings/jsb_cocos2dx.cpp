@@ -15,7 +15,8 @@ using namespace CocosDenshion;
 
 COCOS_BINDINGS(jsb_cocos2dx) {
 
-
+  class_<Ref>("cc.Ref");
+  
   class_<Texture2D>("cc.Texture2D")
     .constructor(&cc_bindings_constructor<Texture2D>, allow_raw_pointers())
     .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
@@ -2662,7 +2663,11 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isEnabled", &MenuItem::isEnabled)
     .function("selected", &MenuItem::selected)
     .function("isSelected", &MenuItem::isSelected)
-    .function("setCallback", &MenuItem::setCallback)
+    .function("setCallback", optional_override([](MenuItem& this_, const val& callback) {
+      return this_.setCallback([callback](Ref* ref) -> void {
+        callback(val(ref));
+      });
+    }))
     .function("unselected", &MenuItem::unselected)
     .function("rect", &MenuItem::rect)
     .property("_className",  optional_override([](const MenuItem& _) -> std::string {return "MenuItem";}))    
@@ -2692,7 +2697,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MenuItemFont, base<MenuItemLabel>>("cc.MenuItemFont")
     .constructor(&cc_bindings_constructor<MenuItemFont>, allow_raw_pointers())
-    .property("_className",  optional_override([](const MenuItemFont& _) -> std::string {return "MenuItemFont";}))    
+    .property("_className",  optional_override([](const MenuItemFont& _) -> std::string {return "MenuItemFont";}))
+    .function("initWithString", optional_override([](MenuItemFont& this_, std::string value, const val& callback) {
+      return this_.initWithString(value, [callback](Ref* ref) -> void {
+        callback(val(ref));
+      });
+    }))
     .allow_subclass<wrapper<MenuItemFont>>("cc.MenuItemFont._extend")
     ;
 
@@ -2703,6 +2713,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("selected", &MenuItemSprite::selected)
     .function("setNormalImage", &MenuItemSprite::setNormalImage, allow_raw_pointers())
     .function("setDisabledImage", &MenuItemSprite::setDisabledImage, allow_raw_pointers())
+    // Don't understand why it is missing in auto-binding
+    .function("initWithNormalSprite", optional_override([](MenuItemSprite& this_, Node* normalSprite, Node* selectedSprite, Node* disabledSprite, const val& callback) {
+      return this_.initWithNormalSprite(normalSprite, selectedSprite, disabledSprite, [callback](Ref* ref) -> void {
+        callback(val(ref));
+      });
+    }), allow_raw_pointers())
     .function("setSelectedImage", &MenuItemSprite::setSelectedImage, allow_raw_pointers())
     .function("getDisabledImage", &MenuItemSprite::getDisabledImage, allow_raw_pointers())
     .function("getSelectedImage", &MenuItemSprite::getSelectedImage, allow_raw_pointers())
