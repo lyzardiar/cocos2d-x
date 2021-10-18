@@ -158,6 +158,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &Widget::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Widget& _) -> std::string {return "Widget";}))    
     .allow_subclass<wrapper<Widget>>("ccui.Widget._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -226,6 +227,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &Layout::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Layout& _) -> std::string {return "Layout";}))    
     .allow_subclass<wrapper<Layout>>("ccui.Layout._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -294,6 +296,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::Button*()>(&Button::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Button& _) -> std::string {return "Button";}))    
     .allow_subclass<wrapper<Button>>("ccui.Button._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
   class_<AbstractCheckButton, base<Widget>>("ccui.AbstractCheckButton")
@@ -319,7 +322,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getRendererFrontCross", &AbstractCheckButton::getRendererFrontCross, allow_raw_pointers())
     .function("getRendererBackgroundSelected", &AbstractCheckButton::getRendererBackgroundSelected, allow_raw_pointers())
     .function("setZoomScale", &AbstractCheckButton::setZoomScale)
-    .property("_className",  optional_override([](const AbstractCheckButton& _) -> std::string {return "AbstractCheckButton";}))    
+    .property("_className",  optional_override([](const AbstractCheckButton& _) -> std::string {return "AbstractCheckButton";}))
     ;
 
 
@@ -339,6 +342,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const CheckBox& _) -> std::string {return "CheckBox";}))    
     .allow_subclass<wrapper<CheckBox>>("ccui.CheckBox._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -358,6 +362,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const RadioButton& _) -> std::string {return "RadioButton";}))    
     .allow_subclass<wrapper<RadioButton>>("ccui.RadioButton._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -379,6 +384,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &RadioButtonGroup::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RadioButtonGroup& _) -> std::string {return "RadioButtonGroup";}))    
     .allow_subclass<wrapper<RadioButtonGroup>>("ccui.RadioButtonGroup._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -400,6 +406,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::ImageView*()>(&ImageView::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ImageView& _) -> std::string {return "ImageView";}))    
     .allow_subclass<wrapper<ImageView>>("ccui.ImageView._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -480,6 +487,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::Text*()>(&Text::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Text& _) -> std::string {return "Text";}))    
     .allow_subclass<wrapper<Text>>("ccui.Text._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -495,6 +503,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::TextAtlas*()>(&TextAtlas::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextAtlas& _) -> std::string {return "TextAtlas";}))    
     .allow_subclass<wrapper<TextAtlas>>("ccui.TextAtlas._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -525,6 +534,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const LoadingBar& _) -> std::string {return "LoadingBar";}))    
     .allow_subclass<wrapper<LoadingBar>>("ccui.LoadingBar._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -600,6 +610,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &ScrollView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
     .allow_subclass<wrapper<ScrollView>>("ccui.ScrollView._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -660,6 +671,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &ListView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ListView& _) -> std::string {return "ListView";}))    
     .allow_subclass<wrapper<ListView>>("ccui.ListView._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -713,6 +725,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::Slider*()>(&Slider::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Slider& _) -> std::string {return "Slider";}))    
     .allow_subclass<wrapper<Slider>>("ccui.Slider._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -744,7 +757,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setDeleteBackward", &UICCTextField::setDeleteBackward)
     .class_function("create", select_overload<cocos2d::ui::UICCTextField*(const std::string&, const std::string&, float)>(&UICCTextField::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::UICCTextField*()>(&UICCTextField::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const UICCTextField& _) -> std::string {return "UICCTextField";}))    
+    .property("_className",  optional_override([](const UICCTextField& _) -> std::string {return "UICCTextField";}))
     ;
 
 
@@ -812,6 +825,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::TextField*()>(&TextField::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextField& _) -> std::string {return "TextField";}))    
     .allow_subclass<wrapper<TextField>>("ccui.TextField._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -827,6 +841,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::TextBMFont*()>(&TextBMFont::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextBMFont& _) -> std::string {return "TextBMFont";}))    
     .allow_subclass<wrapper<TextBMFont>>("ccui.TextBMFont._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -874,6 +889,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &PageView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const PageView& _) -> std::string {return "PageView";}))    
     .allow_subclass<wrapper<PageView>>("ccui.PageView._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
   class_<Helper>("ccui.Helper")
@@ -899,6 +915,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setColor", &RichElement::setColor)
     .property("_className",  optional_override([](const RichElement& _) -> std::string {return "RichElement";}))    
     .allow_subclass<wrapper<RichElement>>("ccui.RichElement._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -964,6 +981,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementText& _) -> std::string {return "RichElementText";}))    
     .allow_subclass<wrapper<RichElementText>>("ccui.RichElementText._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -998,6 +1016,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementImage& _) -> std::string {return "RichElementImage";}))    
     .allow_subclass<wrapper<RichElementImage>>("ccui.RichElementImage._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1007,6 +1026,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &RichElementCustomNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementCustomNode& _) -> std::string {return "RichElementCustomNode";}))    
     .allow_subclass<wrapper<RichElementCustomNode>>("ccui.RichElementCustomNode._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1015,6 +1035,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", &RichElementNewLine::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RichElementNewLine& _) -> std::string {return "RichElementNewLine";}))    
     .allow_subclass<wrapper<RichElementNewLine>>("ccui.RichElementNewLine._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1115,6 +1136,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const RichText& _) -> std::string {return "RichText";}))    
     .allow_subclass<wrapper<RichText>>("ccui.RichText._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1125,6 +1147,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::HBox*()>(&HBox::create), allow_raw_pointers())
     .property("_className",  optional_override([](const HBox& _) -> std::string {return "HBox";}))    
     .allow_subclass<wrapper<HBox>>("ccui.HBox._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1135,6 +1158,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::VBox*()>(&VBox::create), allow_raw_pointers())
     .property("_className",  optional_override([](const VBox& _) -> std::string {return "VBox";}))    
     .allow_subclass<wrapper<VBox>>("ccui.VBox._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1145,6 +1169,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::RelativeBox*()>(&RelativeBox::create), allow_raw_pointers())
     .property("_className",  optional_override([](const RelativeBox& _) -> std::string {return "RelativeBox";}))    
     .allow_subclass<wrapper<RelativeBox>>("ccui.RelativeBox._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1205,6 +1230,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("createWithSpriteFrame", select_overload<cocos2d::ui::Scale9Sprite*(cocos2d::SpriteFrame*)>(&Scale9Sprite::createWithSpriteFrame), allow_raw_pointers())
     .property("_className",  optional_override([](const Scale9Sprite& _) -> std::string {return "Scale9Sprite";}))    
     .allow_subclass<wrapper<Scale9Sprite>>("ccui.Scale9Sprite._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1323,6 +1349,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const EditBox& _) -> std::string {return "EditBox";}))    
     .allow_subclass<wrapper<EditBox>>("ccui.EditBox._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -1393,6 +1420,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("bindLayoutComponent", &LayoutComponent::bindLayoutComponent, allow_raw_pointers())
     .property("_className",  optional_override([](const LayoutComponent& _) -> std::string {return "LayoutComponent";}))    
     .allow_subclass<wrapper<LayoutComponent>>("ccui.LayoutComponent._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
   class_<TabHeader, base<AbstractCheckButton>>("ccui.TabHeader")
@@ -1470,6 +1498,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .property("_className",  optional_override([](const ScrollViewBar& _) -> std::string {return "ScrollViewBar";})) 
     // TODO: it doesn't compile   
     // .allow_subclass<wrapper<ScrollViewBar>>("ccui.ScrollViewBar._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 }
 

@@ -107,5 +107,6 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const SkeletonAnimation& _) -> std::string {return "SkeletonAnimation";}))    
     .allow_subclass<wrapper<SkeletonAnimation>>("sp.SkeletonAnimation._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 }

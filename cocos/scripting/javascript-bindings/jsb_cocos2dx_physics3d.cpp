@@ -28,7 +28,8 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .class_function("createConvexHull", &Physics3DShape::createConvexHull, allow_raw_pointers())
     .class_function("createCapsule", &Physics3DShape::createCapsule, allow_raw_pointers())
     .class_function("createSphere", &Physics3DShape::createSphere, allow_raw_pointers())
-    .property("_className",  optional_override([](const Physics3DShape& _) -> std::string {return "Physics3DShape";}))    
+    .property("_className",  optional_override([](const Physics3DShape& _) -> std::string {return "Physics3DShape";}))
+    .allow_subclass<wrapper<Physics3DShape>>("jsb.Physics3DShape._extend")    
     ;
 
   class_<Physics3DObject>("jsb.Physics3DObject")
@@ -102,7 +103,8 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("setRestitution", &Physics3DRigidBody::setRestitution)
     .function("setHitFraction", &Physics3DRigidBody::setHitFraction)
     .function("getLinearDamping", &Physics3DRigidBody::getLinearDamping)
-    .property("_className",  optional_override([](const Physics3DRigidBody& _) -> std::string {return "Physics3DRigidBody";}))    
+    .property("_className",  optional_override([](const Physics3DRigidBody& _) -> std::string {return "Physics3DRigidBody";}))
+    .allow_subclass<wrapper<Physics3DRigidBody>>("jsb.Physics3DRigidBody._extend")    
     ;
 
 
@@ -123,7 +125,8 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::Physics3DComponent*()>(&Physics3DComponent::create), allow_raw_pointers())
     .class_function("getPhysics3DComponentName", &Physics3DComponent::getPhysics3DComponentName)
-    .property("_className",  optional_override([](const Physics3DComponent& _) -> std::string {return "Physics3DComponent";}))    
+    .property("_className",  optional_override([](const Physics3DComponent& _) -> std::string {return "Physics3DComponent";}))
+    .allow_subclass<wrapper<Physics3DComponent>>("jsb.Physics3DComponent._extend")    
     ;
 
 
@@ -136,7 +139,7 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
         [](PhysicsSprite3D& this_, int32_t arg0){
         return this_.setSyncFlag((cocos2d::Physics3DComponent::PhysicsSyncFlag)arg0);
       }))
-    .property("_className",  optional_override([](const PhysicsSprite3D& _) -> std::string {return "PhysicsSprite3D";}))    
+    .property("_className",  optional_override([](const PhysicsSprite3D& _) -> std::string {return "PhysicsSprite3D";}))
     ;
 
 
@@ -165,7 +168,8 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("debugDraw", &Physics3DWorld::debugDraw, allow_raw_pointers())
     .function("sweepShape", &Physics3DWorld::sweepShape, allow_raw_pointers())
     .class_function("create", &Physics3DWorld::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Physics3DWorld& _) -> std::string {return "Physics3DWorld";}))    
+    .property("_className",  optional_override([](const Physics3DWorld& _) -> std::string {return "Physics3DWorld";}))
+    .allow_subclass<wrapper<Physics3DWorld>>("jsb.Physics3DWorld._extend")    
     ;
 
   class_<Physics3DConstraint>("jsb.Physics3DConstraint")
@@ -198,7 +202,8 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("setPivotPointInB", &Physics3DPointToPointConstraint::setPivotPointInB)
     .class_function("create", select_overload<cocos2d::Physics3DPointToPointConstraint*(cocos2d::Physics3DRigidBody*, cocos2d::Physics3DRigidBody*, const cocos2d::Vec3&, const cocos2d::Vec3&)>(&Physics3DPointToPointConstraint::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Physics3DPointToPointConstraint*(cocos2d::Physics3DRigidBody*, const cocos2d::Vec3&)>(&Physics3DPointToPointConstraint::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const Physics3DPointToPointConstraint& _) -> std::string {return "Physics3DPointToPointConstraint";}))    
+    .property("_className",  optional_override([](const Physics3DPointToPointConstraint& _) -> std::string {return "Physics3DPointToPointConstraint";}))
+    .allow_subclass<wrapper<Physics3DPointToPointConstraint>>("jsb.Physics3DPointToPointConstraint._extend")    
     ;
 
 

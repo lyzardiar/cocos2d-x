@@ -91,9 +91,8 @@ namespace cocos2d {
     };
 
     // Embind helpers
-    template<typename T, bool R>
-    bool cc_bindings_getBool(const T& obj) {
-      return R;
+    inline bool cc_bindings_getTrue() {
+      return true;
     }
 
     template<typename T, typename... Args>

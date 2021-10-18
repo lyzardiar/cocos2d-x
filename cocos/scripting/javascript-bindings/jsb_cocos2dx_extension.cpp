@@ -32,7 +32,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getTouchLocation", &Control::getTouchLocation, allow_raw_pointers())
     .function("isHighlighted", &Control::isHighlighted)
     .class_function("create", &Control::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Control& _) -> std::string {return "Control";}))    
+    .property("_className",  optional_override([](const Control& _) -> std::string {return "Control";}))
     ;
 
 
@@ -129,6 +129,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ControlButton& _) -> std::string {return "ControlButton";}))    
     .allow_subclass<wrapper<ControlButton>>("cc.ControlButton._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -145,7 +146,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getHuePercentage", &ControlHuePicker::getHuePercentage)
     .function("setSlider", &ControlHuePicker::setSlider, allow_raw_pointers())
     .class_function("create", &ControlHuePicker::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ControlHuePicker& _) -> std::string {return "ControlHuePicker";}))    
+    .property("_className",  optional_override([](const ControlHuePicker& _) -> std::string {return "ControlHuePicker";}))
     ;
 
 
@@ -160,7 +161,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getSaturation", &ControlSaturationBrightnessPicker::getSaturation)
     .function("getBrightness", &ControlSaturationBrightnessPicker::getBrightness)
     .class_function("create", &ControlSaturationBrightnessPicker::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ControlSaturationBrightnessPicker& _) -> std::string {return "ControlSaturationBrightnessPicker";}))    
+    .property("_className",  optional_override([](const ControlSaturationBrightnessPicker& _) -> std::string {return "ControlSaturationBrightnessPicker";}))
     ;
 
 
@@ -183,6 +184,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .class_function("create", &ControlColourPicker::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlColourPicker& _) -> std::string {return "ControlColourPicker";}))    
     .allow_subclass<wrapper<ControlColourPicker>>("cc.ControlColourPicker._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -209,6 +211,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .class_function("create", &ControlPotentiometer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlPotentiometer& _) -> std::string {return "ControlPotentiometer";}))    
     .allow_subclass<wrapper<ControlPotentiometer>>("cc.ControlPotentiometer._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -241,6 +244,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ControlSlider& _) -> std::string {return "ControlSlider";}))    
     .allow_subclass<wrapper<ControlSlider>>("cc.ControlSlider._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -269,6 +273,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .class_function("create", &ControlStepper::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlStepper& _) -> std::string {return "ControlStepper";}))    
     .allow_subclass<wrapper<ControlStepper>>("cc.ControlStepper._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -285,6 +290,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .class_function("create", select_overload<cocos2d::extension::ControlSwitch*(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Label*, cocos2d::Label*)>(&ControlSwitch::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ControlSwitch& _) -> std::string {return "ControlSwitch";}))    
     .allow_subclass<wrapper<ControlSwitch>>("cc.ControlSwitch._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -343,6 +349,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
     .allow_subclass<wrapper<ScrollView>>("cc.ScrollView._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -354,6 +361,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .class_function("create", &TableViewCell::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TableViewCell& _) -> std::string {return "TableViewCell";}))    
     .allow_subclass<wrapper<TableViewCell>>("cc.TableViewCell._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -383,6 +391,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("dequeueCell", &TableView::dequeueCell, allow_raw_pointers())
     .property("_className",  optional_override([](const TableView& _) -> std::string {return "TableView";}))    
     .allow_subclass<wrapper<TableView>>("cc.TableView._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -437,6 +446,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
 
   class_<EventListenerAssetsManagerEx, base<EventListenerCustom>>("cc.EventListenerAssetsManager")
     .constructor(&cc_bindings_constructor<EventListenerAssetsManagerEx>, allow_raw_pointers())
-    .property("_className",  optional_override([](const EventListenerAssetsManagerEx& _) -> std::string {return "EventListenerAssetsManagerEx";}))    
+    .property("_className",  optional_override([](const EventListenerAssetsManagerEx& _) -> std::string {return "EventListenerAssetsManagerEx";}))
+    .allow_subclass<wrapper<EventListenerAssetsManagerEx>>("cc.EventListenerAssetsManagerEx._extend")    
     ;
 }

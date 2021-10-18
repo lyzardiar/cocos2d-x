@@ -51,7 +51,8 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
         return Animate3D::createWithFrames(arg0, arg1, arg2);
       }), allow_raw_pointers())
     .class_function("setTransitionTime", &Animate3D::setTransitionTime)
-    .property("_className",  optional_override([](const Animate3D& _) -> std::string {return "Animate3D";}))    
+    .property("_className",  optional_override([](const Animate3D& _) -> std::string {return "Animate3D";}))
+    .allow_subclass<wrapper<Animate3D>>("jsb.Animate3D._extend")    
     ;
 
 
@@ -103,7 +104,8 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
       [](cocos2d::Texture2D* arg0){
         return BillBoard::createWithTexture(arg0);
       }), allow_raw_pointers())
-    .property("_className",  optional_override([](const BillBoard& _) -> std::string {return "BillBoard";}))    
+    .property("_className",  optional_override([](const BillBoard& _) -> std::string {return "BillBoard";}))
+    .allow_subclass<wrapper<BillBoard>>("jsb.BillBoard._extend")    
     ;
 
 
@@ -158,7 +160,8 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("setTexture", &Skybox::setTexture, allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Skybox*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&)>(&Skybox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Skybox*()>(&Skybox::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const Skybox& _) -> std::string {return "Skybox";}))    
+    .property("_className",  optional_override([](const Skybox& _) -> std::string {return "Skybox";}))
+    .allow_subclass<wrapper<Skybox>>("jsb.Skybox._extend")    
     ;
 
 
@@ -208,6 +211,7 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .class_function("create", select_overload<cocos2d::Sprite3D*(const std::string&, const std::string&)>(&Sprite3D::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Sprite3D& _) -> std::string {return "Sprite3D";}))    
     .allow_subclass<wrapper<Sprite3D>>("jsb.Sprite3D._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
   class_<Sprite3DCache>("jsb.Sprite3DCache")
@@ -251,7 +255,8 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("setIsEnableFrustumCull", &Terrain::setIsEnableFrustumCull)
     .function("getMinHeight", &Terrain::getMinHeight)
     .function("getMaxHeight", &Terrain::getMaxHeight)
-    .property("_className",  optional_override([](const Terrain& _) -> std::string {return "Terrain";}))    
+    .property("_className",  optional_override([](const Terrain& _) -> std::string {return "Terrain";}))
+    .allow_subclass<wrapper<Terrain>>("jsb.Terrain._extend")    
     ;
 
 

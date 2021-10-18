@@ -306,10 +306,13 @@
                   ctor[prop] = clazz[prop]
                 }
 
-                // Assign extend 
-                ctor.extend = cc.Class.extend.bind(subClazz)
+                // Allow extend from js 
+                if (clazz._allowJSSubclass && clazz._allowJSSubclass()) {
+                  ctor.extend = cc.Class.extend.bind(subClazz)
+                  subClazz.prototype.ctor = ctor
+                }
 
-                ns[clazzName] = subClazz.prototype.ctor = ctor
+                ns[clazzName] = ctor
               } else {
                 ns[clazzName] = clazz
               }

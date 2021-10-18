@@ -129,7 +129,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("init", &Tween::init, allow_raw_pointers())
     .function("setAnimation", &Tween::setAnimation, allow_raw_pointers())
     .class_function("create", &Tween::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Tween& _) -> std::string {return "Tween";}))    
+    .property("_className",  optional_override([](const Tween& _) -> std::string {return "Tween";}))
+    .allow_subclass<wrapper<Tween>>("ccs.Tween._extend")    
     ;
 
   class_<ColliderFilter>("ccs.ColliderFilter")
@@ -152,7 +153,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("setBone", &ColliderDetector::setBone, allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::ColliderDetector*(cocostudio::Bone*)>(&ColliderDetector::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::ColliderDetector*()>(&ColliderDetector::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const ColliderDetector& _) -> std::string {return "ColliderDetector";}))    
+    .property("_className",  optional_override([](const ColliderDetector& _) -> std::string {return "ColliderDetector";}))
+    .allow_subclass<wrapper<ColliderDetector>>("ccs.ColliderDetector._extend")    
     ;
 
   class_<DecorativeDisplay>("ccs.DecorativeDisplay")
@@ -164,7 +166,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getDisplayData", &DecorativeDisplay::getDisplayData, allow_raw_pointers())
     .function("setColliderDetector", &DecorativeDisplay::setColliderDetector, allow_raw_pointers())
     .class_function("create", &DecorativeDisplay::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const DecorativeDisplay& _) -> std::string {return "DecorativeDisplay";}))    
+    .property("_className",  optional_override([](const DecorativeDisplay& _) -> std::string {return "DecorativeDisplay";}))
+    .allow_subclass<wrapper<DecorativeDisplay>>("ccs.DecorativeDisplay._extend")    
     ;
 
 
@@ -198,7 +201,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("isVisible", &DisplayManager::isVisible)
     .function("setVisible", &DisplayManager::setVisible)
     .class_function("create", &DisplayManager::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const DisplayManager& _) -> std::string {return "DisplayManager";}))    
+    .property("_className",  optional_override([](const DisplayManager& _) -> std::string {return "DisplayManager";}))
+    .allow_subclass<wrapper<DisplayManager>>("ccs.DisplayManager._extend")    
     ;
 
 
@@ -241,12 +245,14 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getArmature", &Bone::getArmature, allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Bone*(const std::string&)>(&Bone::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Bone*()>(&Bone::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const Bone& _) -> std::string {return "Bone";}))    
+    .property("_className",  optional_override([](const Bone& _) -> std::string {return "Bone";}))
+    .allow_subclass<wrapper<Bone>>("ccs.Bone._extend")    
     ;
 
   class_<BatchNode, base<Node>>("ccs.BatchNode")
     .class_function("create", &BatchNode::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const BatchNode& _) -> std::string {return "BatchNode";}))    
+    .property("_className",  optional_override([](const BatchNode& _) -> std::string {return "BatchNode";}))
+    .allow_subclass<wrapper<BatchNode>>("ccs.BatchNode._extend")    
     ;
 
 
@@ -298,7 +304,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
       }))
     .function("getCurrentMovementID", &ArmatureAnimation::getCurrentMovementID)
     .class_function("create", &ArmatureAnimation::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ArmatureAnimation& _) -> std::string {return "ArmatureAnimation";}))    
+    .property("_className",  optional_override([](const ArmatureAnimation& _) -> std::string {return "ArmatureAnimation";}))
+    .allow_subclass<wrapper<ArmatureAnimation>>("ccs.ArmatureAnimation._extend")    
     ;
 
   class_<ArmatureDataManager>("ccs.ArmatureDataManager")
@@ -372,6 +379,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .class_function("create", select_overload<cocostudio::Armature*(const std::string&, cocostudio::Bone*)>(&Armature::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Armature& _) -> std::string {return "Armature";}))    
     .allow_subclass<wrapper<Armature>>("ccs.Armature._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -385,7 +393,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .class_function("create", select_overload<cocostudio::Skin*(const std::string&)>(&Skin::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Skin*()>(&Skin::create), allow_raw_pointers())
     .class_function("createWithSpriteFrameName", &Skin::createWithSpriteFrameName, allow_raw_pointers())
-    .property("_className",  optional_override([](const Skin& _) -> std::string {return "Skin";}))    
+    .property("_className",  optional_override([](const Skin& _) -> std::string {return "Skin";}))
+    .allow_subclass<wrapper<Skin>>("ccs.Skin._extend")    
     ;
 
 
@@ -417,7 +426,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
       }))
     .function("setBool", &ComAttribute::setBool)
     .class_function("create", &ComAttribute::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ComAttribute& _) -> std::string {return "ComAttribute";}))    
+    .property("_className",  optional_override([](const ComAttribute& _) -> std::string {return "ComAttribute";}))
+    .allow_subclass<wrapper<ComAttribute>>("ccs.ComAttribute._extend")    
     ;
 
 
@@ -457,7 +467,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getFile", &ComAudio::getFile, allow_raw_pointers())
     .function("resumeEffect", &ComAudio::resumeEffect)
     .class_function("create", &ComAudio::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ComAudio& _) -> std::string {return "ComAudio";}))    
+    .property("_className",  optional_override([](const ComAudio& _) -> std::string {return "ComAudio";}))
+    .allow_subclass<wrapper<ComAudio>>("ccs.ComAudio._extend")    
     ;
 
   class_<InputDelegate>("ccs.InputDelegate")
@@ -486,6 +497,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .class_function("create", &ComController::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ComController& _) -> std::string {return "ComController";}))    
     .allow_subclass<wrapper<ComController>>("ccs.ComController._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -495,7 +507,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getNode", &ComRender::getNode, allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::ComRender*(cocos2d::Node*, const char*)>(&ComRender::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::ComRender*()>(&ComRender::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const ComRender& _) -> std::string {return "ComRender";}))    
+    .property("_className",  optional_override([](const ComRender& _) -> std::string {return "ComRender";}))
+    .allow_subclass<wrapper<ComRender>>("ccs.ComRender._extend")    
     ;
 
   class_<Frame>("ccs.Frame")
@@ -696,7 +709,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("init", &ActionTimelineData::init)
     .function("getActionTag", &ActionTimelineData::getActionTag)
     .class_function("create", &ActionTimelineData::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ActionTimelineData& _) -> std::string {return "ActionTimelineData";}))    
+    .property("_className",  optional_override([](const ActionTimelineData& _) -> std::string {return "ActionTimelineData";}))
+    .allow_subclass<wrapper<ActionTimelineData>>("ccs.ActionTimelineData._extend")    
     ;
 
 
@@ -771,6 +785,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .class_function("create", select_overload<cocostudio::timeline::BoneNode*()>(&BoneNode::create), allow_raw_pointers())
     .property("_className",  optional_override([](const BoneNode& _) -> std::string {return "BoneNode";}))    
     .allow_subclass<wrapper<BoneNode>>("ccs.BoneNode._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -784,6 +799,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .class_function("create", &SkeletonNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const SkeletonNode& _) -> std::string {return "SkeletonNode";}))    
     .allow_subclass<wrapper<SkeletonNode>>("ccs.SkeletonNode._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
 
@@ -794,7 +810,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getActionTag", &ComExtensionData::getActionTag)
     .function("setCustomProperty", &ComExtensionData::setCustomProperty)
     .class_function("create", &ComExtensionData::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ComExtensionData& _) -> std::string {return "ComExtensionData";}))    
+    .property("_className",  optional_override([](const ComExtensionData& _) -> std::string {return "ComExtensionData";}))
+    .allow_subclass<wrapper<ComExtensionData>>("ccs.ComExtensionData._extend")    
     ;
 }
 
