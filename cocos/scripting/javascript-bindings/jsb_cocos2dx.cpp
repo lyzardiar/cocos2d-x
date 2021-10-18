@@ -1408,6 +1408,28 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventListenerMouse, base<EventListener>>("cc.EventListenerMouse")
     .constructor(&cc_bindings_constructor<EventListenerMouse>, allow_raw_pointers())
     .function("init", &EventListenerMouse::init)
+    .class_function("create", optional_override(
+    [](){
+      auto ret = val::global("cc")["EventListenerMouse"].new_();
+      auto listener = ret.as<EventListenerMouse*>(allow_raw_pointers());
+      listener->onMouseDown = [ret](Event* event) {
+        ret["onMouseDown"](val(event));
+      };
+
+      listener->onMouseUp = [ret](Event* event) {
+        ret["onMouseUp"](val(event));
+      };
+
+      listener->onMouseMove = [ret](Event* event) {
+        ret["onMouseMove"](val(event));
+      };
+
+      listener->onMouseScroll = [ret](Event* event) {
+        ret["onMouseScroll"](val(event));
+      };
+
+      return ret;
+    }), allow_raw_pointers())
     .property("_className",  optional_override([](const EventListenerMouse& _) -> std::string {return "EventListenerMouse";}))    
     ;
 
