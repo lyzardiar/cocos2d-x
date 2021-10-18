@@ -2810,6 +2810,11 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MenuItemLabel, base<MenuItem>>("cc.MenuItemLabel")
     .constructor(&cc_bindings_constructor<MenuItemLabel>, allow_raw_pointers())
+    .function("initWithLabel", optional_override([](MenuItemLabel& this_, Node* label, const val& callback) {
+      return this_.initWithLabel(label, [callback](Ref* ref) -> void {
+        callback(val(ref));
+      });
+    }), allow_raw_pointers())
     .function("setLabel", &MenuItemLabel::setLabel, allow_raw_pointers())
     .function("getString", &MenuItemLabel::getString)
     .function("getDisabledColor", &MenuItemLabel::getDisabledColor)

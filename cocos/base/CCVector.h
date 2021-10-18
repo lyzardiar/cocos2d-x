@@ -107,6 +107,9 @@ public:
      */
     const_reverse_iterator crend() const { return _data.crend(); }
     
+    /** std style value_type */
+    typedef T value_type;
+    
     /** Constructor. */
     Vector<T>()
     : _data()
