@@ -126,14 +126,14 @@ namespace emscripten {                                            \
 namespace emscripten {                                            \
     namespace internal {                                          \
         template<>                                                \
-        struct TypeID<T*> {                                       \
-            static constexpr TYPEID get() {                       \
-                return LightTypeID<T*>::get();                    \
-            }                                                     \
-        };                                                        \
+        struct TypeID<T*> {                                       \
+            static constexpr TYPEID get() {                       \
+                return LightTypeID<T*>::get();                    \
+            }                                                     \
+        };                                                        \
     }                                                             \
 }
-        
+
 
 // Custom marshal vector<T> to JSArray
 namespace emscripten {

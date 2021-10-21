@@ -16,6 +16,7 @@ using namespace CocosDenshion;
 CC_BINDINGS_ALLOW_RAW_POINTERS(Node)
 CC_BINDINGS_ALLOW_RAW_POINTERS(Texture2D)
 CC_BINDINGS_ALLOW_RAW_POINTERS(TextureAtlas)
+CC_BINDINGS_ALLOW_RAW_POINTERS(SpriteBatchNode)
 
 COCOS_BINDINGS(jsb_cocos2dx) {
 
@@ -80,6 +81,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("drawAtPoint", &Texture2D::drawAtPoint)
     .function("hasMipmaps", &Texture2D::hasMipmaps)
     .function("setMaxS", &Texture2D::setMaxS)
+    .property("name", &Texture2D::getName)
+    .property("pixelFormat", &Texture2D::getPixelFormat)
+    .property("pixelsWidth", &Texture2D::getPixelsWide)
+    .property("pixelsHeight", &Texture2D::getPixelsHigh)
+    .property("maxS", &Texture2D::getMaxS, &Texture2D::setMaxS)
+    .property("maxT", &Texture2D::getMaxT, &Texture2D::setMaxT)
     .class_function("setDefaultAlphaPixelFormat", optional_override(
       [](int32_t arg0){
         return Texture2D::setDefaultAlphaPixelFormat((Texture2D::PixelFormat)arg0);
@@ -2314,6 +2321,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setTexture", &AtlasNode::setTexture, allow_raw_pointers())
     .function("initWithTexture", &AtlasNode::initWithTexture, allow_raw_pointers())
     .function("setQuadsToDraw", &AtlasNode::setQuadsToDraw)
+    .property("texture", &AtlasNode::getTexture, &AtlasNode::setTexture)
+    .property("textureAtlas", &AtlasNode::getTextureAtlas, &AtlasNode::setTextureAtlas)
+    .property("quadsToDraw", &AtlasNode::getQuadsToDraw, &AtlasNode::setQuadsToDraw)
     .class_function("create", &AtlasNode::create, allow_raw_pointers())
     .property("_className",  optional_override([](const AtlasNode& _) -> std::string {return "AtlasNode";}))
     .allow_subclass<wrapper<AtlasNode>>("cc.AtlasNode._extend")    
@@ -2572,9 +2582,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithString", select_overload<bool(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::initWithString))
     // TODO: Only support function overloading with different number of parameters
     .function("getString", &LabelAtlas::getString)
-    .property("texture", &LabelAtlas::getTexture, &LabelAtlas::setTexture)
-    .property("textureAtlas", &LabelAtlas::getTextureAtlas, &LabelAtlas::setTextureAtlas)
-    .property("quadsToDraw", &LabelAtlas::getQuadsToDraw, &LabelAtlas::setQuadsToDraw)
+    .property("string", &LabelAtlas::getString, &LabelAtlas::setString)
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<LabelAtlas*()>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&)>(&LabelAtlas::create), allow_raw_pointers())
@@ -2617,6 +2625,28 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.setAlignment((TextHAlignment)arg0);
       }))
     .function("setWidth", &LabelBMFont::setWidth)
+    .property("string", &LabelBMFont::getString, &LabelBMFont::setString)
+    .property("textAlign",
+      optional_override([](const LabelBMFont& this_)
+      {
+        CCLOG("LabelBMFont.textAlign is write-only");
+        return (int32_t)TextHAlignment::LEFT;
+      }), 
+      optional_override([](LabelBMFont& this_, int32_t alignment)
+      {
+        this_.setAlignment((TextHAlignment)alignment);
+      }))
+    .property("boundingWidth", 
+      optional_override([](const LabelBMFont& this_) -> float
+      {
+        CCLOG("LabelBMFont.boundingWidth is write-only");
+        return 0;
+      }), 
+      optional_override([](LabelBMFont& this_, float width)
+      {
+        return this_.setWidth(width);
+      }))
+    // .property("boundingHeight", &LabelBMFont::_getBoundingHeight, &LabelBMFont::setBoundingHeight)
     .class_function("create", select_overload<LabelBMFont*()>(&LabelBMFont::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const std::string& arg0, const std::string& arg1, float arg2, int32_t arg3, const Vec2& arg4){
@@ -2737,7 +2767,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       optional_override([](LabelTTF& this_, float height){this_.setDimensions(Size(this_.getDimensions().width, height));}))
     .property("fillStyle", optional_override(
         [](const LabelTTF& this_) {
-        CCLOG("Not implemented yet in JSB");
+        CCLOG("LabelTTF.fillStyle is write-only");
         return Color3B::BLACK;
       }), optional_override(
         [](LabelTTF& this_, const Color3B &tintColor) { 
@@ -2815,6 +2845,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getEndOpacity", &LayerGradient::getEndOpacity)
     .function("setStartColor", &LayerGradient::setStartColor)
     .property("size", &LayerGradient::getContentSize, &LayerGradient::setContentSize)
+    .property("startColor", &LayerGradient::getStartColor, &LayerGradient::setStartColor)
+    .property("endColor", &LayerGradient::getEndColor, &LayerGradient::setEndColor)
+    .property("startOpacity", &LayerGradient::getStartOpacity, &LayerGradient::setStartOpacity)
+    .property("endOpacity", &LayerGradient::getEndOpacity, &LayerGradient::setEndOpacity)
+    .property("vector", &LayerGradient::getVector, &LayerGradient::setVector)
+    .property("compresseInterpolation", &LayerGradient::isCompressedInterpolation, &LayerGradient::setCompressedInterpolation)
     .class_function("create", select_overload<LayerGradient*(const Color4B&, const Color4B&)>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerGradient*()>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerGradient*(const Color4B&, const Color4B&, const Vec2&)>(&LayerGradient::create), allow_raw_pointers())
@@ -3434,6 +3470,23 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isFlippedX", &Sprite::isFlippedX)
     .function("isFlippedY", &Sprite::isFlippedY)
     .function("setVertexRect", &Sprite::setVertexRect)
+    .property("dirty", &Sprite::isDirty, &Sprite::setDirty)
+    .property("flippedX", &Sprite::isFlippedX, &Sprite::setFlippedX)
+    .property("flippedY", &Sprite::isFlippedY, &Sprite::setFlippedY)
+    .property("offsetX", optional_override(
+        [](const Sprite& this_){
+        return this_.getOffsetPosition().x;
+      }))
+    .property("offsetY", optional_override(
+        [](const Sprite& this_){
+        return this_.getOffsetPosition().y;
+      }))
+    .property("atlasIndex", &Sprite::getAtlasIndex, &Sprite::setAtlasIndex)
+    .property("texture", &Sprite::getTexture, select_overload<void(Texture2D*)>(&Sprite::setTexture))
+    .property("textureRectRotated", &Sprite::isTextureRectRotated)
+    .property("textureAtlas", &Sprite::getTextureAtlas, &Sprite::setTextureAtlas)
+    .property("batchNode", &Sprite::getBatchNode, &Sprite::setBatchNode)
+    .property("quad", &Sprite::getQuad)
     .property("_className",  optional_override([](const Sprite& _) -> std::string {return "Sprite";}))    
     .allow_subclass<wrapper<Sprite>>("cc.Sprite._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4327,6 +4380,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("rebuildIndexInOrder", &SpriteBatchNode::rebuildIndexInOrder, allow_raw_pointers())
     .function("getTextureAtlas", &SpriteBatchNode::getTextureAtlas, allow_raw_pointers())
     .function("highestAtlasIndexInChild", &SpriteBatchNode::highestAtlasIndexInChild, allow_raw_pointers())
+    .property("textureAtlas", reinterpret_cast<TextureAtlas* (SpriteBatchNode::*)() const>(&SpriteBatchNode::getTextureAtlas), &SpriteBatchNode::setTextureAtlas)
+    .property("descendants", &SpriteBatchNode::getDescendants)
+    .property("texture", &SpriteBatchNode::getTexture, &SpriteBatchNode::setTexture)
     .class_function("create", &SpriteBatchNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](const std::string& arg0){
