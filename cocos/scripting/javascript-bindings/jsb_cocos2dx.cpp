@@ -13,6 +13,10 @@ using namespace cocos2d;
 using namespace bindings;
 using namespace CocosDenshion;
 
+CC_BINDINGS_ALLOW_RAW_POINTERS(Node)
+CC_BINDINGS_ALLOW_RAW_POINTERS(Texture2D)
+CC_BINDINGS_ALLOW_RAW_POINTERS(TextureAtlas)
+
 COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Ref>("cc.Ref");
@@ -565,6 +569,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setTarget", &Action::setTarget, allow_raw_pointers())
     .function("isDone", &Action::isDone)
     .function("reverse", &Action::reverse, allow_raw_pointers())
+    .property("tag",  &Action::getTag, &Action::setTag)
     .property("_className",  optional_override([](const Action& _) -> std::string {return "Action";}))    
     ;
 
@@ -2324,6 +2329,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getStencil", &ClippingNode::getStencil, allow_raw_pointers())
     .function("setAlphaThreshold", &ClippingNode::setAlphaThreshold)
     .function("isInverted", &ClippingNode::isInverted)
+    .property("alphaThreshold", &ClippingNode::getAlphaThreshold, &ClippingNode::setAlphaThreshold)
+    .property("inverted", &ClippingNode::isInverted, &ClippingNode::setInverted)
+    .property("stencil", &ClippingNode::getStencil, &ClippingNode::setStencil)
     .class_function("create", select_overload<ClippingNode*(Node*)>(&ClippingNode::create), allow_raw_pointers())
     .class_function("create", select_overload<ClippingNode*()>(&ClippingNode::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ClippingNode& _) -> std::string {return "ClippingNode";}))
@@ -2515,6 +2523,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         }))
     .function("requestSystemFontRefresh", &Label::requestSystemFontRefresh)
     .function("setBMFontSize", &Label::setBMFontSize)
+    .property("size", &Label::getContentSize, &Label::setContentSize)
+    .property("boundingWidth", &Label::getWidth, &Label::setWidth)
+    .property("boundingHeight", &Label::getHeight, &Label::setHeight)
     .class_function("createWithBMFont", optional_override(
         [](const std::string& arg0, const std::string& arg1, int32_t arg2, int arg3, const Rect& arg4, bool arg5){
             return Label::createWithBMFont(arg0, arg1, (const TextHAlignment&)arg2, arg3, arg4, arg5);
@@ -2561,6 +2572,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithString", select_overload<bool(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::initWithString))
     // TODO: Only support function overloading with different number of parameters
     .function("getString", &LabelAtlas::getString)
+    .property("texture", &LabelAtlas::getTexture, &LabelAtlas::setTexture)
+    .property("textureAtlas", &LabelAtlas::getTextureAtlas, &LabelAtlas::setTextureAtlas)
+    .property("quadsToDraw", &LabelAtlas::getQuadsToDraw, &LabelAtlas::setQuadsToDraw)
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<LabelAtlas*()>(&LabelAtlas::create), allow_raw_pointers())
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&)>(&LabelAtlas::create), allow_raw_pointers())
@@ -2691,6 +2705,50 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](LabelTTF& this_){
         return this_.disableStroke();
       }))
+    .property("string", &LabelTTF::getString, &LabelTTF::setString)
+    .property("textAlign", &LabelTTF::getHorizontalAlignment, &LabelTTF::setHorizontalAlignment)
+    .property("verticalAlign", &LabelTTF::getVerticalAlignment, &LabelTTF::setVerticalAlignment)
+    .property("fontSize", &LabelTTF::getFontSize, &LabelTTF::setFontSize)
+    .property("fontName", &LabelTTF::getFontName, &LabelTTF::setFontName)
+    .property("font", optional_override(
+        [](const LabelTTF& this_) -> std::string {
+        float size = this_.getFontSize();
+        const std::string& name = this_.getFontName();
+        return std::to_string(size) + "px '" + name + "'";
+      })
+      , optional_override(
+        [](LabelTTF& this_, const std::string& font) { 
+        size_t found = font.find("px ");
+        if (found != std::string::npos)
+        {
+          this_.setFontSize(stoi(font.substr(0, found)));
+          this_.setFontName(font.substr(found + 4, font.size() - found - 5));  
+        } else 
+        {
+          CCLOG("Failed to parse font '%s'", font.c_str());
+        }
+      })
+      )
+    .property("boundingWidth", 
+      optional_override([](const LabelTTF& this_){return this_.getDimensions().width;}), 
+      optional_override([](LabelTTF& this_, float width){this_.setDimensions(Size(width, this_.getDimensions().height));}))
+    .property("boundingHeight", 
+      optional_override([](const LabelTTF& this_){return this_.getDimensions().height;}), 
+      optional_override([](LabelTTF& this_, float height){this_.setDimensions(Size(this_.getDimensions().width, height));}))
+    .property("fillStyle", optional_override(
+        [](const LabelTTF& this_) {
+        CCLOG("Not implemented yet in JSB");
+        return Color3B::BLACK;
+      }), optional_override(
+        [](LabelTTF& this_, const Color3B &tintColor) { 
+        this_.setFontFillColor(tintColor);
+      }))
+    // .property("strokeStyle", &LabelTTF::_getStrokeStyle, &LabelTTF::_setStrokeStyle)
+    // .property("lineWidth", &LabelTTF::_getLineWidth, &LabelTTF::_setLineWidth)
+    // .property("shadowOffsetX", &LabelTTF::_getShadowOffsetX, &LabelTTF::_setShadowOffsetX)
+    // .property("shadowOffsetY", &LabelTTF::_getShadowOffsetY, &LabelTTF::_setShadowOffsetY)
+    // .property("shadowOpacity", &LabelTTF::_getShadowOpacity, &LabelTTF::_setShadowOpacity)
+    // .property("shadowBlur", &LabelTTF::_getShadowBlur, &LabelTTF::_setShadowBlur)
     .class_function("create", select_overload<LabelTTF*()>(&LabelTTF::create), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5){
@@ -2756,6 +2814,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getEndColor", &LayerGradient::getEndColor)
     .function("getEndOpacity", &LayerGradient::getEndOpacity)
     .function("setStartColor", &LayerGradient::setStartColor)
+    .property("size", &LayerGradient::getContentSize, &LayerGradient::setContentSize)
     .class_function("create", select_overload<LayerGradient*(const Color4B&, const Color4B&)>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerGradient*()>(&LayerGradient::create), allow_raw_pointers())
     .class_function("create", select_overload<LayerGradient*(const Color4B&, const Color4B&, const Vec2&)>(&LayerGradient::create), allow_raw_pointers())
@@ -4329,6 +4388,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getPlaceHolder", &TextFieldTTF::getPlaceHolder)
     .function("setCursorPosition", &TextFieldTTF::setCursorPosition)
     .function("attachWithIME", &TextFieldTTF::attachWithIME)
+    .property("string", &TextFieldTTF::getString, &TextFieldTTF::setString)
     .class_function("create", select_overload<TextFieldTTF*(const std::string&, const std::string&, float)>(&TextFieldTTF::textFieldWithPlaceHolder), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const std::string& arg0, const Size& arg1, int32_t arg2, const std::string& arg3, float arg4){
