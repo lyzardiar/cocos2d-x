@@ -17,6 +17,13 @@ CC_BINDINGS_ALLOW_RAW_POINTERS(Node)
 CC_BINDINGS_ALLOW_RAW_POINTERS(Texture2D)
 CC_BINDINGS_ALLOW_RAW_POINTERS(TextureAtlas)
 CC_BINDINGS_ALLOW_RAW_POINTERS(SpriteBatchNode)
+CC_BINDINGS_ALLOW_RAW_POINTERS(ParticleBatchNode)
+CC_BINDINGS_ALLOW_RAW_POINTERS(Sprite)
+CC_BINDINGS_ALLOW_RAW_POINTERS(GridBase)
+CC_BINDINGS_ALLOW_RAW_POINTERS(ActionManager)
+CC_BINDINGS_ALLOW_RAW_POINTERS(Scheduler)
+CC_BINDINGS_ALLOW_RAW_POINTERS(Ref)
+CC_BINDINGS_ALLOW_RAW_POINTERS(GLProgram)
 
 COCOS_BINDINGS(jsb_cocos2dx) {
 
@@ -353,6 +360,67 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         CCScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnterTransitionDidFinish();
     }))
+    .property("x", &Node::getPositionX, &Node::setPositionX)
+    .property("y", &Node::getPositionY, &Node::setPositionY)
+    .property("width", 
+      optional_override([](const Node& this_){return this_.getContentSize().width;}), 
+      optional_override([](Node& this_, float width){this_.setContentSize(Size(width, this_.getContentSize().height));}))
+    .property("height", 
+      optional_override([](const Node& this_){return this_.getContentSize().height;}), 
+      optional_override([](Node& this_, float height){this_.setContentSize(Size(this_.getContentSize().width, height));}))
+    .property("anchorX", 
+      optional_override([](const Node& this_){return this_.getAnchorPoint().x;}), 
+      optional_override([](Node& this_, float x){this_.setAnchorPoint(Vec2(x, this_.getAnchorPoint().y));}))
+    .property("anchorY", 
+      optional_override([](const Node& this_){return this_.getAnchorPoint().y;}), 
+      optional_override([](Node& this_, float y){this_.setAnchorPoint(Vec2(this_.getAnchorPoint().x, y));}))
+    .property("skewX", &Node::getSkewX, &Node::setSkewX)
+    .property("skewY", &Node::getSkewY, &Node::setSkewY)
+    .property("zIndex", &Node::getLocalZOrder, &Node::setLocalZOrder)
+    .property("vertexZ", &Node::getVertexZ, &Node::setVertexZ)
+    .property("rotation", &Node::getRotation, &Node::setRotation)
+    .property("rotationX", &Node::getRotationX, &Node::setRotationX)
+    .property("rotationY", &Node::getRotationY, &Node::setRotationY)
+    .property("scale", &Node::getScale, select_overload<void(float)>(&Node::setScale))
+    .property("scaleX", &Node::getScaleX, &Node::setScaleX)
+    .property("scaleY", &Node::getScaleY, &Node::setScaleY)
+    .property("children", optional_override([](const Node& this_)
+      {
+        return const_cast<Vector<Node*>&>(this_.getChildren());
+      }))
+    .property("childrenCount", &Node::getChildrenCount)
+    .property("parent", optional_override([](const Node& this_)
+      {
+        return const_cast<Node*>(this_.getParent());
+      }), &Node::setParent)
+    .property("visible", &Node::isVisible, &Node::setVisible)
+    .property("running", &Node::isRunning)
+    .property("ignoreAnchor", &Node::isIgnoreAnchorPointForPosition, &Node::ignoreAnchorPointForPosition)
+    .property("actionManager", optional_override([](const Node& this_)
+      {
+        return const_cast<ActionManager*>(this_.getActionManager());
+      }), &Node::setActionManager)
+    .property("scheduler", optional_override([](const Node& this_)
+      {
+        return const_cast<Scheduler*>(this_.getScheduler());
+      }), &Node::setScheduler)
+    .property("shaderProgram", optional_override([](const Node& this_)
+      {
+        return const_cast<GLProgram*>(this_.getShaderProgram());
+      }), &Node::setShaderProgram)
+    .property("glServerState", &Node::getGLServerState, &Node::setGLServerState)
+    .property("tag", &Node::getTag, &Node::setTag)
+    .property("userObject", optional_override([](const Node& this_)
+      {
+        return const_cast<Ref*>(this_.getUserObject());
+      }), &Node::setUserObject)
+    // cocos2d-x js only
+    // .property("arrivalOrder", &Node::getOrderOfArrival, &Node::setOrderOfArrival)
+    .property("opacity", &Node::getOpacity, &Node::setOpacity)
+    .property("opacityModifyRGB", &Node::isOpacityModifyRGB, &Node::setOpacityModifyRGB)
+    .property("cascadeOpacity", &Node::isCascadeOpacityEnabled, &Node::setCascadeOpacityEnabled)
+    .property("color", &Node::getColor, &Node::setColor)
+    .property("cascadeColor", &Node::isCascadeColorEnabled, &Node::setCascadeColorEnabled)
     .class_function("create", &Node::create, allow_raw_pointers())
     .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount)
     .property("_className",  optional_override([](const Node& _) -> std::string {return "Node";}))    
@@ -3066,9 +3134,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<NodeGrid, base<Node>>("cc.NodeGrid")
     .constructor(&cc_bindings_constructor<NodeGrid>, allow_raw_pointers())
     .function("setTarget", &NodeGrid::setTarget, allow_raw_pointers())
-    .function("getGrid", select_overload<const GridBase*() const>(&NodeGrid::getGrid), allow_raw_pointers())
+    .function("getGrid", select_overload<GridBase*()>(&NodeGrid::getGrid), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("getGridRect", &NodeGrid::getGridRect)
+    .property("grid", optional_override([](const NodeGrid& this_)
+      {
+        return const_cast<GridBase*>(this_.getGrid());
+      }), &NodeGrid::setGrid)
+    .property("target", optional_override([](const NodeGrid& this_)
+      {
+        CCLOG("NodeGrid.target is write-only");
+        return nullptr;
+      }), &NodeGrid::setTarget)
     .class_function("create", select_overload<NodeGrid*(const Rect&)>(&NodeGrid::create), allow_raw_pointers())
     .class_function("create", select_overload<NodeGrid*()>(&NodeGrid::create), allow_raw_pointers())
     .property("_className",  optional_override([](const NodeGrid& _) -> std::string {return "NodeGrid";}))    
@@ -3089,6 +3166,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getBlendFunc", &ParticleBatchNode::getBlendFunc)
     .function("insertChild", &ParticleBatchNode::insertChild, allow_raw_pointers())
     .function("removeChildAtIndex", &ParticleBatchNode::removeChildAtIndex)
+    .property("textureAtlas", &ParticleBatchNode::getTextureAtlas, &ParticleBatchNode::setTextureAtlas)
+    .property("texture", &ParticleBatchNode::getTexture, &ParticleBatchNode::setTexture)
     .class_function("create", &ParticleBatchNode::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](const std::string& arg0){
@@ -3237,6 +3316,54 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setBlendFunc", &ParticleSystem::setBlendFunc)
     .function("getEndRadiusVar", &ParticleSystem::getEndRadiusVar)
     .function("getStartColorVar", &ParticleSystem::getStartColorVar)
+    .property("batchNode", &ParticleSystem::getBatchNode, &ParticleSystem::setBatchNode)
+    .property("active", &ParticleSystem::isActive)
+    // cocos2d-x js only
+    // .property("shapeType", &ParticleSystem::getShapeType, &ParticleSystem::setShapeType)
+    .property("atlasIndex", &ParticleSystem::getAtlasIndex, &ParticleSystem::setAtlasIndex)
+    .property("particleCount", &ParticleSystem::getParticleCount)
+    .property("duration", &ParticleSystem::getDuration, &ParticleSystem::setDuration)
+    .property("sourcePos", &ParticleSystem::getSourcePosition, &ParticleSystem::setSourcePosition)
+    .property("posVar", &ParticleSystem::getPosVar, &ParticleSystem::setPosVar)
+    .property("life", &ParticleSystem::getLife, &ParticleSystem::setLife)
+    .property("lifeVar", &ParticleSystem::getLifeVar, &ParticleSystem::setLifeVar)
+    .property("angle", &ParticleSystem::getAngle, &ParticleSystem::setAngle)
+    .property("angleVar", &ParticleSystem::getAngleVar, &ParticleSystem::setAngleVar)
+    .property("startSize", &ParticleSystem::getStartSize, &ParticleSystem::setStartSize)
+    .property("startSizeVar", &ParticleSystem::getStartSizeVar, &ParticleSystem::setStartSizeVar)
+    .property("endSize", &ParticleSystem::getEndSize, &ParticleSystem::setEndSize)
+    .property("endSizeVar", &ParticleSystem::getEndSizeVar, &ParticleSystem::setEndSizeVar)
+    .property("startSpin", &ParticleSystem::getStartSpin, &ParticleSystem::setStartSpin)
+    .property("startSpinVar", &ParticleSystem::getStartSpinVar, &ParticleSystem::setStartSpinVar)
+    .property("endSpin", &ParticleSystem::getEndSpin, &ParticleSystem::setEndSpin)
+    .property("endSpinVar", &ParticleSystem::getEndSpinVar, &ParticleSystem::setEndSpinVar)
+    .property("gravity", optional_override([](const ParticleSystem& this_)
+      {
+        return const_cast<ParticleSystem&>(this_).getGravity();
+      }), &ParticleSystem::setGravity)
+    .property("speed", &ParticleSystem::getSpeed, &ParticleSystem::setSpeed)
+    .property("speedVar", &ParticleSystem::getSpeedVar, &ParticleSystem::setSpeedVar)
+    .property("tangentialAccel", &ParticleSystem::getTangentialAccel, &ParticleSystem::setTangentialAccel)
+    .property("tangentialAccelVar", &ParticleSystem::getTangentialAccelVar, &ParticleSystem::setTangentialAccelVar)
+    .property("tangentialAccel", &ParticleSystem::getTangentialAccel, &ParticleSystem::setTangentialAccel)
+    .property("tangentialAccelVar", &ParticleSystem::getTangentialAccelVar, &ParticleSystem::setTangentialAccelVar)
+    .property("rotationIsDir", &ParticleSystem::getRotationIsDir, &ParticleSystem::setRotationIsDir)
+    .property("startRadius", &ParticleSystem::getStartRadius, &ParticleSystem::setStartRadius)
+    .property("startRadiusVar", &ParticleSystem::getStartRadiusVar, &ParticleSystem::setStartRadiusVar)
+    .property("endRadius", &ParticleSystem::getEndRadius, &ParticleSystem::setEndRadius)
+    .property("endRadiusVar", &ParticleSystem::getEndRadiusVar, &ParticleSystem::setEndRadiusVar)
+    .property("rotatePerS", &ParticleSystem::getRotatePerSecond, &ParticleSystem::setRotatePerSecond)
+    .property("rotatePerSVar", &ParticleSystem::getRotatePerSecondVar, &ParticleSystem::setRotatePerSecondVar)
+    .property("startColor", &ParticleSystem::getStartColor, &ParticleSystem::setStartColor)
+    .property("startColorVar", &ParticleSystem::getStartColorVar, &ParticleSystem::setStartColorVar)
+    .property("endColor", &ParticleSystem::getEndColor, &ParticleSystem::setEndColor)
+    .property("endColorVar", &ParticleSystem::getEndColorVar, &ParticleSystem::setEndColorVar)
+    .property("emissionRate", &ParticleSystem::getEmissionRate, &ParticleSystem::setEmissionRate)
+    .property("emitterMode", &ParticleSystem::getEmitterMode, &ParticleSystem::setEmitterMode)
+    .property("positionType", &ParticleSystem::getPositionType, &ParticleSystem::setPositionType)
+    .property("totalParticles", &ParticleSystem::getTotalParticles, &ParticleSystem::setTotalParticles)
+    .property("autoRemoveOnFinish", &ParticleSystem::isAutoRemoveOnFinish, &ParticleSystem::setAutoRemoveOnFinish)
+    .property("texture", &ParticleSystem::getTexture, &ParticleSystem::setTexture)
     .class_function("create", &ParticleSystem::create, allow_raw_pointers())
     .class_function("createWithTotalParticles", &ParticleSystem::createWithTotalParticles, allow_raw_pointers())
     .class_function("getAllParticleSystems", &ParticleSystem::getAllParticleSystems)
@@ -3398,6 +3525,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](ProgressTimer& this_, int32_t arg0){
         return this_.setType((ProgressTimer::Type)arg0);
       }))
+    .property("midPoint", &ProgressTimer::getMidpoint, &ProgressTimer::setMidpoint)
+    .property("barChangeRate", &ProgressTimer::getBarChangeRate, &ProgressTimer::setBarChangeRate)
+    .property("type", &ProgressTimer::getType, &ProgressTimer::setType)
+    .property("percentage", &ProgressTimer::getPercentage, &ProgressTimer::setPercentage)
+    .property("sprite", &ProgressTimer::getSprite, &ProgressTimer::setSprite)
+    .property("reverseDir", optional_override([](const ProgressTimer& this_)
+      {
+        return const_cast<ProgressTimer&>(this_).isReverseDirection();
+      }), &ProgressTimer::setReverseDirection)
     .class_function("create", &ProgressTimer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ProgressTimer& _) -> std::string {return "ProgressTimer";}))    
     .allow_subclass<wrapper<ProgressTimer>>("cc.ProgressTimer._extend")
@@ -4390,7 +4526,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("rebuildIndexInOrder", &SpriteBatchNode::rebuildIndexInOrder, allow_raw_pointers())
     .function("getTextureAtlas", &SpriteBatchNode::getTextureAtlas, allow_raw_pointers())
     .function("highestAtlasIndexInChild", &SpriteBatchNode::highestAtlasIndexInChild, allow_raw_pointers())
-    .property("textureAtlas", reinterpret_cast<TextureAtlas* (SpriteBatchNode::*)() const>(&SpriteBatchNode::getTextureAtlas), &SpriteBatchNode::setTextureAtlas)
+    .property("textureAtlas", optional_override([](const SpriteBatchNode& this_)
+      {
+        return const_cast<SpriteBatchNode&>(this_).getTextureAtlas();
+      }), &SpriteBatchNode::setTextureAtlas)
     .property("descendants", &SpriteBatchNode::getDescendants)
     .property("texture", &SpriteBatchNode::getTexture, &SpriteBatchNode::setTexture)
     .class_function("create", &SpriteBatchNode::create, allow_raw_pointers())
@@ -4536,6 +4675,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 }
 
+CC_BINDINGS_ALLOW_RAW_POINTERS(TMXTilesetInfo)
+
 COCOS_BINDINGS(jsb_cocos2dx_tmx) {
   class_<TMXObjectGroup>("cc.TMXObjectGroup")
     .constructor(&cc_bindings_constructor<TMXObjectGroup>, allow_raw_pointers())
@@ -4659,6 +4800,29 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     // TODO: Only support function overloading with different number of parameters
     .function("getTileAt", &TMXLayer::getTileAt, allow_raw_pointers())
     .function("getTileAnimManager", &TMXLayer::getTileAnimManager, allow_raw_pointers())
+    .property("tileset", &TMXLayer::getTileSet, &TMXLayer::setTileSet)
+    .property("layerOrientation", &TMXLayer::getLayerOrientation, &TMXLayer::setLayerOrientation)
+    .property("properties", optional_override([](const TMXLayer& this_)
+      {
+        return const_cast<ValueMap&>(this_.getProperties());
+      }), &TMXLayer::setProperties)
+    .property("layerName", optional_override([](const TMXLayer& this_)
+      {
+        return const_cast<TMXLayer&>(this_).getLayerName();
+      }), &TMXLayer::setLayerName)
+    .property("layerWidth", 
+      optional_override([](const TMXLayer& this_){return this_.getLayerSize().width;}), 
+      optional_override([](TMXLayer& this_, float width){this_.setLayerSize(Size(width, this_.getLayerSize().height));}))
+    .property("layerHeight", 
+      optional_override([](const TMXLayer& this_){return this_.getLayerSize().height;}), 
+      optional_override([](TMXLayer& this_, float height){this_.setLayerSize(Size(this_.getLayerSize().width, height));}))
+    .property("tileWidth", 
+      optional_override([](const TMXLayer& this_){return this_.getMapTileSize().width;}), 
+      optional_override([](TMXLayer& this_, float width){this_.setMapTileSize(Size(width, this_.getMapTileSize().height));}))
+    .property("tileHeight", 
+      optional_override([](const TMXLayer& this_){return this_.getMapTileSize().height;}), 
+      optional_override([](TMXLayer& this_, float height){this_.setMapTileSize(Size(this_.getMapTileSize().width, height));}))
+    .property("texture", &TMXLayer::getTexture, &TMXLayer::setTexture)
     .class_function("create", &TMXLayer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXLayer& _) -> std::string {return "TMXLayer";}))    
     .allow_subclass<wrapper<TMXLayer>>("cc.TMXLayer._extend")
@@ -4709,6 +4873,27 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("getLayer", &TMXTiledMap::getLayer, allow_raw_pointers())
     .function("getMapOrientation", &TMXTiledMap::getMapOrientation)
     .function("setMapOrientation", &TMXTiledMap::setMapOrientation)
+    .property("properties", optional_override([](const TMXTiledMap& this_)
+      {
+        return const_cast<TMXTiledMap&>(this_).getProperties();
+      }), &TMXTiledMap::setProperties)
+    .property("mapOrientation", &TMXTiledMap::getMapOrientation, &TMXTiledMap::setMapOrientation)
+    .property("objectGroups", optional_override([](const TMXTiledMap& this_)
+      {
+        return const_cast<Vector<TMXObjectGroup*>&>(this_.getObjectGroups());
+      }), &TMXTiledMap::setObjectGroups)
+    .property("mapWidth", 
+      optional_override([](const TMXTiledMap& this_){return this_.getMapSize().width;}), 
+      optional_override([](TMXTiledMap& this_, float width){this_.setMapSize(Size(width, this_.getMapSize().height));}))
+    .property("mapHeight", 
+      optional_override([](const TMXTiledMap& this_){return this_.getMapSize().height;}), 
+      optional_override([](TMXTiledMap& this_, float height){this_.setMapSize(Size(this_.getMapSize().width, height));}))
+    .property("tileWidth", 
+      optional_override([](const TMXTiledMap& this_){return this_.getTileSize().width;}), 
+      optional_override([](TMXTiledMap& this_, float width){this_.setTileSize(Size(width, this_.getTileSize().height));}))
+    .property("tileHeight", 
+      optional_override([](const TMXTiledMap& this_){return this_.getTileSize().height;}), 
+      optional_override([](TMXTiledMap& this_, float height){this_.setTileSize(Size(this_.getTileSize().width, height));}))
     .class_function("create", &TMXTiledMap::create, allow_raw_pointers())
     .class_function("createWithXML", &TMXTiledMap::createWithXML, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXTiledMap& _) -> std::string {return "TMXTiledMap";}))    
