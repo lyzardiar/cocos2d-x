@@ -35,6 +35,9 @@ cc.Node.prototype.attr = function(attrs) {
     }
 };
 
+if (cc.sys.platform == cc.sys.EMSCRIPTEN) {
+    cc.defineGetterSetter(cc.Texture2D, "defaultPixelFormat", cc.Texture2D.getDefaultAlphaPixelFormat, cc.Texture2D.setDefaultAlphaPixelFormat);
+}else {
 var _proto = cc.Action.prototype;
 cc.defineGetterSetter(_proto, "tag", _proto.getTag, _proto.setTag);
 
@@ -372,3 +375,5 @@ cc.defineGetterSetter(_proto, "mapWidth", _proto._getMapWidth, _proto._setMapWid
 cc.defineGetterSetter(_proto, "mapHeight", _proto._getMapHeight, _proto._setMapHeight);
 cc.defineGetterSetter(_proto, "tileWidth", _proto._getTileWidth, _proto._setTileWidth);
 cc.defineGetterSetter(_proto, "tileHeight", _proto._getTileHeight, _proto._setTileHeight);
+
+}

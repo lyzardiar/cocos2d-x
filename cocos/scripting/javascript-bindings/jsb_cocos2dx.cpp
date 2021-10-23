@@ -3690,387 +3690,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
-  class_<TransitionEaseScene>("cc.TransitionEaseScene")
-    .function("easeActionWithAction", &TransitionEaseScene::easeActionWithAction, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionEaseScene& _) -> std::string {return "TransitionEaseScene";}))    
-    ;
-
-
-  class_<TransitionScene, base<Scene>>("cc.TransitionScene")
-    .constructor(&cc_bindings_constructor<TransitionScene>, allow_raw_pointers())
-    .function("getInScene", &TransitionScene::getInScene, allow_raw_pointers())
-    .function("finish", &TransitionScene::finish)
-    .function("initWithDuration", &TransitionScene::initWithDuration, allow_raw_pointers())
-    .function("getDuration", &TransitionScene::getDuration)
-    .function("hideOutShowIn", &TransitionScene::hideOutShowIn)
-    .class_function("create", &TransitionScene::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionScene& _) -> std::string {return "TransitionScene";}))    
-    .allow_subclass<wrapper<TransitionScene>>("cc.TransitionScene._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSceneOriented, base<TransitionScene>>("cc.TransitionSceneOriented")
-    .constructor(&cc_bindings_constructor<TransitionSceneOriented>, allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-        [](TransitionSceneOriented& this_, float arg0, Scene* arg1, int32_t arg2){
-        return this_.initWithDuration(arg0, arg1, (TransitionScene::Orientation)arg2);
-      }), allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](float arg0, Scene* arg1, int32_t arg2){
-        return TransitionSceneOriented::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSceneOriented& _) -> std::string {return "TransitionSceneOriented";}))    
-    .allow_subclass<wrapper<TransitionSceneOriented>>("cc.TransitionSceneOriented._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionRotoZoom, base<TransitionScene>>("cc.TransitionRotoZoom")
-    .constructor(&cc_bindings_constructor<TransitionRotoZoom>, allow_raw_pointers())
-    .class_function("create", &TransitionRotoZoom::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionRotoZoom& _) -> std::string {return "TransitionRotoZoom";}))    
-    .allow_subclass<wrapper<TransitionRotoZoom>>("cc.TransitionRotoZoom._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionJumpZoom, base<TransitionScene>>("cc.TransitionJumpZoom")
-    .constructor(&cc_bindings_constructor<TransitionJumpZoom>, allow_raw_pointers())
-    .class_function("create", &TransitionJumpZoom::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionJumpZoom& _) -> std::string {return "TransitionJumpZoom";}))    
-    .allow_subclass<wrapper<TransitionJumpZoom>>("cc.TransitionJumpZoom._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionMoveInL, base<TransitionScene>>("cc.TransitionMoveInL")
-    .constructor(&cc_bindings_constructor<TransitionMoveInL>, allow_raw_pointers())
-    .function("action", &TransitionMoveInL::action, allow_raw_pointers())
-    .function("easeActionWithAction", &TransitionMoveInL::easeActionWithAction, allow_raw_pointers())
-    .class_function("create", &TransitionMoveInL::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionMoveInL& _) -> std::string {return "TransitionMoveInL";}))    
-    .allow_subclass<wrapper<TransitionMoveInL>>("cc.TransitionMoveInL._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionMoveInR, base<TransitionMoveInL>>("cc.TransitionMoveInR")
-    .constructor(&cc_bindings_constructor<TransitionMoveInR>, allow_raw_pointers())
-    .class_function("create", &TransitionMoveInR::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionMoveInR& _) -> std::string {return "TransitionMoveInR";}))    
-    .allow_subclass<wrapper<TransitionMoveInR>>("cc.TransitionMoveInR._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionMoveInT, base<TransitionMoveInL>>("cc.TransitionMoveInT")
-    .constructor(&cc_bindings_constructor<TransitionMoveInT>, allow_raw_pointers())
-    .class_function("create", &TransitionMoveInT::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionMoveInT& _) -> std::string {return "TransitionMoveInT";}))    
-    .allow_subclass<wrapper<TransitionMoveInT>>("cc.TransitionMoveInT._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionMoveInB, base<TransitionMoveInL>>("cc.TransitionMoveInB")
-    .constructor(&cc_bindings_constructor<TransitionMoveInB>, allow_raw_pointers())
-    .class_function("create", &TransitionMoveInB::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionMoveInB& _) -> std::string {return "TransitionMoveInB";}))    
-    .allow_subclass<wrapper<TransitionMoveInB>>("cc.TransitionMoveInB._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSlideInL, base<TransitionScene>>("cc.TransitionSlideInL")
-    .constructor(&cc_bindings_constructor<TransitionSlideInL>, allow_raw_pointers())
-    .function("action", &TransitionSlideInL::action, allow_raw_pointers())
-    .function("easeActionWithAction", &TransitionSlideInL::easeActionWithAction, allow_raw_pointers())
-    .class_function("create", &TransitionSlideInL::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSlideInL& _) -> std::string {return "TransitionSlideInL";}))    
-    .allow_subclass<wrapper<TransitionSlideInL>>("cc.TransitionSlideInL._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSlideInR, base<TransitionSlideInL>>("cc.TransitionSlideInR")
-    .constructor(&cc_bindings_constructor<TransitionSlideInR>, allow_raw_pointers())
-    .class_function("create", &TransitionSlideInR::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSlideInR& _) -> std::string {return "TransitionSlideInR";}))    
-    .allow_subclass<wrapper<TransitionSlideInR>>("cc.TransitionSlideInR._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSlideInB, base<TransitionSlideInL>>("cc.TransitionSlideInB")
-    .constructor(&cc_bindings_constructor<TransitionSlideInB>, allow_raw_pointers())
-    .class_function("create", &TransitionSlideInB::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSlideInB& _) -> std::string {return "TransitionSlideInB";}))    
-    .allow_subclass<wrapper<TransitionSlideInB>>("cc.TransitionSlideInB._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSlideInT, base<TransitionSlideInL>>("cc.TransitionSlideInT")
-    .constructor(&cc_bindings_constructor<TransitionSlideInT>, allow_raw_pointers())
-    .class_function("create", &TransitionSlideInT::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSlideInT& _) -> std::string {return "TransitionSlideInT";}))    
-    .allow_subclass<wrapper<TransitionSlideInT>>("cc.TransitionSlideInT._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionShrinkGrow, base<TransitionScene>>("cc.TransitionShrinkGrow")
-    .constructor(&cc_bindings_constructor<TransitionShrinkGrow>, allow_raw_pointers())
-    .function("easeActionWithAction", &TransitionShrinkGrow::easeActionWithAction, allow_raw_pointers())
-    .class_function("create", &TransitionShrinkGrow::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionShrinkGrow& _) -> std::string {return "TransitionShrinkGrow";}))    
-    .allow_subclass<wrapper<TransitionShrinkGrow>>("cc.TransitionShrinkGrow._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFlipX, base<TransitionSceneOriented>>("cc.TransitionFlipX")
-    .constructor(&cc_bindings_constructor<TransitionFlipX>, allow_raw_pointers())
-    .class_function("create", select_overload<TransitionFlipX*(float, Scene*)>(&TransitionFlipX::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionFlipX::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFlipX& _) -> std::string {return "TransitionFlipX";}))    
-    .allow_subclass<wrapper<TransitionFlipX>>("cc.TransitionFlipX._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFlipY, base<TransitionSceneOriented>>("cc.TransitionFlipY")
-    .constructor(&cc_bindings_constructor<TransitionFlipY>, allow_raw_pointers())
-    .class_function("create", select_overload<TransitionFlipY*(float, Scene*)>(&TransitionFlipY::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionFlipY::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFlipY& _) -> std::string {return "TransitionFlipY";}))    
-    .allow_subclass<wrapper<TransitionFlipY>>("cc.TransitionFlipY._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFlipAngular, base<TransitionSceneOriented>>("cc.TransitionFlipAngular")
-    .constructor(&cc_bindings_constructor<TransitionFlipAngular>, allow_raw_pointers())
-    .class_function("create", select_overload<TransitionFlipAngular*(float, Scene*)>(&TransitionFlipAngular::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionFlipAngular::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFlipAngular& _) -> std::string {return "TransitionFlipAngular";}))    
-    .allow_subclass<wrapper<TransitionFlipAngular>>("cc.TransitionFlipAngular._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionZoomFlipX, base<TransitionSceneOriented>>("cc.TransitionZoomFlipX")
-    .constructor(&cc_bindings_constructor<TransitionZoomFlipX>, allow_raw_pointers())
-    .class_function("create", select_overload<TransitionZoomFlipX*(float, Scene*)>(&TransitionZoomFlipX::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionZoomFlipX::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionZoomFlipX& _) -> std::string {return "TransitionZoomFlipX";}))    
-    .allow_subclass<wrapper<TransitionZoomFlipX>>("cc.TransitionZoomFlipX._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionZoomFlipY, base<TransitionSceneOriented>>("cc.TransitionZoomFlipY")
-    .constructor(&cc_bindings_constructor<TransitionZoomFlipY>, allow_raw_pointers())
-    .class_function("create", select_overload<TransitionZoomFlipY*(float, Scene*)>(&TransitionZoomFlipY::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionZoomFlipY::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionZoomFlipY& _) -> std::string {return "TransitionZoomFlipY";}))    
-    .allow_subclass<wrapper<TransitionZoomFlipY>>("cc.TransitionZoomFlipY._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionZoomFlipAngular, base<TransitionSceneOriented>>("cc.TransitionZoomFlipAngular")
-    .constructor(&cc_bindings_constructor<TransitionZoomFlipAngular>, allow_raw_pointers())
-    .class_function("create", select_overload<TransitionZoomFlipAngular*(float, Scene*)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionZoomFlipAngular::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionZoomFlipAngular& _) -> std::string {return "TransitionZoomFlipAngular";}))    
-    .allow_subclass<wrapper<TransitionZoomFlipAngular>>("cc.TransitionZoomFlipAngular._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFade, base<TransitionScene>>("cc.TransitionFade")
-    .constructor(&cc_bindings_constructor<TransitionFade>, allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, Scene*)>(&TransitionFade::initWithDuration), allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, Scene*, const Color3B&)>(&TransitionFade::initWithDuration), allow_raw_pointers())
-    .class_function("create", select_overload<TransitionFade*(float, Scene*)>(&TransitionFade::create), allow_raw_pointers())
-    .class_function("create", select_overload<TransitionFade*(float, Scene*, const Color3B&)>(&TransitionFade::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFade& _) -> std::string {return "TransitionFade";}))    
-    .allow_subclass<wrapper<TransitionFade>>("cc.TransitionFade._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionCrossFade, base<TransitionScene>>("cc.TransitionCrossFade")
-    .constructor(&cc_bindings_constructor<TransitionCrossFade>, allow_raw_pointers())
-    .class_function("create", &TransitionCrossFade::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionCrossFade& _) -> std::string {return "TransitionCrossFade";}))    
-    .allow_subclass<wrapper<TransitionCrossFade>>("cc.TransitionCrossFade._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionTurnOffTiles, base<TransitionScene>>("cc.TransitionTurnOffTiles")
-    .constructor(&cc_bindings_constructor<TransitionTurnOffTiles>, allow_raw_pointers())
-    .function("easeActionWithAction", &TransitionTurnOffTiles::easeActionWithAction, allow_raw_pointers())
-    .class_function("create", &TransitionTurnOffTiles::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionTurnOffTiles& _) -> std::string {return "TransitionTurnOffTiles";}))    
-    .allow_subclass<wrapper<TransitionTurnOffTiles>>("cc.TransitionTurnOffTiles._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSplitCols, base<TransitionScene>>("cc.TransitionSplitCols")
-    .constructor(&cc_bindings_constructor<TransitionSplitCols>, allow_raw_pointers())
-    .function("action", &TransitionSplitCols::action, allow_raw_pointers())
-    .function("easeActionWithAction", &TransitionSplitCols::easeActionWithAction, allow_raw_pointers())
-    .class_function("create", &TransitionSplitCols::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSplitCols& _) -> std::string {return "TransitionSplitCols";}))    
-    .allow_subclass<wrapper<TransitionSplitCols>>("cc.TransitionSplitCols._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionSplitRows, base<TransitionSplitCols>>("cc.TransitionSplitRows")
-    .constructor(&cc_bindings_constructor<TransitionSplitRows>, allow_raw_pointers())
-    .class_function("create", &TransitionSplitRows::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionSplitRows& _) -> std::string {return "TransitionSplitRows";}))    
-    .allow_subclass<wrapper<TransitionSplitRows>>("cc.TransitionSplitRows._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFadeTR, base<TransitionScene>>("cc.TransitionFadeTR")
-    .constructor(&cc_bindings_constructor<TransitionFadeTR>, allow_raw_pointers())
-    .function("easeActionWithAction", &TransitionFadeTR::easeActionWithAction, allow_raw_pointers())
-    .function("actionWithSize", &TransitionFadeTR::actionWithSize, allow_raw_pointers())
-    .class_function("create", &TransitionFadeTR::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFadeTR& _) -> std::string {return "TransitionFadeTR";}))    
-    .allow_subclass<wrapper<TransitionFadeTR>>("cc.TransitionFadeTR._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFadeBL, base<TransitionFadeTR>>("cc.TransitionFadeBL")
-    .constructor(&cc_bindings_constructor<TransitionFadeBL>, allow_raw_pointers())
-    .class_function("create", &TransitionFadeBL::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFadeBL& _) -> std::string {return "TransitionFadeBL";}))    
-    .allow_subclass<wrapper<TransitionFadeBL>>("cc.TransitionFadeBL._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFadeUp, base<TransitionFadeTR>>("cc.TransitionFadeUp")
-    .constructor(&cc_bindings_constructor<TransitionFadeUp>, allow_raw_pointers())
-    .class_function("create", &TransitionFadeUp::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFadeUp& _) -> std::string {return "TransitionFadeUp";}))    
-    .allow_subclass<wrapper<TransitionFadeUp>>("cc.TransitionFadeUp._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionFadeDown, base<TransitionFadeTR>>("cc.TransitionFadeDown")
-    .constructor(&cc_bindings_constructor<TransitionFadeDown>, allow_raw_pointers())
-    .class_function("create", &TransitionFadeDown::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionFadeDown& _) -> std::string {return "TransitionFadeDown";}))    
-    .allow_subclass<wrapper<TransitionFadeDown>>("cc.TransitionFadeDown._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionPageTurn, base<TransitionScene>>("cc.TransitionPageTurn")
-    .constructor(&cc_bindings_constructor<TransitionPageTurn>, allow_raw_pointers())
-    .function("actionWithSize", &TransitionPageTurn::actionWithSize, allow_raw_pointers())
-    .function("initWithDuration", &TransitionPageTurn::initWithDuration, allow_raw_pointers())
-    .class_function("create", &TransitionPageTurn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionPageTurn& _) -> std::string {return "TransitionPageTurn";}))    
-    .allow_subclass<wrapper<TransitionPageTurn>>("cc.TransitionPageTurn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgress, base<TransitionScene>>("cc.TransitionProgress")
-    .constructor(&cc_bindings_constructor<TransitionProgress>, allow_raw_pointers())
-    .class_function("create", &TransitionProgress::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgress& _) -> std::string {return "TransitionProgress";}))    
-    .allow_subclass<wrapper<TransitionProgress>>("cc.TransitionProgress._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgressRadialCCW, base<TransitionProgress>>("cc.TransitionProgressRadialCCW")
-    .constructor(&cc_bindings_constructor<TransitionProgressRadialCCW>, allow_raw_pointers())
-    .class_function("create", &TransitionProgressRadialCCW::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgressRadialCCW& _) -> std::string {return "TransitionProgressRadialCCW";}))    
-    .allow_subclass<wrapper<TransitionProgressRadialCCW>>("cc.TransitionProgressRadialCCW._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgressRadialCW, base<TransitionProgress>>("cc.TransitionProgressRadialCW")
-    .constructor(&cc_bindings_constructor<TransitionProgressRadialCW>, allow_raw_pointers())
-    .class_function("create", &TransitionProgressRadialCW::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgressRadialCW& _) -> std::string {return "TransitionProgressRadialCW";}))    
-    .allow_subclass<wrapper<TransitionProgressRadialCW>>("cc.TransitionProgressRadialCW._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgressHorizontal, base<TransitionProgress>>("cc.TransitionProgressHorizontal")
-    .constructor(&cc_bindings_constructor<TransitionProgressHorizontal>, allow_raw_pointers())
-    .class_function("create", &TransitionProgressHorizontal::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgressHorizontal& _) -> std::string {return "TransitionProgressHorizontal";}))    
-    .allow_subclass<wrapper<TransitionProgressHorizontal>>("cc.TransitionProgressHorizontal._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgressVertical, base<TransitionProgress>>("cc.TransitionProgressVertical")
-    .constructor(&cc_bindings_constructor<TransitionProgressVertical>, allow_raw_pointers())
-    .class_function("create", &TransitionProgressVertical::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgressVertical& _) -> std::string {return "TransitionProgressVertical";}))    
-    .allow_subclass<wrapper<TransitionProgressVertical>>("cc.TransitionProgressVertical._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgressInOut, base<TransitionProgress>>("cc.TransitionProgressInOut")
-    .constructor(&cc_bindings_constructor<TransitionProgressInOut>, allow_raw_pointers())
-    .class_function("create", &TransitionProgressInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgressInOut& _) -> std::string {return "TransitionProgressInOut";}))    
-    .allow_subclass<wrapper<TransitionProgressInOut>>("cc.TransitionProgressInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TransitionProgressOutIn, base<TransitionProgress>>("cc.TransitionProgressOutIn")
-    .constructor(&cc_bindings_constructor<TransitionProgressOutIn>, allow_raw_pointers())
-    .class_function("create", &TransitionProgressOutIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TransitionProgressOutIn& _) -> std::string {return "TransitionProgressOutIn";}))    
-    .allow_subclass<wrapper<TransitionProgressOutIn>>("cc.TransitionProgressOutIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
   class_<Camera, base<Node>>("cc.Camera")
     .constructor(&cc_bindings_constructor<Camera>, allow_raw_pointers())
     .function("restore", &Camera::restore)
@@ -4913,6 +4532,389 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .class_function("create", &TileMapAtlas::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TileMapAtlas& _) -> std::string {return "TileMapAtlas";}))    
     .allow_subclass<wrapper<TileMapAtlas>>("cc.TileMapAtlas._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+}
+
+COCOS_BINDINGS(jsb_cocos2dx_transition) {
+
+  class_<TransitionEaseScene>("cc.TransitionEaseScene")
+    .function("easeActionWithAction", &TransitionEaseScene::easeActionWithAction, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionEaseScene& _) -> std::string {return "TransitionEaseScene";}))    
+    ;
+
+
+  class_<TransitionScene, base<Scene>>("cc.TransitionScene")
+    .constructor(&cc_bindings_constructor<TransitionScene>, allow_raw_pointers())
+    .function("getInScene", &TransitionScene::getInScene, allow_raw_pointers())
+    .function("finish", &TransitionScene::finish)
+    .function("initWithDuration", &TransitionScene::initWithDuration, allow_raw_pointers())
+    .function("getDuration", &TransitionScene::getDuration)
+    .function("hideOutShowIn", &TransitionScene::hideOutShowIn)
+    .class_function("create", &TransitionScene::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionScene& _) -> std::string {return "TransitionScene";}))    
+    .allow_subclass<wrapper<TransitionScene>>("cc.TransitionScene._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSceneOriented, base<TransitionScene>>("cc.TransitionSceneOriented")
+    .constructor(&cc_bindings_constructor<TransitionSceneOriented>, allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+        [](TransitionSceneOriented& this_, float arg0, Scene* arg1, int32_t arg2){
+        return this_.initWithDuration(arg0, arg1, (TransitionScene::Orientation)arg2);
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](float arg0, Scene* arg1, int32_t arg2){
+        return TransitionSceneOriented::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSceneOriented& _) -> std::string {return "TransitionSceneOriented";}))    
+    .allow_subclass<wrapper<TransitionSceneOriented>>("cc.TransitionSceneOriented._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionRotoZoom, base<TransitionScene>>("cc.TransitionRotoZoom")
+    .constructor(&cc_bindings_constructor<TransitionRotoZoom>, allow_raw_pointers())
+    .class_function("create", &TransitionRotoZoom::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionRotoZoom& _) -> std::string {return "TransitionRotoZoom";}))    
+    .allow_subclass<wrapper<TransitionRotoZoom>>("cc.TransitionRotoZoom._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionJumpZoom, base<TransitionScene>>("cc.TransitionJumpZoom")
+    .constructor(&cc_bindings_constructor<TransitionJumpZoom>, allow_raw_pointers())
+    .class_function("create", &TransitionJumpZoom::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionJumpZoom& _) -> std::string {return "TransitionJumpZoom";}))    
+    .allow_subclass<wrapper<TransitionJumpZoom>>("cc.TransitionJumpZoom._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionMoveInL, base<TransitionScene>>("cc.TransitionMoveInL")
+    .constructor(&cc_bindings_constructor<TransitionMoveInL>, allow_raw_pointers())
+    .function("action", &TransitionMoveInL::action, allow_raw_pointers())
+    .function("easeActionWithAction", &TransitionMoveInL::easeActionWithAction, allow_raw_pointers())
+    .class_function("create", &TransitionMoveInL::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionMoveInL& _) -> std::string {return "TransitionMoveInL";}))    
+    .allow_subclass<wrapper<TransitionMoveInL>>("cc.TransitionMoveInL._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionMoveInR, base<TransitionMoveInL>>("cc.TransitionMoveInR")
+    .constructor(&cc_bindings_constructor<TransitionMoveInR>, allow_raw_pointers())
+    .class_function("create", &TransitionMoveInR::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionMoveInR& _) -> std::string {return "TransitionMoveInR";}))    
+    .allow_subclass<wrapper<TransitionMoveInR>>("cc.TransitionMoveInR._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionMoveInT, base<TransitionMoveInL>>("cc.TransitionMoveInT")
+    .constructor(&cc_bindings_constructor<TransitionMoveInT>, allow_raw_pointers())
+    .class_function("create", &TransitionMoveInT::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionMoveInT& _) -> std::string {return "TransitionMoveInT";}))    
+    .allow_subclass<wrapper<TransitionMoveInT>>("cc.TransitionMoveInT._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionMoveInB, base<TransitionMoveInL>>("cc.TransitionMoveInB")
+    .constructor(&cc_bindings_constructor<TransitionMoveInB>, allow_raw_pointers())
+    .class_function("create", &TransitionMoveInB::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionMoveInB& _) -> std::string {return "TransitionMoveInB";}))    
+    .allow_subclass<wrapper<TransitionMoveInB>>("cc.TransitionMoveInB._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSlideInL, base<TransitionScene>>("cc.TransitionSlideInL")
+    .constructor(&cc_bindings_constructor<TransitionSlideInL>, allow_raw_pointers())
+    .function("action", &TransitionSlideInL::action, allow_raw_pointers())
+    .function("easeActionWithAction", &TransitionSlideInL::easeActionWithAction, allow_raw_pointers())
+    .class_function("create", &TransitionSlideInL::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSlideInL& _) -> std::string {return "TransitionSlideInL";}))    
+    .allow_subclass<wrapper<TransitionSlideInL>>("cc.TransitionSlideInL._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSlideInR, base<TransitionSlideInL>>("cc.TransitionSlideInR")
+    .constructor(&cc_bindings_constructor<TransitionSlideInR>, allow_raw_pointers())
+    .class_function("create", &TransitionSlideInR::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSlideInR& _) -> std::string {return "TransitionSlideInR";}))    
+    .allow_subclass<wrapper<TransitionSlideInR>>("cc.TransitionSlideInR._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSlideInB, base<TransitionSlideInL>>("cc.TransitionSlideInB")
+    .constructor(&cc_bindings_constructor<TransitionSlideInB>, allow_raw_pointers())
+    .class_function("create", &TransitionSlideInB::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSlideInB& _) -> std::string {return "TransitionSlideInB";}))    
+    .allow_subclass<wrapper<TransitionSlideInB>>("cc.TransitionSlideInB._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSlideInT, base<TransitionSlideInL>>("cc.TransitionSlideInT")
+    .constructor(&cc_bindings_constructor<TransitionSlideInT>, allow_raw_pointers())
+    .class_function("create", &TransitionSlideInT::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSlideInT& _) -> std::string {return "TransitionSlideInT";}))    
+    .allow_subclass<wrapper<TransitionSlideInT>>("cc.TransitionSlideInT._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionShrinkGrow, base<TransitionScene>>("cc.TransitionShrinkGrow")
+    .constructor(&cc_bindings_constructor<TransitionShrinkGrow>, allow_raw_pointers())
+    .function("easeActionWithAction", &TransitionShrinkGrow::easeActionWithAction, allow_raw_pointers())
+    .class_function("create", &TransitionShrinkGrow::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionShrinkGrow& _) -> std::string {return "TransitionShrinkGrow";}))    
+    .allow_subclass<wrapper<TransitionShrinkGrow>>("cc.TransitionShrinkGrow._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFlipX, base<TransitionSceneOriented>>("cc.TransitionFlipX")
+    .constructor(&cc_bindings_constructor<TransitionFlipX>, allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFlipX*(float, Scene*)>(&TransitionFlipX::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](float arg0, Scene* arg1, int32_t arg2){
+            return TransitionFlipX::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+        }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFlipX& _) -> std::string {return "TransitionFlipX";}))    
+    .allow_subclass<wrapper<TransitionFlipX>>("cc.TransitionFlipX._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFlipY, base<TransitionSceneOriented>>("cc.TransitionFlipY")
+    .constructor(&cc_bindings_constructor<TransitionFlipY>, allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFlipY*(float, Scene*)>(&TransitionFlipY::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](float arg0, Scene* arg1, int32_t arg2){
+            return TransitionFlipY::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+        }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFlipY& _) -> std::string {return "TransitionFlipY";}))    
+    .allow_subclass<wrapper<TransitionFlipY>>("cc.TransitionFlipY._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFlipAngular, base<TransitionSceneOriented>>("cc.TransitionFlipAngular")
+    .constructor(&cc_bindings_constructor<TransitionFlipAngular>, allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFlipAngular*(float, Scene*)>(&TransitionFlipAngular::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](float arg0, Scene* arg1, int32_t arg2){
+            return TransitionFlipAngular::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+        }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFlipAngular& _) -> std::string {return "TransitionFlipAngular";}))    
+    .allow_subclass<wrapper<TransitionFlipAngular>>("cc.TransitionFlipAngular._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionZoomFlipX, base<TransitionSceneOriented>>("cc.TransitionZoomFlipX")
+    .constructor(&cc_bindings_constructor<TransitionZoomFlipX>, allow_raw_pointers())
+    .class_function("create", select_overload<TransitionZoomFlipX*(float, Scene*)>(&TransitionZoomFlipX::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](float arg0, Scene* arg1, int32_t arg2){
+            return TransitionZoomFlipX::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+        }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionZoomFlipX& _) -> std::string {return "TransitionZoomFlipX";}))    
+    .allow_subclass<wrapper<TransitionZoomFlipX>>("cc.TransitionZoomFlipX._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionZoomFlipY, base<TransitionSceneOriented>>("cc.TransitionZoomFlipY")
+    .constructor(&cc_bindings_constructor<TransitionZoomFlipY>, allow_raw_pointers())
+    .class_function("create", select_overload<TransitionZoomFlipY*(float, Scene*)>(&TransitionZoomFlipY::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](float arg0, Scene* arg1, int32_t arg2){
+            return TransitionZoomFlipY::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+        }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionZoomFlipY& _) -> std::string {return "TransitionZoomFlipY";}))    
+    .allow_subclass<wrapper<TransitionZoomFlipY>>("cc.TransitionZoomFlipY._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionZoomFlipAngular, base<TransitionSceneOriented>>("cc.TransitionZoomFlipAngular")
+    .constructor(&cc_bindings_constructor<TransitionZoomFlipAngular>, allow_raw_pointers())
+    .class_function("create", select_overload<TransitionZoomFlipAngular*(float, Scene*)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](float arg0, Scene* arg1, int32_t arg2){
+            return TransitionZoomFlipAngular::create(arg0, arg1, (TransitionScene::Orientation)arg2);
+        }), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionZoomFlipAngular& _) -> std::string {return "TransitionZoomFlipAngular";}))    
+    .allow_subclass<wrapper<TransitionZoomFlipAngular>>("cc.TransitionZoomFlipAngular._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFade, base<TransitionScene>>("cc.TransitionFade")
+    .constructor(&cc_bindings_constructor<TransitionFade>, allow_raw_pointers())
+    .function("initWithDuration", select_overload<bool(float, Scene*)>(&TransitionFade::initWithDuration), allow_raw_pointers())
+    .function("initWithDuration", select_overload<bool(float, Scene*, const Color3B&)>(&TransitionFade::initWithDuration), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFade*(float, Scene*)>(&TransitionFade::create), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFade*(float, Scene*, const Color3B&)>(&TransitionFade::create), allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFade& _) -> std::string {return "TransitionFade";}))    
+    .allow_subclass<wrapper<TransitionFade>>("cc.TransitionFade._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionCrossFade, base<TransitionScene>>("cc.TransitionCrossFade")
+    .constructor(&cc_bindings_constructor<TransitionCrossFade>, allow_raw_pointers())
+    .class_function("create", &TransitionCrossFade::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionCrossFade& _) -> std::string {return "TransitionCrossFade";}))    
+    .allow_subclass<wrapper<TransitionCrossFade>>("cc.TransitionCrossFade._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionTurnOffTiles, base<TransitionScene>>("cc.TransitionTurnOffTiles")
+    .constructor(&cc_bindings_constructor<TransitionTurnOffTiles>, allow_raw_pointers())
+    .function("easeActionWithAction", &TransitionTurnOffTiles::easeActionWithAction, allow_raw_pointers())
+    .class_function("create", &TransitionTurnOffTiles::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionTurnOffTiles& _) -> std::string {return "TransitionTurnOffTiles";}))    
+    .allow_subclass<wrapper<TransitionTurnOffTiles>>("cc.TransitionTurnOffTiles._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSplitCols, base<TransitionScene>>("cc.TransitionSplitCols")
+    .constructor(&cc_bindings_constructor<TransitionSplitCols>, allow_raw_pointers())
+    .function("action", &TransitionSplitCols::action, allow_raw_pointers())
+    .function("easeActionWithAction", &TransitionSplitCols::easeActionWithAction, allow_raw_pointers())
+    .class_function("create", &TransitionSplitCols::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSplitCols& _) -> std::string {return "TransitionSplitCols";}))    
+    .allow_subclass<wrapper<TransitionSplitCols>>("cc.TransitionSplitCols._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionSplitRows, base<TransitionSplitCols>>("cc.TransitionSplitRows")
+    .constructor(&cc_bindings_constructor<TransitionSplitRows>, allow_raw_pointers())
+    .class_function("create", &TransitionSplitRows::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionSplitRows& _) -> std::string {return "TransitionSplitRows";}))    
+    .allow_subclass<wrapper<TransitionSplitRows>>("cc.TransitionSplitRows._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFadeTR, base<TransitionScene>>("cc.TransitionFadeTR")
+    .constructor(&cc_bindings_constructor<TransitionFadeTR>, allow_raw_pointers())
+    .function("easeActionWithAction", &TransitionFadeTR::easeActionWithAction, allow_raw_pointers())
+    .function("actionWithSize", &TransitionFadeTR::actionWithSize, allow_raw_pointers())
+    .class_function("create", &TransitionFadeTR::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFadeTR& _) -> std::string {return "TransitionFadeTR";}))    
+    .allow_subclass<wrapper<TransitionFadeTR>>("cc.TransitionFadeTR._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFadeBL, base<TransitionFadeTR>>("cc.TransitionFadeBL")
+    .constructor(&cc_bindings_constructor<TransitionFadeBL>, allow_raw_pointers())
+    .class_function("create", &TransitionFadeBL::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFadeBL& _) -> std::string {return "TransitionFadeBL";}))    
+    .allow_subclass<wrapper<TransitionFadeBL>>("cc.TransitionFadeBL._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFadeUp, base<TransitionFadeTR>>("cc.TransitionFadeUp")
+    .constructor(&cc_bindings_constructor<TransitionFadeUp>, allow_raw_pointers())
+    .class_function("create", &TransitionFadeUp::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFadeUp& _) -> std::string {return "TransitionFadeUp";}))    
+    .allow_subclass<wrapper<TransitionFadeUp>>("cc.TransitionFadeUp._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionFadeDown, base<TransitionFadeTR>>("cc.TransitionFadeDown")
+    .constructor(&cc_bindings_constructor<TransitionFadeDown>, allow_raw_pointers())
+    .class_function("create", &TransitionFadeDown::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionFadeDown& _) -> std::string {return "TransitionFadeDown";}))    
+    .allow_subclass<wrapper<TransitionFadeDown>>("cc.TransitionFadeDown._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionPageTurn, base<TransitionScene>>("cc.TransitionPageTurn")
+    .constructor(&cc_bindings_constructor<TransitionPageTurn>, allow_raw_pointers())
+    .function("actionWithSize", &TransitionPageTurn::actionWithSize, allow_raw_pointers())
+    .function("initWithDuration", &TransitionPageTurn::initWithDuration, allow_raw_pointers())
+    .class_function("create", &TransitionPageTurn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionPageTurn& _) -> std::string {return "TransitionPageTurn";}))    
+    .allow_subclass<wrapper<TransitionPageTurn>>("cc.TransitionPageTurn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgress, base<TransitionScene>>("cc.TransitionProgress")
+    .constructor(&cc_bindings_constructor<TransitionProgress>, allow_raw_pointers())
+    .class_function("create", &TransitionProgress::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgress& _) -> std::string {return "TransitionProgress";}))    
+    .allow_subclass<wrapper<TransitionProgress>>("cc.TransitionProgress._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgressRadialCCW, base<TransitionProgress>>("cc.TransitionProgressRadialCCW")
+    .constructor(&cc_bindings_constructor<TransitionProgressRadialCCW>, allow_raw_pointers())
+    .class_function("create", &TransitionProgressRadialCCW::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgressRadialCCW& _) -> std::string {return "TransitionProgressRadialCCW";}))    
+    .allow_subclass<wrapper<TransitionProgressRadialCCW>>("cc.TransitionProgressRadialCCW._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgressRadialCW, base<TransitionProgress>>("cc.TransitionProgressRadialCW")
+    .constructor(&cc_bindings_constructor<TransitionProgressRadialCW>, allow_raw_pointers())
+    .class_function("create", &TransitionProgressRadialCW::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgressRadialCW& _) -> std::string {return "TransitionProgressRadialCW";}))    
+    .allow_subclass<wrapper<TransitionProgressRadialCW>>("cc.TransitionProgressRadialCW._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgressHorizontal, base<TransitionProgress>>("cc.TransitionProgressHorizontal")
+    .constructor(&cc_bindings_constructor<TransitionProgressHorizontal>, allow_raw_pointers())
+    .class_function("create", &TransitionProgressHorizontal::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgressHorizontal& _) -> std::string {return "TransitionProgressHorizontal";}))    
+    .allow_subclass<wrapper<TransitionProgressHorizontal>>("cc.TransitionProgressHorizontal._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgressVertical, base<TransitionProgress>>("cc.TransitionProgressVertical")
+    .constructor(&cc_bindings_constructor<TransitionProgressVertical>, allow_raw_pointers())
+    .class_function("create", &TransitionProgressVertical::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgressVertical& _) -> std::string {return "TransitionProgressVertical";}))    
+    .allow_subclass<wrapper<TransitionProgressVertical>>("cc.TransitionProgressVertical._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgressInOut, base<TransitionProgress>>("cc.TransitionProgressInOut")
+    .constructor(&cc_bindings_constructor<TransitionProgressInOut>, allow_raw_pointers())
+    .class_function("create", &TransitionProgressInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgressInOut& _) -> std::string {return "TransitionProgressInOut";}))    
+    .allow_subclass<wrapper<TransitionProgressInOut>>("cc.TransitionProgressInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+
+  class_<TransitionProgressOutIn, base<TransitionProgress>>("cc.TransitionProgressOutIn")
+    .constructor(&cc_bindings_constructor<TransitionProgressOutIn>, allow_raw_pointers())
+    .class_function("create", &TransitionProgressOutIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TransitionProgressOutIn& _) -> std::string {return "TransitionProgressOutIn";}))    
+    .allow_subclass<wrapper<TransitionProgressOutIn>>("cc.TransitionProgressOutIn._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 }
