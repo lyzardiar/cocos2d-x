@@ -35,35 +35,23 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getMaxT", &Texture2D::getMaxT)
     .function("setAlphaTexture", &Texture2D::setAlphaTexture, allow_raw_pointers())
     .function("getStringForFormat", &Texture2D::getStringForFormat, allow_raw_pointers())
-    .function("initWithImage", optional_override(
-        [](Texture2D& this_, Image* arg0, int32_t arg1){
-            return this_.initWithImage(arg0, (Texture2D::PixelFormat)arg1);
-        }), allow_raw_pointers())
+    .function("initWithImage", select_overload<bool(cocos2d::Image*, cocos2d::Texture2D::PixelFormat)>(&Texture2D::initWithImage), allow_raw_pointers())
     .function("initWithImage", select_overload<bool(Image*)>(&Texture2D::initWithImage), allow_raw_pointers())
     .function("setShaderProgram", &Texture2D::setGLProgram, allow_raw_pointers())
     .function("getMaxS", &Texture2D::getMaxS)
     .function("hasPremultipliedAlpha", &Texture2D::hasPremultipliedAlpha)
     .function("getPixelsHigh", &Texture2D::getPixelsHigh)
+    .function("initWithMipmaps", &Texture2D::initWithMipmaps, allow_raw_pointers())
     .function("initWithMipmaps", optional_override(
-        [](Texture2D& this_, _MipmapInfo* arg0, int arg1, int32_t arg2, int arg3, int arg4, bool arg5){
-        return this_.initWithMipmaps(arg0, arg1, (Texture2D::PixelFormat)arg2, arg3, arg4, arg5);
-      }), allow_raw_pointers())
-    .function("initWithMipmaps", optional_override(
-        [](Texture2D& this_, _MipmapInfo* arg0, int arg1, int32_t arg2, int arg3, int arg4){
-        return this_.initWithMipmaps(arg0, arg1, (Texture2D::PixelFormat)arg2, arg3, arg4);
+        [](Texture2D& this_, cocos2d::_MipmapInfo* arg0, int arg1, cocos2d::Texture2D::PixelFormat arg2, int arg3, int arg4){
+        return this_.initWithMipmaps(arg0, arg1, arg2, arg3, arg4);
       }), allow_raw_pointers())
     .function("getAlphaTextureName", &Texture2D::getAlphaTextureName)
-    .function("getBitsPerPixelForFormat", optional_override(
-        [](Texture2D& this_, int32_t arg0){
-            return this_.getBitsPerPixelForFormat((Texture2D::PixelFormat)arg0);
-        }))
+    .function("getBitsPerPixelForFormat", select_overload<unsigned int(cocos2d::Texture2D::PixelFormat) const>(&Texture2D::getBitsPerPixelForFormat))
     .function("getBitsPerPixelForFormat", select_overload<unsigned int() const>(&Texture2D::getBitsPerPixelForFormat))
     .function("getName", &Texture2D::getName)
     .function("initWithString", select_overload<bool(const char*, const FontDefinition&)>(&Texture2D::initWithString), allow_raw_pointers())
-    .function("initWithString", optional_override(
-        [](Texture2D& this_, const char* arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5, bool arg6, int arg7){
-            return this_.initWithString(arg0, arg1, arg2, arg3, (TextHAlignment)arg4, (TextVAlignment)arg5, arg6, arg7);
-        }), allow_raw_pointers())
+    .function("initWithString", select_overload<bool(const char*, const std::string&, float, const cocos2d::Size&, cocos2d::TextHAlignment, cocos2d::TextVAlignment, bool, int)>(&Texture2D::initWithString), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
@@ -78,10 +66,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("generateMipmap", &Texture2D::generateMipmap)
     .function("getAlphaTexture", &Texture2D::getAlphaTexture, allow_raw_pointers())
     .function("getDescription", &Texture2D::getDescription)
-    .function("getPixelFormat", optional_override(
-        [](Texture2D& this_){
-        return (int32_t)this_.getPixelFormat();
-      }))
+    .function("getPixelFormat", &Texture2D::getPixelFormat)
     .function("getContentSizeInPixels", &Texture2D::getContentSizeInPixels)
     .function("releaseTexture", &Texture2D::releaseGLTexture)
     .function("getPixelsWide", &Texture2D::getPixelsWide)
@@ -94,14 +79,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("pixelsHeight", &Texture2D::getPixelsHigh)
     .property("maxS", &Texture2D::getMaxS, &Texture2D::setMaxS)
     .property("maxT", &Texture2D::getMaxT, &Texture2D::setMaxT)
-    .class_function("setDefaultAlphaPixelFormat", optional_override(
-      [](int32_t arg0){
-        return Texture2D::setDefaultAlphaPixelFormat((Texture2D::PixelFormat)arg0);
-      }))
-    .class_function("getDefaultAlphaPixelFormat", optional_override(
-      [](){
-        return (int32_t)Texture2D::getDefaultAlphaPixelFormat();
-      }))
+    .class_function("setDefaultAlphaPixelFormat", &Texture2D::setDefaultAlphaPixelFormat)
+    .class_function("getDefaultAlphaPixelFormat", &Texture2D::getDefaultAlphaPixelFormat)
     .property("_className",  optional_override([](const Texture2D& _) -> std::string {return "Texture2D";}))    
     ;
 
@@ -128,10 +107,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<Event>("cc.Event")
     .constructor(&cc_bindings_constructor<Event, Event::Type>, allow_raw_pointers())
     .function("isStopped", &Event::isStopped)
-    .function("getType", optional_override(
-        [](Event& this_){
-        return (int32_t)this_.getType();
-      }))
+    .function("getType", &Event::getType)
     .function("getCurrentTarget", &Event::getCurrentTarget, allow_raw_pointers())
     .function("stopPropagation", &Event::stopPropagation)
     .property("_className",  optional_override([](const Event& _) -> std::string {return "Event";}))    
@@ -140,14 +116,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EventTouch, base<Event>>("cc.EventTouch")
     .constructor(&cc_bindings_constructor<EventTouch>, allow_raw_pointers())
-    .function("getEventCode", optional_override(
-        [](EventTouch& this_){
-        return (int32_t)this_.getEventCode();
-      }))
-    .function("setEventCode", optional_override(
-        [](EventTouch& this_, int32_t arg0){
-        return this_.setEventCode((EventTouch::EventCode)arg0);
-      }))
+    .function("getEventCode", &EventTouch::getEventCode)
+    .function("setEventCode", &EventTouch::setEventCode)
     .property("_className",  optional_override([](const EventTouch& _) -> std::string {return "EventTouch";}))
     .allow_subclass<wrapper<EventTouch>>("cc.EventTouch._extend")    
     ;
@@ -476,14 +446,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setDefaultCursor", &GLView::setDefaultCursor)
     .function("windowShouldClose", &GLView::windowShouldClose)
-    .function("setDesignResolutionSize", optional_override(
-        [](GLView& this_, float arg0, float arg1, int32_t arg2){
-        return this_.setDesignResolutionSize(arg0, arg1, (ResolutionPolicy)arg2);
-      }))
-    .function("getResolutionPolicy", optional_override(
-        [](GLView& this_){
-        return (int32_t)this_.getResolutionPolicy();
-      }))
+    .function("setDesignResolutionSize", &GLView::setDesignResolutionSize)
+    .function("getResolutionPolicy", &GLView::getResolutionPolicy)
     .function("isRetinaDisplay", &GLView::isRetinaDisplay)
     .function("renderScene", &GLView::renderScene, allow_raw_pointers())
     .function("setVR", &GLView::setVR, allow_raw_pointers())
@@ -520,10 +484,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setActionManager", &Director::setActionManager, allow_raw_pointers())
     .function("setAlphaBlending", &Director::setAlphaBlending)
     .function("popToRootScene", &Director::popToRootScene)
-    .function("loadMatrix", optional_override(
-        [](Director& this_, int32_t arg0, const Mat4& arg1){
-        return this_.loadMatrix((MATRIX_STACK_TYPE)arg0, arg1);
-      }))
+    .function("loadMatrix", &Director::loadMatrix)
     .function("getNotificationNode", &Director::getNotificationNode, allow_raw_pointers())
     .function("getWinSize", &Director::getWinSize)
     .function("end", &Director::end)
@@ -537,18 +498,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getSecondsPerFrame", &Director::getSecondsPerFrame)
     .function("resetMatrixStack", &Director::resetMatrixStack)
     .function("convertToUI", &Director::convertToUI)
-    .function("pushMatrix", optional_override(
-        [](Director& this_, int32_t arg0){
-        return this_.pushMatrix((MATRIX_STACK_TYPE)arg0);
-      }))
+    .function("pushMatrix", &Director::pushMatrix)
     .function("setDefaultValues", &Director::setDefaultValues)
     .function("init", &Director::init)
     .function("setScheduler", &Director::setScheduler, allow_raw_pointers())
     .function("multiplyProjectionMatrix", &Director::multiplyProjectionMatrix)
-    .function("getMatrix", optional_override(
-        [](Director& this_, int32_t arg0){
-        return this_.getMatrix((MATRIX_STACK_TYPE)arg0);
-      }))
+    .function("getMatrix", &Director::getMatrix)
     .function("isValid", &Director::isValid)
     .function("startAnimation", &Director::startAnimation)
     .function("getOpenGLView", &Director::getOpenGLView, allow_raw_pointers())
@@ -568,25 +523,13 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("drawScene", &Director::drawScene)
     .function("restart", &Director::restart)
     .function("popScene", &Director::popScene)
-    .function("loadIdentityMatrix", optional_override(
-        [](Director& this_, int32_t arg0){
-        return this_.loadIdentityMatrix((MATRIX_STACK_TYPE)arg0);
-      }))
+    .function("loadIdentityMatrix", &Director::loadIdentityMatrix)
     .function("isDisplayStats", &Director::isDisplayStats)
-    .function("setProjection", optional_override(
-        [](Director& this_, int32_t arg0){
-        return this_.setProjection((Director::Projection)arg0);
-      }))
-    .function("multiplyMatrix", optional_override(
-        [](Director& this_, int32_t arg0, const Mat4& arg1){
-        return this_.multiplyMatrix((MATRIX_STACK_TYPE)arg0, arg1);
-      }))
+    .function("setProjection", &Director::setProjection)
+    .function("multiplyMatrix", &Director::multiplyMatrix)
     .function("getZEye", &Director::getZEye)
     .function("setNextDeltaTimeZero", &Director::setNextDeltaTimeZero)
-    .function("popMatrix", optional_override(
-        [](Director& this_, int32_t arg0){
-        return this_.popMatrix((MATRIX_STACK_TYPE)arg0);
-      }))
+    .function("popMatrix", &Director::popMatrix)
     .function("getVisibleSize", &Director::getVisibleSize)
     .function("loadProjectionMatrix", &Director::loadProjectionMatrix)
     .function("initProjectionMatrixStack", &Director::initProjectionMatrixStack)
@@ -619,10 +562,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<AsyncTaskPool>("cc.AsyncTaskPool")
-    .function("stopTasks", optional_override(
-        [](AsyncTaskPool& this_, int32_t arg0){
-        return this_.stopTasks((AsyncTaskPool::TaskType)arg0);
-      }))
+    .function("stopTasks", &AsyncTaskPool::stopTasks)
     .class_function("destroyInstance", &AsyncTaskPool::destroyInstance)
     .class_function("getInstance", &AsyncTaskPool::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const AsyncTaskPool& _) -> std::string {return "AsyncTaskPool";}))    
@@ -715,16 +655,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithImageFile", &Image::initWithImageFile)
     .function("getWidth", &Image::getWidth)
     .function("getBitPerPixel", &Image::getBitPerPixel)
-    .function("getFileType", optional_override(
-        [](Image& this_){
-        return (int32_t)this_.getFileType();
-      }))
+    .function("getFileType", &Image::getFileType)
     .function("getFilePath", &Image::getFilePath)
     .function("getNumberOfMipmaps", &Image::getNumberOfMipmaps)
-    .function("getRenderFormat", optional_override(
-        [](Image& this_){
-        return (int32_t)this_.getRenderFormat();
-      }))
+    .function("getRenderFormat", &Image::getRenderFormat)
     .function("getData", &Image::getData, allow_raw_pointers())
     .function("getMipmaps", &Image::getMipmaps, allow_raw_pointers())
     .function("initWithRawData", &Image::initWithRawData, allow_raw_pointers())
@@ -1201,10 +1135,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("supportsATITC", &Configuration::supportsATITC)
     .function("supportsNPOT", &Configuration::supportsNPOT)
     .function("init", &Configuration::init)
-    .function("getAnimate3DQuality", optional_override(
-        [](Configuration& this_){
-        return (int32_t)this_.getAnimate3DQuality();
-      }))
+    .function("getAnimate3DQuality", &Configuration::getAnimate3DQuality)
     .function("getMaxSupportPointLightInShader", &Configuration::getMaxSupportPointLightInShader)
     .function("getMaxTextureSize", &Configuration::getMaxTextureSize)
     .function("setValue", &Configuration::setValue)
@@ -1272,13 +1203,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }), allow_raw_pointers())
     .function("getColor", select_overload<bool(const char*, Vec4*) const>(&Properties::getColor), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .function("getType", optional_override(
-        [](Properties& this_, const char* arg0){
-        return (int32_t)this_.getType(arg0);
-      }), allow_raw_pointers())
+    .function("getType", &Properties::getType, allow_raw_pointers())
     .function("getType", optional_override(
         [](Properties& this_){
-        return (int32_t)this_.getType();
+        return this_.getType();
       }))
     .function("getNextNamespace", &Properties::getNextNamespace, allow_raw_pointers())
     .function("getInt", &Properties::getInt, allow_raw_pointers())
@@ -1401,10 +1329,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("addEventListenerWithFixedPriority", &EventDispatcher::addEventListenerWithFixedPriority, allow_raw_pointers())
     .function("removeListeners", select_overload<void(Node*, bool)>(&EventDispatcher::removeEventListenersForTarget), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .function("removeListeners", optional_override(
-        [](EventDispatcher& this_, int32_t arg0){
-            return this_.removeEventListenersForType((EventListener::Type)arg0);
-        }))
+    .function("removeListeners", select_overload<void(EventListener::Type)>(&EventDispatcher::removeEventListenersForType))
     .function("resumeTarget", &EventDispatcher::resumeEventListenersForTarget, allow_raw_pointers())
     .function("resumeTarget", optional_override(
         [](EventDispatcher& this_, Node* arg0){
@@ -1460,15 +1385,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EventMouse, base<Event>>("cc.EventMouse")
     .constructor(&cc_bindings_constructor<EventMouse, EventMouse::MouseEventType>, allow_raw_pointers())
-    .function("getButton", optional_override(
-        [](EventMouse& this_){
-        return (int32_t)this_.getMouseButton();
-      }))
+    .function("getButton", &EventMouse::getMouseButton)
     .function("getLocation", &EventMouse::getLocation)
-    .function("setButton", optional_override(
-        [](EventMouse& this_, int32_t arg0){
-        return this_.setMouseButton((EventMouse::MouseButton)arg0);
-      }))
+    .function("setButton", &EventMouse::setMouseButton)
     .function("setScrollData", &EventMouse::setScrollData)
     .function("getPreviousLocationInView", &EventMouse::getPreviousLocationInView)
     .function("getDelta", &EventMouse::getDelta)
@@ -1537,10 +1456,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<EventController, base<Event>>("cc.EventController")
         // TODO: overloaded constructor
-    .function("getControllerEventType", optional_override(
-        [](EventController& this_){
-        return (int32_t)this_.getControllerEventType();
-      }))
+    .function("getControllerEventType", &EventController::getControllerEventType)
     .function("setConnectStatus", &EventController::setConnectStatus)
     .function("isConnected", &EventController::isConnected)
     .function("setKeyCode", &EventController::setKeyCode)
@@ -2479,15 +2395,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getWidth", &Label::getWidth)
     .function("getString", &Label::getString)
     .function("getHeight", &Label::getHeight)
-    .function("disableEffect", optional_override(
-        [](Label& this_, int32_t arg0){
-            return this_.disableEffect((LabelEffect)arg0);
-        }))
+    .function("disableEffect", select_overload<void(LabelEffect)>(&Label::disableEffect))
     .function("disableEffect", select_overload<void()>(&Label::disableEffect))
-    .function("getLabelType", optional_override(
-        [](Label& this_){
-        return (int32_t)this_.getLabelType();
-      }))
+    .function("getLabelType", &Label::getLabelType)
     .function("getTextColor", &Label::getTextColor)
     .function("getBlendFunc", &Label::getBlendFunc)
     .function("enableWrap", &Label::enableWrap)
@@ -2495,10 +2405,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getAdditionalKerning", &Label::getAdditionalKerning)
     .function("getBMFontSize", &Label::getBMFontSize)
     .function("getMaxLineWidth", &Label::getMaxLineWidth)
-    .function("getHorizontalAlignment", optional_override(
-        [](Label& this_){
-        return (int32_t)this_.getHorizontalAlignment();
-      }))
+    .function("getHorizontalAlignment", &Label::getHorizontalAlignment)
     .function("getShadowOffset", &Label::getShadowOffset)
     .function("getLineSpacing", &Label::getLineSpacing)
     .function("setClipMarginEnabled", &Label::setClipMarginEnabled)
@@ -2512,25 +2419,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // TODO: Only support function overloading with different number of parameters
     .function("setBMFontFilePath", select_overload<bool(const std::string&, const std::string&, float)>(&Label::setBMFontFilePath))
     // TODO: Only support function overloading with different number of parameters
-    .function("initWithTTF", optional_override(
-        [](Label& this_, const _ttfConfig& arg0, const std::string& arg1, int32_t arg2, int arg3){
-            return this_.initWithTTF(arg0, arg1, (TextHAlignment)arg2, arg3);
-        }))
+    .function("initWithTTF", select_overload<bool(const _ttfConfig&, const std::string&, TextHAlignment, int)>(&Label::initWithTTF))
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
-    .function("initWithTTF", optional_override(
-        [](Label& this_, const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5){
-            return this_.initWithTTF(arg0, arg1, arg2, arg3, (TextHAlignment)arg4, (TextVAlignment)arg5);
-        }))
+    .function("initWithTTF", select_overload<bool(const std::string&, const std::string&, float, const Size&, TextHAlignment, TextVAlignment)>(&Label::initWithTTF))
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     .function("setLineHeight", &Label::setLineHeight)
     .function("setSystemFontSize", &Label::setSystemFontSize)
-    .function("setOverflow", optional_override(
-        [](Label& this_, int32_t arg0){
-        return this_.setOverflow((Label::Overflow)arg0);
-      }))
+    .function("setOverflow", &Label::setOverflow)
     .function("enableStrikethrough", &Label::enableStrikethrough)
     .function("updateContent", &Label::updateContent)
     .function("getStringLength", &Label::getStringLength)
@@ -2550,10 +2448,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getDimensions", &Label::getDimensions)
     .function("setMaxLineWidth", &Label::setMaxLineWidth)
     .function("getSystemFontName", &Label::getSystemFontName)
-    .function("setVerticalAlignment", optional_override(
-        [](Label& this_, int32_t arg0){
-        return this_.setVerticalAlignment((TextVAlignment)arg0);
-      }))
+    .function("setVerticalAlignment", &Label::setVerticalAlignment)
     .function("setLineSpacing", &Label::setLineSpacing)
     .function("getRenderingFontSize", &Label::getRenderingFontSize)
     .function("getLineHeight", &Label::getLineHeight)
@@ -2565,66 +2460,33 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setHeight", &Label::setHeight)
     .function("isShadowEnabled", &Label::isShadowEnabled)
     .function("enableGlow", &Label::enableGlow)
-    .function("getOverflow", optional_override(
-        [](Label& this_){
-        return (int32_t)this_.getOverflow();
-      }))
-    .function("getVerticalAlignment", optional_override(
-        [](Label& this_){
-        return (int32_t)this_.getVerticalAlignment();
-      }))
+    .function("getOverflow", &Label::getOverflow)
+    .function("getVerticalAlignment", &Label::getVerticalAlignment)
     .function("setAdditionalKerning", &Label::setAdditionalKerning)
     .function("getSystemFontSize", &Label::getSystemFontSize)
     .function("setBlendFunc", &Label::setBlendFunc)
-    .function("getTextAlignment", optional_override(
-        [](Label& this_){
-        return (int32_t)this_.getTextAlignment();
-      }))
+    .function("getTextAlignment", &Label::getTextAlignment)
     .function("getBMFontFilePath", &Label::getBMFontFilePath)
-    .function("setHorizontalAlignment", optional_override(
-        [](Label& this_, int32_t arg0){
-        return this_.setHorizontalAlignment((TextHAlignment)arg0);
-      }))
+    .function("setHorizontalAlignment", &Label::setHorizontalAlignment)
     .function("enableBold", &Label::enableBold)
     .function("enableUnderline", &Label::enableUnderline)
-    .function("getLabelEffectType", optional_override(
-        [](Label& this_){
-        return (int32_t)this_.getLabelEffectType();
-      }))
-    .function("setAlignment", optional_override(
-        [](Label& this_, int32_t arg0, int32_t arg1){
-            return this_.setAlignment((TextHAlignment)arg0, (TextVAlignment)arg1);
-        }))
-    .function("setAlignment", optional_override(
-        [](Label& this_, int32_t arg0){
-            return this_.setAlignment((TextHAlignment)arg0);
-        }))
+    .function("getLabelEffectType", &Label::getLabelEffectType)
+    .function("setAlignment", select_overload<void(TextHAlignment, TextVAlignment)>(&Label::setAlignment))
+    .function("setAlignment", select_overload<void(TextHAlignment)>(&Label::setAlignment))
     .function("requestSystemFontRefresh", &Label::requestSystemFontRefresh)
     .function("setBMFontSize", &Label::setBMFontSize)
     .property("size", &Label::getContentSize, &Label::setContentSize)
     .property("boundingWidth", &Label::getWidth, &Label::setWidth)
     .property("boundingHeight", &Label::getHeight, &Label::setHeight)
-    .class_function("createWithBMFont", optional_override(
-        [](const std::string& arg0, const std::string& arg1, int32_t arg2, int arg3, const Rect& arg4, bool arg5){
-            return Label::createWithBMFont(arg0, arg1, (const TextHAlignment&)arg2, arg3, arg4, arg5);
-        }), allow_raw_pointers())
-    .class_function("createWithBMFont", optional_override(
-        [](const std::string& arg0, const std::string& arg1, int32_t arg2, int arg3){
-            return Label::createWithBMFont(arg0, arg1, (const TextHAlignment&)arg2, arg3);
-        }), allow_raw_pointers())
+    .class_function("createWithBMFont", select_overload<Label*(const std::string&, const std::string&, const TextHAlignment&, int, const Rect&, bool)>(&Label::createWithBMFont), allow_raw_pointers())
+    .class_function("createWithBMFont", select_overload<Label*(const std::string&, const std::string&, const TextHAlignment&, int)>(&Label::createWithBMFont), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
-    .class_function("createWithBMFont", optional_override(
-        [](const std::string& arg0, const std::string& arg1, int32_t arg2, int arg3, const std::string& arg4){
-            return Label::createWithBMFont(arg0, arg1, (const TextHAlignment&)arg2, arg3, arg4);
-        }), allow_raw_pointers())
+    .class_function("createWithBMFont", select_overload<Label*(const std::string&, const std::string&, const TextHAlignment&, int, const std::string&)>(&Label::createWithBMFont), allow_raw_pointers())
     .class_function("createWithCharMap", select_overload<Label*(Texture2D*, int, int, int)>(&Label::createWithCharMap), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("createWithCharMap", select_overload<Label*(const std::string&)>(&Label::createWithCharMap), allow_raw_pointers())
-    .class_function("createWithSystemFont", optional_override(
-      [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5){
-        return Label::createWithSystemFont(arg0, arg1, arg2, arg3, (TextHAlignment)arg4, (TextVAlignment)arg5);
-      }), allow_raw_pointers())
+    .class_function("createWithSystemFont", &Label::createWithSystemFont, allow_raw_pointers())
     .class_function("createWithSystemFont", optional_override(
       [](const std::string& arg0, const std::string& arg1, float arg2){
         return Label::createWithSystemFont(arg0, arg1, arg2);
@@ -2634,8 +2496,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return Label::createWithSystemFont(arg0, arg1, arg2, arg3);
       }), allow_raw_pointers())
     .class_function("createWithSystemFont", optional_override(
-      [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4){
-        return Label::createWithSystemFont(arg0, arg1, arg2, arg3, (TextHAlignment)arg4);
+      [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, TextHAlignment arg4){
+        return Label::createWithSystemFont(arg0, arg1, arg2, arg3, arg4);
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const Label& _) -> std::string {return "Label";}))    
     .allow_subclass<wrapper<Label>>("cc.Label._extend")
@@ -2668,10 +2530,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getString", &LabelBMFont::getString)
     .function("setBlendFunc", &LabelBMFont::setBlendFunc)
     .function("setString", &LabelBMFont::setString)
-    .function("initWithString", optional_override(
-        [](LabelBMFont& this_, const std::string& arg0, const std::string& arg1, float arg2, int32_t arg3, const Vec2& arg4){
-        return this_.initWithString(arg0, arg1, arg2, (TextHAlignment)arg3, arg4);
-      }))
+    .function("initWithString", &LabelBMFont::initWithString)
     .function("initWithString", optional_override(
         [](LabelBMFont& this_, const std::string& arg0, const std::string& arg1){
         return this_.initWithString(arg0, arg1);
@@ -2681,28 +2540,25 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.initWithString(arg0, arg1, arg2);
       }))
     .function("initWithString", optional_override(
-        [](LabelBMFont& this_, const std::string& arg0, const std::string& arg1, float arg2, int32_t arg3){
-        return this_.initWithString(arg0, arg1, arg2, (TextHAlignment)arg3);
+        [](LabelBMFont& this_, const std::string& arg0, const std::string& arg1, float arg2, TextHAlignment arg3){
+        return this_.initWithString(arg0, arg1, arg2, arg3);
       }))
     .function("getFntFile", &LabelBMFont::getFntFile)
     .function("setFntFile", select_overload<void(const std::string&, const Rect&, bool)>(&LabelBMFont::setFntFile))
     .function("setFntFile", select_overload<void(const std::string&, const Vec2&)>(&LabelBMFont::setFntFile))
     // TODO: Only support function overloading with different number of parameters
-    .function("setAlignment", optional_override(
-        [](LabelBMFont& this_, int32_t arg0){
-        return this_.setAlignment((TextHAlignment)arg0);
-      }))
+    .function("setAlignment", &LabelBMFont::setAlignment)
     .function("setWidth", &LabelBMFont::setWidth)
     .property("string", &LabelBMFont::getString, &LabelBMFont::setString)
     .property("textAlign",
       optional_override([](const LabelBMFont& this_)
       {
         CCLOG("LabelBMFont.textAlign is write-only");
-        return (int32_t)TextHAlignment::LEFT;
+        return TextHAlignment::LEFT;
       }), 
-      optional_override([](LabelBMFont& this_, int32_t alignment)
+      optional_override([](LabelBMFont& this_, TextHAlignment alignment)
       {
-        this_.setAlignment((TextHAlignment)alignment);
+        this_.setAlignment(alignment);
       }))
     .property("boundingWidth", 
       optional_override([](const LabelBMFont& this_) -> float
@@ -2716,10 +2572,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }))
     // .property("boundingHeight", &LabelBMFont::_getBoundingHeight, &LabelBMFont::setBoundingHeight)
     .class_function("create", select_overload<LabelBMFont*()>(&LabelBMFont::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, float arg2, int32_t arg3, const Vec2& arg4){
-            return LabelBMFont::create(arg0, arg1, arg2, (TextHAlignment)arg3, arg4);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<LabelBMFont*(const std::string&, const std::string&, float, TextHAlignment, const Vec2&)>(&LabelBMFont::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
@@ -2743,16 +2596,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setFlippedX", &LabelTTF::setFlippedX)
     .function("setTextDefinition", &LabelTTF::setTextDefinition)
     .function("setFontName", &LabelTTF::setFontName)
-    .function("getHorizontalAlignment", optional_override(
-        [](LabelTTF& this_){
-        return (int32_t)this_.getHorizontalAlignment();
-      }))
+    .function("getHorizontalAlignment", &LabelTTF::getHorizontalAlignment)
     .function("initWithStringAndTextDefinition", &LabelTTF::initWithStringAndTextDefinition)
     .function("setString", &LabelTTF::setString)
-    .function("initWithString", optional_override(
-        [](LabelTTF& this_, const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5){
-        return this_.initWithString(arg0, arg1, arg2, arg3, (TextHAlignment)arg4, (TextVAlignment)arg5);
-      }))
+    .function("initWithString", &LabelTTF::initWithString)
     .function("initWithString", optional_override(
         [](LabelTTF& this_, const std::string& arg0, const std::string& arg1, float arg2){
         return this_.initWithString(arg0, arg1, arg2);
@@ -2762,8 +2609,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.initWithString(arg0, arg1, arg2, arg3);
       }))
     .function("initWithString", optional_override(
-        [](LabelTTF& this_, const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4){
-        return this_.initWithString(arg0, arg1, arg2, arg3, (TextHAlignment)arg4);
+        [](LabelTTF& this_, const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, TextHAlignment arg4){
+        return this_.initWithString(arg0, arg1, arg2, arg3, arg4);
       }))
     .function("setFontFillColor", &LabelTTF::setFontFillColor)
     .function("setFontFillColor", optional_override(
@@ -2777,22 +2624,13 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.enableStroke(arg0, arg1);
       }))
     .function("getDimensions", &LabelTTF::getDimensions)
-    .function("setVerticalAlignment", optional_override(
-        [](LabelTTF& this_, int32_t arg0){
-        return this_.setVerticalAlignment((TextVAlignment)arg0);
-      }))
+    .function("setVerticalAlignment", &LabelTTF::setVerticalAlignment)
     .function("setFontSize", &LabelTTF::setFontSize)
-    .function("getVerticalAlignment", optional_override(
-        [](LabelTTF& this_){
-        return (int32_t)this_.getVerticalAlignment();
-      }))
+    .function("getVerticalAlignment", &LabelTTF::getVerticalAlignment)
     .function("getTextDefinition", &LabelTTF::getTextDefinition)
     .function("setBlendFunc", &LabelTTF::setBlendFunc)
     .function("getFontName", &LabelTTF::getFontName)
-    .function("setHorizontalAlignment", optional_override(
-        [](LabelTTF& this_, int32_t arg0){
-        return this_.setHorizontalAlignment((TextHAlignment)arg0);
-      }))
+    .function("setHorizontalAlignment", &LabelTTF::setHorizontalAlignment)
     .function("disableShadow", &LabelTTF::disableShadow)
     .function("disableShadow", optional_override(
         [](LabelTTF& this_){
@@ -2848,10 +2686,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // .property("shadowOpacity", &LabelTTF::_getShadowOpacity, &LabelTTF::_setShadowOpacity)
     // .property("shadowBlur", &LabelTTF::_getShadowBlur, &LabelTTF::_setShadowBlur)
     .class_function("create", select_overload<LabelTTF*()>(&LabelTTF::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, int32_t arg4, int32_t arg5){
-            return LabelTTF::create(arg0, arg1, arg2, arg3, (TextHAlignment)arg4, (TextVAlignment)arg5);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<LabelTTF*(const std::string&, const std::string&, float, const Size&, TextHAlignment, TextVAlignment)>(&LabelTTF::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
@@ -3202,10 +3037,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isFull", &ParticleSystem::isFull)
     .function("getBatchNode", &ParticleSystem::getBatchNode, allow_raw_pointers())
     .function("getStartColor", &ParticleSystem::getStartColor)
-    .function("getPositionType", optional_override(
-        [](ParticleSystem& this_){
-        return (int32_t)this_.getPositionType();
-      }))
+    .function("getPositionType", &ParticleSystem::getPositionType)
     .function("setPosVar", &ParticleSystem::setPosVar)
     .function("getEndSpin", &ParticleSystem::getEndSpin)
     .function("setRotatePerSecondVar", &ParticleSystem::setRotatePerSecondVar)
@@ -3235,10 +3067,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("updateWithNoTime", &ParticleSystem::updateWithNoTime)
     .function("isBlendAdditive", &ParticleSystem::isBlendAdditive)
     .function("getSpeedVar", &ParticleSystem::getSpeedVar)
-    .function("setPositionType", optional_override(
-        [](ParticleSystem& this_, int32_t arg0){
-        return this_.setPositionType((ParticleSystem::PositionType)arg0);
-      }))
+    .function("setPositionType", &ParticleSystem::setPositionType)
     .function("stopSystem", &ParticleSystem::stopSystem)
     .function("getSourcePosition", &ParticleSystem::getSourcePosition)
     .function("setLifeVar", &ParticleSystem::setLifeVar)
@@ -3259,10 +3088,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getStartSpin", &ParticleSystem::getStartSpin)
     .function("getResourceFile", &ParticleSystem::getResourceFile)
     .function("getRotatePerSecond", &ParticleSystem::getRotatePerSecond)
-    .function("setEmitterMode", optional_override(
-        [](ParticleSystem& this_, int32_t arg0){
-        return this_.setEmitterMode((ParticleSystem::Mode)arg0);
-      }))
+    .function("setEmitterMode", &ParticleSystem::setEmitterMode)
     .function("getDuration", &ParticleSystem::getDuration)
     .function("setSourcePosition", &ParticleSystem::setSourcePosition)
     .function("stop", &ParticleSystem::stop)
@@ -3277,10 +3103,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setAngle", &ParticleSystem::setAngle)
     .function("setBatchNode", &ParticleSystem::setBatchNode, allow_raw_pointers())
     .function("getTangentialAccelVar", &ParticleSystem::getTangentialAccelVar)
-    .function("getEmitterMode", optional_override(
-        [](ParticleSystem& this_){
-        return (int32_t)this_.getEmitterMode();
-      }))
+    .function("getEmitterMode", &ParticleSystem::getEmitterMode)
     .function("setEndSpinVar", &ParticleSystem::setEndSpinVar)
     .function("initWithFile", &ParticleSystem::initWithFile)
     .function("getAngleVar", &ParticleSystem::getAngleVar)
@@ -3512,19 +3335,13 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setBarChangeRate", &ProgressTimer::setBarChangeRate)
     .function("getPercentage", &ProgressTimer::getPercentage)
     .function("setSprite", &ProgressTimer::setSprite, allow_raw_pointers())
-    .function("getType", optional_override(
-        [](ProgressTimer& this_){
-        return (int32_t)this_.getType();
-      }))
+    .function("getType", &ProgressTimer::getType)
     .function("getSprite", &ProgressTimer::getSprite, allow_raw_pointers())
     .function("setMidpoint", &ProgressTimer::setMidpoint)
     .function("getBarChangeRate", &ProgressTimer::getBarChangeRate)
     .function("getMidpoint", &ProgressTimer::getMidpoint)
     .function("setPercentage", &ProgressTimer::setPercentage)
-    .function("setType", optional_override(
-        [](ProgressTimer& this_, int32_t arg0){
-        return this_.setType((ProgressTimer::Type)arg0);
-      }))
+    .function("setType", &ProgressTimer::setType)
     .property("midPoint", &ProgressTimer::getMidpoint, &ProgressTimer::setMidpoint)
     .property("barChangeRate", &ProgressTimer::getBarChangeRate, &ProgressTimer::setBarChangeRate)
     .property("type", &ProgressTimer::getType, &ProgressTimer::setType)
@@ -3668,22 +3485,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.newImage();
       }), allow_raw_pointers())
     .function("setClearDepth", &RenderTexture::setClearDepth)
-    .function("initWithWidthAndHeight", optional_override(
-        [](RenderTexture& this_, int arg0, int arg1, int32_t arg2, unsigned int arg3){
-            return this_.initWithWidthAndHeight(arg0, arg1, (Texture2D::PixelFormat)arg2, arg3);
-        }))
-    .function("initWithWidthAndHeight", optional_override(
-        [](RenderTexture& this_, int arg0, int arg1, int32_t arg2){
-            return this_.initWithWidthAndHeight(arg0, arg1, (Texture2D::PixelFormat)arg2);
-        }))
-    .class_function("create", optional_override(
-        [](int arg0, int arg1, int32_t arg2){
-            return RenderTexture::create(arg0, arg1, (Texture2D::PixelFormat)arg2);
-        }), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](int arg0, int arg1, int32_t arg2, unsigned int arg3){
-            return RenderTexture::create(arg0, arg1, (Texture2D::PixelFormat)arg2, arg3);
-        }), allow_raw_pointers())
+    .function("initWithWidthAndHeight", select_overload<bool(int, int, Texture2D::PixelFormat, unsigned int)>(&RenderTexture::initWithWidthAndHeight))
+    .function("initWithWidthAndHeight", select_overload<bool(int, int, Texture2D::PixelFormat)>(&RenderTexture::initWithWidthAndHeight))
+    .class_function("create", select_overload<RenderTexture*(int, int, Texture2D::PixelFormat)>(&RenderTexture::create), allow_raw_pointers())
+    .class_function("create", select_overload<RenderTexture*(int, int, Texture2D::PixelFormat, unsigned int)>(&RenderTexture::create), allow_raw_pointers())
     .class_function("create", select_overload<RenderTexture*(int, int)>(&RenderTexture::create), allow_raw_pointers())
     .property("_className",  optional_override([](const RenderTexture& _) -> std::string {return "RenderTexture";}))    
     .allow_subclass<wrapper<RenderTexture>>("cc.RenderTexture._extend")
@@ -3712,14 +3517,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setAdditionalProjection", &Camera::setAdditionalProjection)
     .function("setViewport", &Camera::setViewport)
     .function("initDefault", &Camera::initDefault)
-    .function("getCameraFlag", optional_override(
-        [](Camera& this_){
-        return (int32_t)this_.getCameraFlag();
-      }))
-    .function("getType", optional_override(
-        [](Camera& this_){
-        return (int32_t)this_.getType();
-      }))
+    .function("getCameraFlag", &Camera::getCameraFlag)
+    .function("getType", &Camera::getType)
     .function("initOrthographic", &Camera::initOrthographic)
     .function("getRenderOrder", &Camera::getRenderOrder)
     .function("setDepth", &Camera::setDepth)
@@ -3729,10 +3528,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getViewMatrix", &Camera::getViewMatrix)
     .function("getNearPlane", &Camera::getNearPlane)
     .function("project", &Camera::project)
-    .function("setCameraFlag", optional_override(
-        [](Camera& this_, int32_t arg0){
-        return this_.setCameraFlag((CameraFlag)arg0);
-      }))
+    .function("setCameraFlag", &Camera::setCameraFlag)
     .function("getFarPlane", &Camera::getFarPlane)
     .function("applyFrameBufferObject", &Camera::applyFrameBufferObject)
     .function("setFrameBufferObject", &Camera::setFrameBufferObject, allow_raw_pointers())
@@ -3752,10 +3548,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<CameraBackgroundBrush>("cc.CameraBackgroundBrush")
     .constructor(&cc_bindings_constructor<CameraBackgroundBrush>, allow_raw_pointers())
-    .function("getBrushType", optional_override(
-        [](CameraBackgroundBrush& this_){
-        return (int32_t)this_.getBrushType();
-      }))
+    .function("getBrushType", &CameraBackgroundBrush::getBrushType)
     .function("drawBackground", &CameraBackgroundBrush::drawBackground, allow_raw_pointers())
     .function("init", &CameraBackgroundBrush::init)
     .function("isValid", &CameraBackgroundBrush::isValid)
@@ -3865,19 +3658,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setEnabled", &BaseLight::setEnabled)
     .function("getIntensity", &BaseLight::getIntensity)
     .function("isEnabled", &BaseLight::isEnabled)
-    .function("getLightType", optional_override(
-        [](BaseLight& this_){
-        return (int32_t)this_.getLightType();
-      }))
-    .function("setLightFlag", optional_override(
-        [](BaseLight& this_, int32_t arg0){
-        return this_.setLightFlag((LightFlag)arg0);
-      }))
+    .function("getLightType", &BaseLight::getLightType)
+    .function("setLightFlag", &BaseLight::setLightFlag)
     .function("setIntensity", &BaseLight::setIntensity)
-    .function("getLightFlag", optional_override(
-        [](BaseLight& this_){
-        return (int32_t)this_.getLightFlag();
-      }))
+    .function("getLightFlag", &BaseLight::getLightFlag)
     .property("_className",  optional_override([](const BaseLight& _) -> std::string {return "BaseLight";}))    
     ;
 
@@ -4084,14 +3868,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<Application>("cc.Application")
-    .function("getTargetPlatform", optional_override(
-        [](Application& this_){
-        return (int32_t)this_.getTargetPlatform();
-      }))
-    .function("getCurrentLanguage", optional_override(
-        [](Application& this_){
-        return (int32_t)this_.getCurrentLanguage();
-      }))
+    .function("getTargetPlatform", &Application::getTargetPlatform)
+    .function("getCurrentLanguage", &Application::getCurrentLanguage)
     .function("openURL", &Application::openURL)
     .function("getVersion", &Application::getVersion)
     .class_function("getInstance", &Application::getInstance, allow_raw_pointers())
@@ -4196,10 +3974,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setCursorEnabled", &TextFieldTTF::setCursorEnabled)
     .function("getColorSpaceHolder", &TextFieldTTF::getColorSpaceHolder)
     .function("initWithPlaceHolder", select_overload<bool(const std::string&, const std::string&, float)>(&TextFieldTTF::initWithPlaceHolder))
-    .function("initWithPlaceHolder", optional_override(
-        [](TextFieldTTF& this_, const std::string& arg0, const Size& arg1, int32_t arg2, const std::string& arg3, float arg4){
-            return this_.initWithPlaceHolder(arg0, arg1, (TextHAlignment)arg2, arg3, arg4);
-        }))
+    .function("initWithPlaceHolder", select_overload<bool(const std::string&, const Size&, TextHAlignment, const std::string&, float)>(&TextFieldTTF::initWithPlaceHolder))
     .function("appendString", &TextFieldTTF::appendString)
     .function("getPasswordTextStyle", &TextFieldTTF::getPasswordTextStyle)
     .function("setPasswordTextStyle", &TextFieldTTF::setPasswordTextStyle)
@@ -4214,10 +3989,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("attachWithIME", &TextFieldTTF::attachWithIME)
     .property("string", &TextFieldTTF::getString, &TextFieldTTF::setString)
     .class_function("create", select_overload<TextFieldTTF*(const std::string&, const std::string&, float)>(&TextFieldTTF::textFieldWithPlaceHolder), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const Size& arg1, int32_t arg2, const std::string& arg3, float arg4){
-            return TextFieldTTF::textFieldWithPlaceHolder(arg0, arg1, (TextHAlignment)arg2, arg3, arg4);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TextFieldTTF*(const std::string&, const Size&, TextHAlignment, const std::string&, float)>(&TextFieldTTF::textFieldWithPlaceHolder), allow_raw_pointers())
     .property("_className",  optional_override([](const TextFieldTTF& _) -> std::string {return "TextFieldTTF";}))    
     .allow_subclass<wrapper<TextFieldTTF>>("cc.TextFieldTTF._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4404,10 +4176,7 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("removeTileAt", &TMXLayer::removeTileAt)
     .function("initWithTilesetInfo", &TMXLayer::initWithTilesetInfo, allow_raw_pointers())
     .function("setupTiles", &TMXLayer::setupTiles)
-    .function("setTileGID", optional_override(
-        [](TMXLayer& this_, unsigned int arg0, const Vec2& arg1, int32_t arg2){
-            return this_.setTileGID(arg0, arg1, (TMXTileFlags_)arg2);
-        }))
+    .function("setTileGID", select_overload<void(unsigned int, const Vec2&, TMXTileFlags_)>(&TMXLayer::setTileGID))
     .function("setTileGID", select_overload<void(unsigned int, const Vec2&)>(&TMXLayer::setTileGID))
     .function("getMapTileSize", &TMXLayer::getMapTileSize)
     .function("getProperty", &TMXLayer::getProperty)
@@ -4560,14 +4329,8 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
 
   class_<TransitionSceneOriented, base<TransitionScene>>("cc.TransitionSceneOriented")
     .constructor(&cc_bindings_constructor<TransitionSceneOriented>, allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-        [](TransitionSceneOriented& this_, float arg0, Scene* arg1, int32_t arg2){
-        return this_.initWithDuration(arg0, arg1, (TransitionScene::Orientation)arg2);
-      }), allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](float arg0, Scene* arg1, int32_t arg2){
-        return TransitionSceneOriented::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-      }), allow_raw_pointers())
+    .function("initWithDuration", &TransitionSceneOriented::initWithDuration, allow_raw_pointers())
+    .class_function("create", &TransitionSceneOriented::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionSceneOriented& _) -> std::string {return "TransitionSceneOriented";}))    
     .allow_subclass<wrapper<TransitionSceneOriented>>("cc.TransitionSceneOriented._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4681,10 +4444,7 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
   class_<TransitionFlipX, base<TransitionSceneOriented>>("cc.TransitionFlipX")
     .constructor(&cc_bindings_constructor<TransitionFlipX>, allow_raw_pointers())
     .class_function("create", select_overload<TransitionFlipX*(float, Scene*)>(&TransitionFlipX::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionFlipX::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFlipX*(float, Scene*, TransitionScene::Orientation)>(&TransitionFlipX::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFlipX& _) -> std::string {return "TransitionFlipX";}))    
     .allow_subclass<wrapper<TransitionFlipX>>("cc.TransitionFlipX._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4694,10 +4454,7 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
   class_<TransitionFlipY, base<TransitionSceneOriented>>("cc.TransitionFlipY")
     .constructor(&cc_bindings_constructor<TransitionFlipY>, allow_raw_pointers())
     .class_function("create", select_overload<TransitionFlipY*(float, Scene*)>(&TransitionFlipY::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionFlipY::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFlipY*(float, Scene*, TransitionScene::Orientation)>(&TransitionFlipY::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFlipY& _) -> std::string {return "TransitionFlipY";}))    
     .allow_subclass<wrapper<TransitionFlipY>>("cc.TransitionFlipY._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4707,10 +4464,7 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
   class_<TransitionFlipAngular, base<TransitionSceneOriented>>("cc.TransitionFlipAngular")
     .constructor(&cc_bindings_constructor<TransitionFlipAngular>, allow_raw_pointers())
     .class_function("create", select_overload<TransitionFlipAngular*(float, Scene*)>(&TransitionFlipAngular::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionFlipAngular::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionFlipAngular*(float, Scene*, TransitionScene::Orientation)>(&TransitionFlipAngular::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionFlipAngular& _) -> std::string {return "TransitionFlipAngular";}))    
     .allow_subclass<wrapper<TransitionFlipAngular>>("cc.TransitionFlipAngular._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4720,10 +4474,7 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
   class_<TransitionZoomFlipX, base<TransitionSceneOriented>>("cc.TransitionZoomFlipX")
     .constructor(&cc_bindings_constructor<TransitionZoomFlipX>, allow_raw_pointers())
     .class_function("create", select_overload<TransitionZoomFlipX*(float, Scene*)>(&TransitionZoomFlipX::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionZoomFlipX::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionZoomFlipX*(float, Scene*, TransitionScene::Orientation)>(&TransitionZoomFlipX::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionZoomFlipX& _) -> std::string {return "TransitionZoomFlipX";}))    
     .allow_subclass<wrapper<TransitionZoomFlipX>>("cc.TransitionZoomFlipX._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4733,10 +4484,7 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
   class_<TransitionZoomFlipY, base<TransitionSceneOriented>>("cc.TransitionZoomFlipY")
     .constructor(&cc_bindings_constructor<TransitionZoomFlipY>, allow_raw_pointers())
     .class_function("create", select_overload<TransitionZoomFlipY*(float, Scene*)>(&TransitionZoomFlipY::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionZoomFlipY::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionZoomFlipY*(float, Scene*, TransitionScene::Orientation)>(&TransitionZoomFlipY::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionZoomFlipY& _) -> std::string {return "TransitionZoomFlipY";}))    
     .allow_subclass<wrapper<TransitionZoomFlipY>>("cc.TransitionZoomFlipY._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4746,10 +4494,7 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
   class_<TransitionZoomFlipAngular, base<TransitionSceneOriented>>("cc.TransitionZoomFlipAngular")
     .constructor(&cc_bindings_constructor<TransitionZoomFlipAngular>, allow_raw_pointers())
     .class_function("create", select_overload<TransitionZoomFlipAngular*(float, Scene*)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](float arg0, Scene* arg1, int32_t arg2){
-            return TransitionZoomFlipAngular::create(arg0, arg1, (TransitionScene::Orientation)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<TransitionZoomFlipAngular*(float, Scene*, TransitionScene::Orientation)>(&TransitionZoomFlipAngular::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TransitionZoomFlipAngular& _) -> std::string {return "TransitionZoomFlipAngular";}))    
     .allow_subclass<wrapper<TransitionZoomFlipAngular>>("cc.TransitionZoomFlipAngular._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)

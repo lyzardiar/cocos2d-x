@@ -22,10 +22,7 @@ COCOS_BINDINGS(jsb_cocos2dx_experimental_video) {
     .function("setFullScreenEnabled", &VideoPlayer::setFullScreenEnabled)
     .function("setFileName", &VideoPlayer::setFileName)
     .function("setURL", &VideoPlayer::setURL)
-    .function("setStyle", optional_override(
-        [](VideoPlayer& this_, int32_t arg0){
-        return this_.setStyle((cocos2d::experimental::ui::VideoPlayer::StyleType)arg0);
-      }))
+    .function("setStyle", &VideoPlayer::setStyle)
     .function("seekTo", &VideoPlayer::seekTo)
     .function("isKeepAspectRatioEnabled", &VideoPlayer::isKeepAspectRatioEnabled)
     .function("onPlayEvent", &VideoPlayer::onPlayEvent)

@@ -177,10 +177,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getDisplayRenderNode", &DisplayManager::getDisplayRenderNode, allow_raw_pointers())
     .function("getAnchorPointInPoints", &DisplayManager::getAnchorPointInPoints)
     .function("setCurrentDecorativeDisplay", &DisplayManager::setCurrentDecorativeDisplay, allow_raw_pointers())
-    .function("getDisplayRenderNodeType", optional_override(
-        [](DisplayManager& this_){
-        return (int32_t)this_.getDisplayRenderNodeType();
-      }))
+    .function("getDisplayRenderNodeType", &DisplayManager::getDisplayRenderNodeType)
     .function("removeDisplay", &DisplayManager::removeDisplay)
     .function("setForceChangeDisplay", &DisplayManager::setForceChangeDisplay)
     .function("init", &DisplayManager::init, allow_raw_pointers())
@@ -220,10 +217,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getParentBone", &Bone::getParentBone, allow_raw_pointers())
     .function("updateColor", &Bone::updateColor)
     .function("setTransformDirty", &Bone::setTransformDirty)
-    .function("getDisplayRenderNodeType", optional_override(
-        [](Bone& this_){
-        return (int32_t)this_.getDisplayRenderNodeType();
-      }))
+    .function("getDisplayRenderNodeType", &Bone::getDisplayRenderNodeType)
     .function("removeDisplay", &Bone::removeDisplay)
     .function("setBoneData", &Bone::setBoneData, allow_raw_pointers())
     .function("setParentBone", &Bone::setParentBone, allow_raw_pointers())
@@ -474,20 +468,14 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
   class_<InputDelegate>("ccs.InputDelegate")
     .function("isAccelerometerEnabled", &InputDelegate::isAccelerometerEnabled)
     .function("setKeypadEnabled", &InputDelegate::setKeypadEnabled)
-    .function("getTouchMode", optional_override(
-        [](InputDelegate& this_){
-        return (int32_t)this_.getTouchMode();
-      }))
+    .function("getTouchMode", &InputDelegate::getTouchMode)
     .function("setAccelerometerEnabled", &InputDelegate::setAccelerometerEnabled)
     .function("isKeypadEnabled", &InputDelegate::isKeypadEnabled)
     .function("isTouchEnabled", &InputDelegate::isTouchEnabled)
     .function("setTouchPriority", &InputDelegate::setTouchPriority)
     .function("getTouchPriority", &InputDelegate::getTouchPriority)
     .function("setTouchEnabled", &InputDelegate::setTouchEnabled)
-    .function("setTouchMode", optional_override(
-        [](InputDelegate& this_, int32_t arg0){
-        return this_.setTouchMode((cocos2d::Touch::DispatchMode)arg0);
-      }))
+    .function("setTouchMode", &InputDelegate::setTouchMode)
     .property("_className",  optional_override([](const InputDelegate& _) -> std::string {return "InputDelegate";}))    
     ;
 
@@ -513,17 +501,11 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
 
   class_<Frame>("ccs.Frame")
     .function("clone", &Frame::clone, allow_raw_pointers())
-    .function("setTweenType", optional_override(
-        [](Frame& this_, int32_t arg0){
-        return this_.setTweenType((const cocos2d::tweenfunc::TweenType&)arg0);
-      }))
+    .function("setTweenType", &Frame::setTweenType)
     .function("setNode", &Frame::setNode, allow_raw_pointers())
     .function("setTimeline", &Frame::setTimeline, allow_raw_pointers())
     .function("isEnterWhenPassed", &Frame::isEnterWhenPassed)
-    .function("getTweenType", optional_override(
-        [](Frame& this_){
-        return (int32_t)this_.getTweenType();
-      }))
+    .function("getTweenType", &Frame::getTweenType)
     .function("getFrameIndex", &Frame::getFrameIndex)
     .function("apply", &Frame::apply)
     .function("isTween", &Frame::isTween)
@@ -618,19 +600,13 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .constructor(&cc_bindings_constructor<InnerActionFrame>, allow_raw_pointers())
     .function("getEndFrameIndex", &InnerActionFrame::getEndFrameIndex)
     .function("getStartFrameIndex", &InnerActionFrame::getStartFrameIndex)
-    .function("getInnerActionType", optional_override(
-        [](InnerActionFrame& this_){
-        return (int32_t)this_.getInnerActionType();
-      }))
+    .function("getInnerActionType", &InnerActionFrame::getInnerActionType)
     .function("setEndFrameIndex", &InnerActionFrame::setEndFrameIndex)
     .function("setEnterWithName", &InnerActionFrame::setEnterWithName)
     .function("setSingleFrameIndex", &InnerActionFrame::setSingleFrameIndex)
     .function("setStartFrameIndex", &InnerActionFrame::setStartFrameIndex)
     .function("getSingleFrameIndex", &InnerActionFrame::getSingleFrameIndex)
-    .function("setInnerActionType", optional_override(
-        [](InnerActionFrame& this_, int32_t arg0){
-        return this_.setInnerActionType((cocostudio::timeline::InnerActionType)arg0);
-      }))
+    .function("setInnerActionType", &InnerActionFrame::setInnerActionType)
     .function("setAnimationName", &InnerActionFrame::setAnimationName)
     .class_function("create", &InnerActionFrame::create, allow_raw_pointers())
     .property("_className",  optional_override([](const InnerActionFrame& _) -> std::string {return "InnerActionFrame";}))    

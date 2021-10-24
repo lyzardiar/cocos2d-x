@@ -21,10 +21,7 @@ COCOS_BINDINGS(jsb_cocos2dx_3d_extension) {
     .function("getParticleQuota", &ParticleSystem3D::getParticleQuota)
     .function("getBlendFunc", &ParticleSystem3D::getBlendFunc)
     .function("pauseParticleSystem", &ParticleSystem3D::pauseParticleSystem)
-    .function("getState", optional_override(
-        [](ParticleSystem3D& this_){
-        return (int32_t)this_.getState();
-      }))
+    .function("getState", &ParticleSystem3D::getState)
     .function("getAliveParticleCount", &ParticleSystem3D::getAliveParticleCount)
     .function("setParticleQuota", &ParticleSystem3D::setParticleQuota)
     .function("setBlendFunc", &ParticleSystem3D::setBlendFunc)

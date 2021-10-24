@@ -14,14 +14,8 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
   class_<Control, base<Layer>>("cc.Control")
     .constructor(&cc_bindings_constructor<Control>, allow_raw_pointers())
     .function("setEnabled", &Control::setEnabled)
-    .function("getState", optional_override(
-        [](Control& this_){
-        return (int32_t)this_.getState();
-      }))
-    .function("sendActionsForControlEvents", optional_override(
-        [](Control& this_, int32_t arg0){
-        return this_.sendActionsForControlEvents((cocos2d::extension::Control::EventType)arg0);
-      }))
+    .function("getState", &Control::getState)
+    .function("sendActionsForControlEvents", &Control::sendActionsForControlEvents)
     .function("setSelected", &Control::setSelected)
     .function("isEnabled", &Control::isEnabled)
     .function("needsLayout", &Control::needsLayout)
@@ -39,89 +33,44 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
   class_<ControlButton, base<Control>>("cc.ControlButton")
     .constructor(&cc_bindings_constructor<ControlButton>, allow_raw_pointers())
     .function("isPushed", &ControlButton::isPushed)
-    .function("setTitleLabelForState", optional_override(
-        [](ControlButton& this_, cocos2d::Node* arg0, int32_t arg1){
-        return this_.setTitleLabelForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }), allow_raw_pointers())
+    .function("setTitleLabelForState", &ControlButton::setTitleLabelForState, allow_raw_pointers())
     .function("setAdjustBackgroundImage", &ControlButton::setAdjustBackgroundImage)
-    .function("setTitleForState", optional_override(
-        [](ControlButton& this_, const std::string& arg0, int32_t arg1){
-        return this_.setTitleForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }))
+    .function("setTitleForState", &ControlButton::setTitleForState)
     .function("setLabelAnchorPoint", &ControlButton::setLabelAnchorPoint)
     .function("getLabelAnchorPoint", &ControlButton::getLabelAnchorPoint)
     .function("initWithBackgroundSprite", &ControlButton::initWithBackgroundSprite, allow_raw_pointers())
-    .function("getTitleTTFSizeForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getTitleTTFSizeForState((cocos2d::extension::Control::State)arg0);
-      }))
-    .function("setTitleTTFForState", optional_override(
-        [](ControlButton& this_, const std::string& arg0, int32_t arg1){
-        return this_.setTitleTTFForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }))
-    .function("setTitleTTFSizeForState", optional_override(
-        [](ControlButton& this_, float arg0, int32_t arg1){
-        return this_.setTitleTTFSizeForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }))
+    .function("getTitleTTFSizeForState", &ControlButton::getTitleTTFSizeForState)
+    .function("setTitleTTFForState", &ControlButton::setTitleTTFForState)
+    .function("setTitleTTFSizeForState", &ControlButton::setTitleTTFSizeForState)
     .function("setTitleLabel", &ControlButton::setTitleLabel, allow_raw_pointers())
     .function("setPreferredSize", &ControlButton::setPreferredSize)
     .function("getCurrentTitleColor", &ControlButton::getCurrentTitleColor)
     .function("setZoomOnTouchDown", &ControlButton::setZoomOnTouchDown)
     .function("setBackgroundSprite", &ControlButton::setBackgroundSprite, allow_raw_pointers())
-    .function("getBackgroundSpriteForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getBackgroundSpriteForState((cocos2d::extension::Control::State)arg0);
-      }), allow_raw_pointers())
+    .function("getBackgroundSpriteForState", &ControlButton::getBackgroundSpriteForState, allow_raw_pointers())
     .function("getHorizontalOrigin", &ControlButton::getHorizontalOrigin)
     .function("initWithTitleAndFontNameAndFontSize", &ControlButton::initWithTitleAndFontNameAndFontSize)
-    .function("setTitleBMFontForState", optional_override(
-        [](ControlButton& this_, const std::string& arg0, int32_t arg1){
-        return this_.setTitleBMFontForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }))
+    .function("setTitleBMFontForState", &ControlButton::setTitleBMFontForState)
     .function("getScaleRatio", &ControlButton::getScaleRatio)
-    .function("getTitleTTFForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getTitleTTFForState((cocos2d::extension::Control::State)arg0);
-      }))
+    .function("getTitleTTFForState", &ControlButton::getTitleTTFForState)
     .function("getBackgroundSprite", &ControlButton::getBackgroundSprite, allow_raw_pointers())
-    .function("getTitleColorForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getTitleColorForState((cocos2d::extension::Control::State)arg0);
-      }))
-    .function("setTitleColorForState", optional_override(
-        [](ControlButton& this_, const cocos2d::Color3B& arg0, int32_t arg1){
-        return this_.setTitleColorForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }))
+    .function("getTitleColorForState", &ControlButton::getTitleColorForState)
+    .function("setTitleColorForState", &ControlButton::setTitleColorForState)
     .function("doesAdjustBackgroundImage", &ControlButton::doesAdjustBackgroundImage)
-    .function("setBackgroundSpriteFrameForState", optional_override(
-        [](ControlButton& this_, cocos2d::SpriteFrame* arg0, int32_t arg1){
-        return this_.setBackgroundSpriteFrameForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }), allow_raw_pointers())
-    .function("setBackgroundSpriteForState", optional_override(
-        [](ControlButton& this_, cocos2d::ui::Scale9Sprite* arg0, int32_t arg1){
-        return this_.setBackgroundSpriteForState(arg0, (cocos2d::extension::Control::State)arg1);
-      }), allow_raw_pointers())
+    .function("setBackgroundSpriteFrameForState", &ControlButton::setBackgroundSpriteFrameForState, allow_raw_pointers())
+    .function("setBackgroundSpriteForState", &ControlButton::setBackgroundSpriteForState, allow_raw_pointers())
     .function("setScaleRatio", &ControlButton::setScaleRatio)
-    .function("getTitleBMFontForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getTitleBMFontForState((cocos2d::extension::Control::State)arg0);
-      }))
+    .function("getTitleBMFontForState", &ControlButton::getTitleBMFontForState)
     .function("getTitleLabel", &ControlButton::getTitleLabel, allow_raw_pointers())
     .function("getPreferredSize", &ControlButton::getPreferredSize)
     .function("getVerticalMargin", &ControlButton::getVerticalMargin)
-    .function("getTitleLabelForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getTitleLabelForState((cocos2d::extension::Control::State)arg0);
-      }), allow_raw_pointers())
+    .function("getTitleLabelForState", &ControlButton::getTitleLabelForState, allow_raw_pointers())
     .function("setMargins", &ControlButton::setMargins)
     .function("getCurrentTitle", select_overload<std::string()>(&ControlButton::getCurrentTitle))
     // TODO: Only support function overloading with different number of parameters
     .function("initWithLabelAndBackgroundSprite", &ControlButton::initWithLabelAndBackgroundSprite, allow_raw_pointers())
     .function("getZoomOnTouchDown", &ControlButton::getZoomOnTouchDown)
-    .function("getTitleForState", optional_override(
-        [](ControlButton& this_, int32_t arg0){
-        return this_.getTitleForState((cocos2d::extension::Control::State)arg0);
-      }))
+    .function("getTitleForState", &ControlButton::getTitleForState)
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*()>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::Node*, cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
@@ -167,18 +116,12 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
 
   class_<ControlColourPicker, base<Control>>("cc.ControlColourPicker")
     .constructor(&cc_bindings_constructor<ControlColourPicker>, allow_raw_pointers())
-    .function("hueSliderValueChanged", optional_override(
-        [](ControlColourPicker& this_, cocos2d::Ref* arg0, int32_t arg1){
-        return this_.hueSliderValueChanged(arg0, (cocos2d::extension::Control::EventType)arg1);
-      }), allow_raw_pointers())
+    .function("hueSliderValueChanged", &ControlColourPicker::hueSliderValueChanged, allow_raw_pointers())
     .function("getHuePicker", &ControlColourPicker::getHuePicker, allow_raw_pointers())
     .function("getcolourPicker", &ControlColourPicker::getcolourPicker, allow_raw_pointers())
     .function("setBackground", &ControlColourPicker::setBackground, allow_raw_pointers())
     .function("setcolourPicker", &ControlColourPicker::setcolourPicker, allow_raw_pointers())
-    .function("colourSliderValueChanged", optional_override(
-        [](ControlColourPicker& this_, cocos2d::Ref* arg0, int32_t arg1){
-        return this_.colourSliderValueChanged(arg0, (cocos2d::extension::Control::EventType)arg1);
-      }), allow_raw_pointers())
+    .function("colourSliderValueChanged", &ControlColourPicker::colourSliderValueChanged, allow_raw_pointers())
     .function("setHuePicker", &ControlColourPicker::setHuePicker, allow_raw_pointers())
     .function("getBackground", &ControlColourPicker::getBackground, allow_raw_pointers())
     .class_function("create", &ControlColourPicker::create, allow_raw_pointers())
@@ -314,10 +257,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
         return this_.initWithViewSize(arg0);
       }))
     .function("pause", select_overload<void(Ref*)>(&ScrollView::pause), allow_raw_pointers())
-    .function("setDirection", optional_override(
-        [](ScrollView& this_, int32_t arg0){
-        return this_.setDirection((cocos2d::extension::ScrollView::Direction)arg0);
-      }))
+    .function("setDirection", &ScrollView::setDirection)
     .function("stopAnimatedContentOffset", &ScrollView::stopAnimatedContentOffset)
     .function("setContentOffset", &ScrollView::setContentOffset)
     .function("setContentOffset", optional_override(
@@ -338,10 +278,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("isTouchMoved", &ScrollView::isTouchMoved)
     .function("isNodeVisible", &ScrollView::isNodeVisible, allow_raw_pointers())
     .function("minContainerOffset", &ScrollView::minContainerOffset)
-    .function("getDirection", optional_override(
-        [](ScrollView& this_){
-        return (int32_t)this_.getDirection();
-      }))
+    .function("getDirection", &ScrollView::getDirection)
     .function("setZoomScale", select_overload<void(float, bool)>(&ScrollView::setZoomScale))
     .function("setZoomScale", select_overload<void(float)>(&ScrollView::setZoomScale))
     .class_function("create", select_overload<cocos2d::extension::ScrollView*()>(&ScrollView::create), allow_raw_pointers())
@@ -368,16 +305,10 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
   class_<TableView, base<ScrollView>>("cc.TableView")
     .constructor(&cc_bindings_constructor<TableView>, allow_raw_pointers())
     .function("updateCellAtIndex", &TableView::updateCellAtIndex)
-    .function("setVerticalFillOrder", optional_override(
-        [](TableView& this_, int32_t arg0){
-        return this_.setVerticalFillOrder((cocos2d::extension::TableView::VerticalFillOrder)arg0);
-      }))
+    .function("setVerticalFillOrder", &TableView::setVerticalFillOrder)
     .function("scrollViewDidZoom", &TableView::scrollViewDidZoom, allow_raw_pointers())
     .function("_updateContentSize", &TableView::_updateContentSize)
-    .function("getVerticalFillOrder", optional_override(
-        [](TableView& this_){
-        return (int32_t)this_.getVerticalFillOrder();
-      }))
+    .function("getVerticalFillOrder", &TableView::getVerticalFillOrder)
     .function("removeCellAtIndex", &TableView::removeCellAtIndex)
     .function("initWithViewSize", &TableView::initWithViewSize, allow_raw_pointers())
     .function("initWithViewSize", optional_override(
@@ -403,10 +334,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getMessage", &EventAssetsManagerEx::getMessage)
     .function("getCURLMCode", &EventAssetsManagerEx::getCURLMCode)
     .function("getPercentByFile", &EventAssetsManagerEx::getPercentByFile)
-    .function("getEventCode", optional_override(
-        [](EventAssetsManagerEx& this_){
-        return (int32_t)this_.getEventCode();
-      }))
+    .function("getEventCode", &EventAssetsManagerEx::getEventCode)
     .function("getPercent", &EventAssetsManagerEx::getPercent)
     .property("_className",  optional_override([](const EventAssetsManagerEx& _) -> std::string {return "EventAssetsManagerEx";}))    
     ;
@@ -425,10 +353,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
 
   class_<AssetsManagerEx>("cc.AssetsManager")
     .constructor(&cc_bindings_constructor<AssetsManagerEx, const std::string&, const std::string&>, allow_raw_pointers())
-    .function("getState", optional_override(
-        [](AssetsManagerEx& this_){
-        return (int32_t)this_.getState();
-      }))
+    .function("getState", &AssetsManagerEx::getState)
     .function("getMaxConcurrentTask", &AssetsManagerEx::getMaxConcurrentTask)
     .function("checkUpdate", &AssetsManagerEx::checkUpdate)
     .function("setVerifyCallback", &AssetsManagerEx::setVerifyCallback)

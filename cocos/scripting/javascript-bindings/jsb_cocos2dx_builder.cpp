@@ -29,10 +29,7 @@ COCOS_BINDINGS(jsb_cocos2dx_builder) {
     .function("getContainerSize", &CCBAnimationManager::getContainerSize, allow_raw_pointers())
     .function("actionForCallbackChannel", &CCBAnimationManager::actionForCallbackChannel, allow_raw_pointers())
     .function("getDocumentOutletNames", &CCBAnimationManager::getDocumentOutletNames)
-    .function("addDocumentCallbackControlEvents", optional_override(
-        [](CCBAnimationManager& this_, int32_t arg0){
-        return this_.addDocumentCallbackControlEvents((cocos2d::extension::Control::EventType)arg0);
-      }))
+    .function("addDocumentCallbackControlEvents", &CCBAnimationManager::addDocumentCallbackControlEvents)
     .function("init", &CCBAnimationManager::init)
     .function("getKeyframeCallbacks", &CCBAnimationManager::getKeyframeCallbacks)
     .function("getDocumentCallbackControlEvents", &CCBAnimationManager::getDocumentCallbackControlEvents)
@@ -63,10 +60,7 @@ COCOS_BINDINGS(jsb_cocos2dx_builder) {
     .function("setAnimationManager", &CCBReader::setAnimationManager, allow_raw_pointers())
     .function("addOwnerOutletName", &CCBReader::addOwnerOutletName)
     .function("getOwnerCallbackNames", &CCBReader::getOwnerCallbackNames)
-    .function("addDocumentCallbackControlEvents", optional_override(
-        [](CCBReader& this_, int32_t arg0){
-        return this_.addDocumentCallbackControlEvents((cocos2d::extension::Control::EventType)arg0);
-      }))
+    .function("addDocumentCallbackControlEvents", &CCBReader::addDocumentCallbackControlEvents)
     .function("setCCBRootPath", &CCBReader::setCCBRootPath, allow_raw_pointers())
     .function("addOwnerOutletNode", &CCBReader::addOwnerOutletNode, allow_raw_pointers())
     .function("getOwnerCallbackNodes", &CCBReader::getOwnerCallbackNodes)
@@ -75,10 +69,7 @@ COCOS_BINDINGS(jsb_cocos2dx_builder) {
     .function("getOwnerCallbackControlEvents", &CCBReader::getOwnerCallbackControlEvents)
     .function("getOwnerOutletNodes", &CCBReader::getOwnerOutletNodes)
     .function("readUTF8", &CCBReader::readUTF8)
-    .function("addOwnerCallbackControlEvents", optional_override(
-        [](CCBReader& this_, int32_t arg0){
-        return this_.addOwnerCallbackControlEvents((cocos2d::extension::Control::EventType)arg0);
-      }))
+    .function("addOwnerCallbackControlEvents", &CCBReader::addOwnerCallbackControlEvents)
     .function("getOwnerOutletNames", &CCBReader::getOwnerOutletNames)
     .function("readCallbackKeyframesForSeq", &CCBReader::readCallbackKeyframesForSeq, allow_raw_pointers())
     .function("getAnimationManagersForNodes", &CCBReader::getAnimationManagersForNodes)

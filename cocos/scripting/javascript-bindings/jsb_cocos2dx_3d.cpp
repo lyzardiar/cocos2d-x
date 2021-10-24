@@ -25,10 +25,7 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .constructor(&cc_bindings_constructor<Animate3D>, allow_raw_pointers())
     .function("setKeyFrameUserInfo", &Animate3D::setKeyFrameUserInfo)
     .function("getSpeed", &Animate3D::getSpeed)
-    .function("setQuality", optional_override(
-        [](Animate3D& this_, int32_t arg0){
-        return this_.setQuality((cocos2d::Animate3DQuality)arg0);
-      }))
+    .function("setQuality", &Animate3D::setQuality)
     .function("setWeight", &Animate3D::setWeight)
     .function("removeFromMap", &Animate3D::removeFromMap)
     .function("initWithFrames", &Animate3D::initWithFrames, allow_raw_pointers())
@@ -38,10 +35,7 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("init", select_overload<bool(cocos2d::Animation3D*)>(&Animate3D::init), allow_raw_pointers())
     .function("setOriginInterval", &Animate3D::setOriginInterval)
     .function("getWeight", &Animate3D::getWeight)
-    .function("getQuality", optional_override(
-        [](Animate3D& this_){
-        return (int32_t)this_.getQuality();
-      }))
+    .function("getQuality", &Animate3D::getQuality)
     .class_function("create", select_overload<cocos2d::Animate3D*(cocos2d::Animation3D*, float, float)>(&Animate3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Animate3D*(cocos2d::Animation3D*)>(&Animate3D::create), allow_raw_pointers())
     .class_function("getTransitionTime", &Animate3D::getTransitionTime)
@@ -73,33 +67,15 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
 
   class_<BillBoard, base<Sprite>>("jsb.BillBoard")
     .constructor(&cc_bindings_constructor<BillBoard>, allow_raw_pointers())
-    .function("getMode", optional_override(
-        [](BillBoard& this_){
-        return (int32_t)this_.getMode();
-      }))
-    .function("setMode", optional_override(
-        [](BillBoard& this_, int32_t arg0){
-        return this_.setMode((cocos2d::BillBoard::Mode)arg0);
-      }))
-    .class_function("create", optional_override(
-        [](const std::string& arg0, int32_t arg1){
-            return BillBoard::create(arg0, (cocos2d::BillBoard::Mode)arg1);
-        }), allow_raw_pointers())
+    .function("getMode", &BillBoard::getMode)
+    .function("setMode", &BillBoard::setMode)
+    .class_function("create", select_overload<cocos2d::BillBoard*(const std::string&, cocos2d::BillBoard::Mode)>(&BillBoard::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .class_function("create", optional_override(
-        [](int32_t arg0){
-            return BillBoard::create((cocos2d::BillBoard::Mode)arg0);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::BillBoard*(cocos2d::BillBoard::Mode)>(&BillBoard::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const cocos2d::Rect& arg1, int32_t arg2){
-            return BillBoard::create(arg0, arg1, (cocos2d::BillBoard::Mode)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::BillBoard*(const std::string&, const cocos2d::Rect&, cocos2d::BillBoard::Mode)>(&BillBoard::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .class_function("createWithTexture", optional_override(
-      [](cocos2d::Texture2D* arg0, int32_t arg1){
-        return BillBoard::createWithTexture(arg0, (cocos2d::BillBoard::Mode)arg1);
-      }), allow_raw_pointers())
+    .class_function("createWithTexture", &BillBoard::createWithTexture, allow_raw_pointers())
     .class_function("createWithTexture", optional_override(
       [](cocos2d::Texture2D* arg0){
         return BillBoard::createWithTexture(arg0);
@@ -240,10 +216,7 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     // TODO: Only support function overloading with different number of parameters
     .function("getHeight", select_overload<float(float, float, cocos2d::Vec3*) const>(&Terrain::getHeight), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
-    .function("initWithTerrainData", optional_override(
-        [](Terrain& this_, cocos2d::Terrain::TerrainData& arg0, int32_t arg1){
-        return this_.initWithTerrainData(arg0, (cocos2d::Terrain::CrackFixedType)arg1);
-      }))
+    .function("initWithTerrainData", &Terrain::initWithTerrainData)
     .function("setLODDistance", &Terrain::setLODDistance)
     .function("getTerrainSize", &Terrain::getTerrainSize)
     .function("getIntersectionPoint", select_overload<bool(const cocos2d::Ray&, cocos2d::Vec3&) const>(&Terrain::getIntersectionPoint))

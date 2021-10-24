@@ -15,10 +15,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
   class_<LayoutParameter>("ccui.LayoutParameter")
     .constructor(&cc_bindings_constructor<LayoutParameter>, allow_raw_pointers())
     .function("clone", &LayoutParameter::clone, allow_raw_pointers())
-    .function("getLayoutType", optional_override(
-        [](LayoutParameter& this_){
-        return (int32_t)this_.getLayoutType();
-      }))
+    .function("getLayoutType", &LayoutParameter::getLayoutType)
     .function("createCloneInstance", &LayoutParameter::createCloneInstance, allow_raw_pointers())
     .function("copyProperties", &LayoutParameter::copyProperties, allow_raw_pointers())
     .class_function("create", &LayoutParameter::create, allow_raw_pointers())
@@ -28,14 +25,8 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
 
   class_<LinearLayoutParameter, base<LayoutParameter>>("ccui.LinearLayoutParameter")
     .constructor(&cc_bindings_constructor<LinearLayoutParameter>, allow_raw_pointers())
-    .function("setGravity", optional_override(
-        [](LinearLayoutParameter& this_, int32_t arg0){
-        return this_.setGravity((cocos2d::ui::LinearLayoutParameter::LinearGravity)arg0);
-      }))
-    .function("getGravity", optional_override(
-        [](LinearLayoutParameter& this_){
-        return (int32_t)this_.getGravity();
-      }))
+    .function("setGravity", &LinearLayoutParameter::setGravity)
+    .function("getGravity", &LinearLayoutParameter::getGravity)
     .class_function("create", &LinearLayoutParameter::create, allow_raw_pointers())
     .property("_className",  optional_override([](const LinearLayoutParameter& _) -> std::string {return "LinearLayoutParameter";}))    
     ;
@@ -43,18 +34,12 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
 
   class_<RelativeLayoutParameter, base<LayoutParameter>>("ccui.RelativeLayoutParameter")
     .constructor(&cc_bindings_constructor<RelativeLayoutParameter>, allow_raw_pointers())
-    .function("setAlign", optional_override(
-        [](RelativeLayoutParameter& this_, int32_t arg0){
-        return this_.setAlign((cocos2d::ui::RelativeLayoutParameter::RelativeAlign)arg0);
-      }))
+    .function("setAlign", &RelativeLayoutParameter::setAlign)
     .function("setRelativeToWidgetName", &RelativeLayoutParameter::setRelativeToWidgetName)
     .function("getRelativeName", &RelativeLayoutParameter::getRelativeName)
     .function("getRelativeToWidgetName", &RelativeLayoutParameter::getRelativeToWidgetName)
     .function("setRelativeName", &RelativeLayoutParameter::setRelativeName)
-    .function("getAlign", optional_override(
-        [](RelativeLayoutParameter& this_){
-        return (int32_t)this_.getAlign();
-      }))
+    .function("getAlign", &RelativeLayoutParameter::getAlign)
     .class_function("create", &RelativeLayoutParameter::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RelativeLayoutParameter& _) -> std::string {return "RelativeLayoutParameter";}))    
     ;
@@ -76,24 +61,15 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setSwallowTouches", &Widget::setSwallowTouches)
     .function("getLayoutSize", &Widget::getLayoutSize)
     .function("setHighlighted", &Widget::setHighlighted)
-    .function("setPositionType", optional_override(
-        [](Widget& this_, int32_t arg0){
-        return this_.setPositionType((cocos2d::ui::Widget::PositionType)arg0);
-      }))
+    .function("setPositionType", &Widget::setPositionType)
     .function("isIgnoreContentAdaptWithSize", &Widget::isIgnoreContentAdaptWithSize)
     .function("getVirtualRendererSize", &Widget::getVirtualRendererSize)
     .function("isHighlighted", &Widget::isHighlighted)
     .function("addCCSEventListener", &Widget::addCCSEventListener)
-    .function("getPositionType", optional_override(
-        [](Widget& this_){
-        return (int32_t)this_.getPositionType();
-      }))
+    .function("getPositionType", &Widget::getPositionType)
     .function("getTopBoundary", &Widget::getTopBoundary)
     .function("ignoreContentAdaptWithSize", &Widget::ignoreContentAdaptWithSize)
-    .function("findNextFocusedWidget", optional_override(
-        [](Widget& this_, int32_t arg0, cocos2d::ui::Widget* arg1){
-        return this_.findNextFocusedWidget((cocos2d::ui::Widget::FocusDirection)arg0, arg1);
-      }), allow_raw_pointers())
+    .function("findNextFocusedWidget", &Widget::findNextFocusedWidget, allow_raw_pointers())
     .function("isEnabled", &Widget::isEnabled)
     .function("isFocused", &Widget::isFocused)
     .function("getTouchBeganPosition", &Widget::getTouchBeganPosition)
@@ -109,10 +85,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("_init", &Widget::init)
     .function("setEnabled", &Widget::setEnabled)
     .function("getRightBoundary", &Widget::getRightBoundary)
-    .function("setBrightStyle", optional_override(
-        [](Widget& this_, int32_t arg0){
-        return this_.setBrightStyle((cocos2d::ui::Widget::BrightStyle)arg0);
-      }))
+    .function("setBrightStyle", &Widget::setBrightStyle)
     .function("setLayoutParameter", &Widget::setLayoutParameter, allow_raw_pointers())
     .function("clone", &Widget::clone, allow_raw_pointers())
     .function("setFocusEnabled", &Widget::setFocusEnabled)
@@ -128,29 +101,17 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("updateSizeAndPosition", select_overload<void()>(&Widget::updateSizeAndPosition))
     .function("onFocusChange", &Widget::onFocusChange, allow_raw_pointers())
     .function("getTouchMovePosition", &Widget::getTouchMovePosition)
-    .function("getSizeType", optional_override(
-        [](Widget& this_){
-        return (int32_t)this_.getSizeType();
-      }))
+    .function("getSizeType", &Widget::getSizeType)
     .function("getCallbackType", &Widget::getCallbackType)
     .function("getTouchEndPosition", &Widget::getTouchEndPosition)
     .function("getPositionPercent", &Widget::getPositionPercent)
-    .function("propagateTouchEvent", optional_override(
-        [](Widget& this_, int32_t arg0, cocos2d::ui::Widget* arg1, cocos2d::Touch* arg2){
-        return this_.propagateTouchEvent((cocos2d::ui::Widget::TouchEventType)arg0, arg1, arg2);
-      }), allow_raw_pointers())
+    .function("propagateTouchEvent", &Widget::propagateTouchEvent, allow_raw_pointers())
     .function("addClickEventListener", &Widget::addClickEventListener)
     .function("isFlippedX", &Widget::isFlippedX)
     .function("isFlippedY", &Widget::isFlippedY)
     .function("isClippingParentContainsPoint", &Widget::isClippingParentContainsPoint)
-    .function("setSizeType", optional_override(
-        [](Widget& this_, int32_t arg0){
-        return this_.setSizeType((cocos2d::ui::Widget::SizeType)arg0);
-      }))
-    .function("interceptTouchEvent", optional_override(
-        [](Widget& this_, int32_t arg0, cocos2d::ui::Widget* arg1, cocos2d::Touch* arg2){
-        return this_.interceptTouchEvent((cocos2d::ui::Widget::TouchEventType)arg0, arg1, arg2);
-      }), allow_raw_pointers())
+    .function("setSizeType", &Widget::setSizeType)
+    .function("interceptTouchEvent", &Widget::interceptTouchEvent, allow_raw_pointers())
     .function("setBright", &Widget::setBright)
     .function("setCallbackType", &Widget::setCallbackType)
     .function("isSwallowTouches", &Widget::isSwallowTouches)
@@ -192,31 +153,19 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
   class_<Layout, base<Widget>>("ccui.Layout")
     .constructor(&cc_bindings_constructor<Layout>, allow_raw_pointers())
     .function("setBackGroundColorVector", &Layout::setBackGroundColorVector)
-    .function("setClippingType", optional_override(
-        [](Layout& this_, int32_t arg0){
-        return this_.setClippingType((cocos2d::ui::Layout::ClippingType)arg0);
-      }))
-    .function("setBackGroundColorType", optional_override(
-        [](Layout& this_, int32_t arg0){
-        return this_.setBackGroundColorType((cocos2d::ui::Layout::BackGroundColorType)arg0);
-      }))
+    .function("setClippingType", &Layout::setClippingType)
+    .function("setBackGroundColorType", &Layout::setBackGroundColorType)
     .function("setLoopFocus", &Layout::setLoopFocus)
     .function("setBackGroundImageColor", &Layout::setBackGroundImageColor)
     .function("getBackGroundColorVector", &Layout::getBackGroundColorVector)
-    .function("getClippingType", optional_override(
-        [](Layout& this_){
-        return (int32_t)this_.getClippingType();
-      }))
+    .function("getClippingType", &Layout::getClippingType)
     .function("getRenderFile", &Layout::getRenderFile)
     .function("isLoopFocus", &Layout::isLoopFocus)
     .function("removeBackGroundImage", &Layout::removeBackGroundImage)
     .function("getBackGroundColorOpacity", &Layout::getBackGroundColorOpacity)
     .function("isClippingEnabled", &Layout::isClippingEnabled)
     .function("setBackGroundImageOpacity", &Layout::setBackGroundImageOpacity)
-    .function("setBackGroundImage", optional_override(
-        [](Layout& this_, const std::string& arg0, int32_t arg1){
-        return this_.setBackGroundImage(arg0, (cocos2d::ui::Widget::TextureResType)arg1);
-      }))
+    .function("setBackGroundImage", &Layout::setBackGroundImage)
     .function("setBackGroundImage", optional_override(
         [](Layout& this_, const std::string& arg0){
         return this_.setBackGroundImage(arg0);
@@ -229,10 +178,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setClippingEnabled", &Layout::setClippingEnabled)
     .function("getBackGroundImageColor", &Layout::getBackGroundImageColor)
     .function("isBackGroundImageScale9Enabled", &Layout::isBackGroundImageScale9Enabled)
-    .function("getBackGroundColorType", optional_override(
-        [](Layout& this_){
-        return (int32_t)this_.getBackGroundColorType();
-      }))
+    .function("getBackGroundColorType", &Layout::getBackGroundColorType)
     .function("getBackGroundEndColor", &Layout::getBackGroundEndColor)
     .function("setBackGroundColorOpacity", &Layout::setBackGroundColorOpacity)
     .function("getBackGroundImageOpacity", &Layout::getBackGroundImageOpacity)
@@ -240,17 +186,11 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setBackGroundImageCapInsets", &Layout::setBackGroundImageCapInsets)
     .function("getBackGroundImageTextureSize", &Layout::getBackGroundImageTextureSize)
     .function("forceDoLayout", &Layout::forceDoLayout)
-    .function("getLayoutType", optional_override(
-        [](Layout& this_){
-        return (int32_t)this_.getLayoutType();
-      }))
+    .function("getLayoutType", &Layout::getLayoutType)
     .function("setPassFocusToChild", &Layout::setPassFocusToChild)
     .function("getBackGroundStartColor", &Layout::getBackGroundStartColor)
     .function("setBackGroundImageScale9Enabled", &Layout::setBackGroundImageScale9Enabled)
-    .function("setLayoutType", optional_override(
-        [](Layout& this_, int32_t arg0){
-        return this_.setLayoutType((cocos2d::ui::Layout::Type)arg0);
-      }))
+    .function("setLayoutType", &Layout::setLayoutType)
     .property("clippingEnabled", &Layout::isClippingEnabled, &Layout::setClippingEnabled)
     .property("clippingType", &Layout::getClippingType, &Layout::setClippingType)
     .property("layoutType", &Layout::getLayoutType, &Layout::setLayoutType)
@@ -285,19 +225,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setCapInsetsNormalRenderer", &Button::setCapInsetsNormalRenderer)
     .function("setTitleFontName", &Button::setTitleFontName)
     .function("getCapInsetsNormalRenderer", &Button::getCapInsetsNormalRenderer)
-    .function("setTitleAlignment", optional_override(
-        [](Button& this_, int32_t arg0, int32_t arg1){
-            return this_.setTitleAlignment((cocos2d::TextHAlignment)arg0, (cocos2d::TextVAlignment)arg1);
-        }))
-    .function("setTitleAlignment", optional_override(
-        [](Button& this_, int32_t arg0){
-            return this_.setTitleAlignment((cocos2d::TextHAlignment)arg0);
-        }))
+    .function("setTitleAlignment", select_overload<void(cocos2d::TextHAlignment, cocos2d::TextVAlignment)>(&Button::setTitleAlignment))
+    .function("setTitleAlignment", select_overload<void(cocos2d::TextHAlignment)>(&Button::setTitleAlignment))
     .function("getCapInsetsPressedRenderer", &Button::getCapInsetsPressedRenderer)
-    .function("loadTextures", optional_override(
-        [](Button& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, int32_t arg3){
-        return this_.loadTextures(arg0, arg1, arg2, (cocos2d::ui::Widget::TextureResType)arg3);
-      }))
+    .function("loadTextures", &Button::loadTextures)
     .function("loadTextures", optional_override(
         [](Button& this_, const std::string& arg0, const std::string& arg1){
         return this_.loadTextures(arg0, arg1);
@@ -345,10 +276,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         CCLOG("Button.pressedActionEnabled is write-only");
         return false;
       }), &Button::setPressedActionEnabled)
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, int32_t arg3){
-            return Button::create(arg0, arg1, arg2, (cocos2d::ui::Widget::TextureResType)arg3);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::Button*(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
@@ -369,10 +297,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getRendererBackgroundDisabled", &AbstractCheckButton::getRendererBackgroundDisabled, allow_raw_pointers())
     .function("isSelected", &AbstractCheckButton::isSelected)
     .function("getBackNormalFile", &AbstractCheckButton::getBackNormalFile)
-    .function("loadTextures", optional_override(
-        [](AbstractCheckButton& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4, int32_t arg5){
-        return this_.loadTextures(arg0, arg1, arg2, arg3, arg4, (cocos2d::ui::Widget::TextureResType)arg5);
-      }))
+    .function("loadTextures", &AbstractCheckButton::loadTextures)
     .function("loadTextures", optional_override(
         [](AbstractCheckButton& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4){
         return this_.loadTextures(arg0, arg1, arg2, arg3, arg4);
@@ -388,16 +313,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
   class_<CheckBox, base<AbstractCheckButton>>("ccui.CheckBox")
     .constructor(&cc_bindings_constructor<CheckBox>, allow_raw_pointers())
     .function("addEventListener", &CheckBox::addEventListener)
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4, int32_t arg5){
-            return CheckBox::create(arg0, arg1, arg2, arg3, arg4, (cocos2d::ui::Widget::TextureResType)arg5);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::CheckBox*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&CheckBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::CheckBox*()>(&CheckBox::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, int32_t arg2){
-            return CheckBox::create(arg0, arg1, (cocos2d::ui::Widget::TextureResType)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::CheckBox*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&CheckBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const CheckBox& _) -> std::string {return "CheckBox";}))    
     .allow_subclass<wrapper<CheckBox>>("ccui.CheckBox._extend")
@@ -408,16 +327,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
   class_<RadioButton, base<AbstractCheckButton>>("ccui.RadioButton")
     .constructor(&cc_bindings_constructor<RadioButton>, allow_raw_pointers())
     .function("addEventListener", &RadioButton::addEventListener)
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4, int32_t arg5){
-            return RadioButton::create(arg0, arg1, arg2, arg3, arg4, (cocos2d::ui::Widget::TextureResType)arg5);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::RadioButton*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&RadioButton::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::RadioButton*()>(&RadioButton::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, int32_t arg2){
-            return RadioButton::create(arg0, arg1, (cocos2d::ui::Widget::TextureResType)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::RadioButton*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&RadioButton::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const RadioButton& _) -> std::string {return "RadioButton";}))    
     .allow_subclass<wrapper<RadioButton>>("ccui.RadioButton._extend")
@@ -457,10 +370,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getRenderFile", &ImageView::getRenderFile)
     .function("getCapInsets", &ImageView::getCapInsets)
     .function("isScale9Enabled", &ImageView::isScale9Enabled)
-    .class_function("create", optional_override(
-        [](const std::string& arg0, int32_t arg1){
-            return ImageView::create(arg0, (cocos2d::ui::Widget::TextureResType)arg1);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::ImageView*(const std::string&, cocos2d::ui::Widget::TextureResType)>(&ImageView::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::ImageView*()>(&ImageView::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ImageView& _) -> std::string {return "ImageView";}))    
@@ -486,21 +396,12 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
       }))
     .function("getFontSize", &Text::getFontSize)
     .function("getString", &Text::getString)
-    .function("disableEffect", optional_override(
-        [](Text& this_, int32_t arg0){
-            return this_.disableEffect((cocos2d::LabelEffect)arg0);
-        }))
+    .function("disableEffect", select_overload<void(cocos2d::LabelEffect)>(&Text::disableEffect))
     .function("disableEffect", select_overload<void()>(&Text::disableEffect))
-    .function("getLabelEffectType", optional_override(
-        [](Text& this_){
-        return (int32_t)this_.getLabelEffectType();
-      }))
+    .function("getLabelEffectType", &Text::getLabelEffectType)
     .function("getTextColor", &Text::getTextColor)
     .function("getBlendFunc", &Text::getBlendFunc)
-    .function("setTextVerticalAlignment", optional_override(
-        [](Text& this_, int32_t arg0){
-        return this_.setTextVerticalAlignment((cocos2d::TextVAlignment)arg0);
-      }))
+    .function("setTextVerticalAlignment", &Text::setTextVerticalAlignment)
     .function("setFontName", &Text::setFontName)
     .function("setTouchScaleChangeEnabled", &Text::setTouchScaleChangeEnabled)
     .function("getShadowOffset", &Text::getShadowOffset)
@@ -518,14 +419,8 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         return this_.enableOutline(arg0);
       }))
     .function("getEffectColor", &Text::getEffectColor)
-    .function("getType", optional_override(
-        [](Text& this_){
-        return (int32_t)this_.getType();
-      }))
-    .function("getTextHorizontalAlignment", optional_override(
-        [](Text& this_){
-        return (int32_t)this_.getTextHorizontalAlignment();
-      }))
+    .function("getType", &Text::getType)
+    .function("getTextHorizontalAlignment", &Text::getTextHorizontalAlignment)
     .function("isShadowEnabled", &Text::isShadowEnabled)
     .function("setFontSize", &Text::setFontSize)
     .function("getShadowColor", &Text::getShadowColor)
@@ -533,15 +428,9 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("enableGlow", &Text::enableGlow)
     .function("getLetter", &Text::getLetter, allow_raw_pointers())
     .function("setBlendFunc", &Text::setBlendFunc)
-    .function("getTextVerticalAlignment", optional_override(
-        [](Text& this_){
-        return (int32_t)this_.getTextVerticalAlignment();
-      }))
+    .function("getTextVerticalAlignment", &Text::getTextVerticalAlignment)
     .function("getTextAreaSize", &Text::getTextAreaSize)
-    .function("setTextHorizontalAlignment", optional_override(
-        [](Text& this_, int32_t arg0){
-        return this_.setTextHorizontalAlignment((cocos2d::TextHAlignment)arg0);
-      }))
+    .function("setTextHorizontalAlignment", &Text::setTextHorizontalAlignment)
     .property("boundingWidth", 
       optional_override([](const Text& this_){return this_.getTextAreaSize().width;}), 
       optional_override([](Text& this_, float width){this_.setTextAreaSize(Size(width, this_.getTextAreaSize().height));}))
@@ -585,17 +474,11 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
   class_<LoadingBar, base<Widget>>("ccui.LoadingBar")
     .constructor(&cc_bindings_constructor<LoadingBar>, allow_raw_pointers())
     .function("setPercent", &LoadingBar::setPercent)
-    .function("setDirection", optional_override(
-        [](LoadingBar& this_, int32_t arg0){
-        return this_.setDirection((cocos2d::ui::LoadingBar::Direction)arg0);
-      }))
+    .function("setDirection", &LoadingBar::setDirection)
     .function("getRenderFile", &LoadingBar::getRenderFile)
     .function("setScale9Enabled", &LoadingBar::setScale9Enabled)
     .function("setCapInsets", &LoadingBar::setCapInsets)
-    .function("getDirection", optional_override(
-        [](LoadingBar& this_){
-        return (int32_t)this_.getDirection();
-      }))
+    .function("getDirection", &LoadingBar::getDirection)
     .function("getCapInsets", &LoadingBar::getCapInsets)
     .function("isScale9Enabled", &LoadingBar::isScale9Enabled)
     .function("getPercent", &LoadingBar::getPercent)
@@ -604,10 +487,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, float)>(&LoadingBar::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*()>(&LoadingBar::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, int32_t arg1, float arg2){
-            return LoadingBar::create(arg0, (cocos2d::ui::Widget::TextureResType)arg1, arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, cocos2d::ui::Widget::TextureResType, float)>(&LoadingBar::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const LoadingBar& _) -> std::string {return "LoadingBar";}))    
     .allow_subclass<wrapper<LoadingBar>>("ccui.LoadingBar._extend")
@@ -624,19 +504,13 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("isInertiaScrollEnabled", &ScrollView::isInertiaScrollEnabled)
     .function("scrollToBottom", &ScrollView::scrollToBottom)
     .function("getScrolledPercentBothDirection", &ScrollView::getScrolledPercentBothDirection)
-    .function("getDirection", optional_override(
-        [](ScrollView& this_){
-        return (int32_t)this_.getDirection();
-      }))
+    .function("getDirection", &ScrollView::getDirection)
     .function("setScrollBarColor", &ScrollView::setScrollBarColor)
     .function("scrollToBottomLeft", &ScrollView::scrollToBottomLeft)
     .function("getInnerContainer", &ScrollView::getInnerContainer, allow_raw_pointers())
     .function("jumpToBottom", &ScrollView::jumpToBottom)
     .function("setInnerContainerPosition", &ScrollView::setInnerContainerPosition)
-    .function("setDirection", optional_override(
-        [](ScrollView& this_, int32_t arg0){
-        return this_.setDirection((cocos2d::ui::ScrollView::Direction)arg0);
-      }))
+    .function("setDirection", &ScrollView::setDirection)
     .function("scrollToTopLeft", &ScrollView::scrollToTopLeft)
     .function("jumpToTopRight", &ScrollView::jumpToTopRight)
     .function("scrollToPercentBothDirection", &ScrollView::scrollToPercentBothDirection)
@@ -702,10 +576,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
 
   class_<ListView, base<ScrollView>>("ccui.ListView")
     .constructor(&cc_bindings_constructor<ListView>, allow_raw_pointers())
-    .function("setGravity", optional_override(
-        [](ListView& this_, int32_t arg0){
-        return this_.setGravity((cocos2d::ui::ListView::Gravity)arg0);
-      }))
+    .function("setGravity", &ListView::setGravity)
     .function("removeLastItem", &ListView::removeLastItem)
     .function("getLeftPadding", &ListView::getLeftPadding)
     .function("getCenterItemInCurrentView", &ListView::getCenterItemInCurrentView, allow_raw_pointers())
@@ -721,10 +592,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("pushBackCustomItem", &ListView::pushBackCustomItem, allow_raw_pointers())
     .function("setCurSelectedIndex", &ListView::setCurSelectedIndex)
     .function("insertDefaultItem", &ListView::insertDefaultItem)
-    .function("setMagneticType", optional_override(
-        [](ListView& this_, int32_t arg0){
-        return this_.setMagneticType((cocos2d::ui::ListView::MagneticType)arg0);
-      }))
+    .function("setMagneticType", &ListView::setMagneticType)
     .function("setMagneticAllowedOutOfBoundary", &ListView::setMagneticAllowedOutOfBoundary)
     .function("addEventListener", select_overload<void(const ListView::ccListViewCallback&)>(&ListView::addEventListener))
     .function("doLayout", &ListView::doLayout)
@@ -736,10 +604,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getItems", &ListView::getItems)
     .function("getLeftmostItemInCurrentView", &ListView::getLeftmostItemInCurrentView, allow_raw_pointers())
     .function("setItemsMargin", &ListView::setItemsMargin)
-    .function("getMagneticType", optional_override(
-        [](ListView& this_){
-        return (int32_t)this_.getMagneticType();
-      }))
+    .function("getMagneticType", &ListView::getMagneticType)
     .function("getItem", &ListView::getItem, allow_raw_pointers())
     .function("removeItem", &ListView::removeItem)
     .function("getTopPadding", &ListView::getTopPadding)
@@ -771,10 +636,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getBallPressedFile", &Slider::getBallPressedFile)
     .function("getZoomScale", &Slider::getZoomScale)
     .function("setCapInsetProgressBarRenderer", &Slider::setCapInsetProgressBarRenderer)
-    .function("loadSlidBallTextures", optional_override(
-        [](Slider& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, int32_t arg3){
-        return this_.loadSlidBallTextures(arg0, arg1, arg2, (cocos2d::ui::Widget::TextureResType)arg3);
-      }))
+    .function("loadSlidBallTextures", &Slider::loadSlidBallTextures)
     .function("loadSlidBallTextures", optional_override(
         [](Slider& this_, const std::string& arg0){
         return this_.loadSlidBallTextures(arg0);
@@ -804,10 +666,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getSlidBallNormalRenderer", &Slider::getSlidBallNormalRenderer, allow_raw_pointers())
     .function("setZoomScale", &Slider::setZoomScale)
     .property("percent", &Slider::getPercent, &Slider::setPercent)
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, int32_t arg2){
-            return Slider::create(arg0, arg1, (cocos2d::ui::Widget::TextureResType)arg2);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::Slider*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::Slider*()>(&Slider::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Slider& _) -> std::string {return "Slider";}))    
@@ -863,10 +722,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setInsertText", &TextField::setInsertText)
     .function("setString", &TextField::setString)
     .function("getDetachWithIME", &TextField::getDetachWithIME)
-    .function("setTextVerticalAlignment", optional_override(
-        [](TextField& this_, int32_t arg0){
-        return this_.setTextVerticalAlignment((cocos2d::TextVAlignment)arg0);
-      }))
+    .function("setTextVerticalAlignment", &TextField::setTextVerticalAlignment)
     .function("addEventListener", &TextField::addEventListener)
     .function("didNotSelectSelf", &TextField::didNotSelectSelf)
     .function("getFontName", &TextField::getFontName)
@@ -881,28 +737,19 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("isPasswordEnabled", &TextField::isPasswordEnabled)
     .function("setDeleteBackward", &TextField::setDeleteBackward)
     .function("setCursorPosition", &TextField::setCursorPosition)
-    .function("getTextHorizontalAlignment", optional_override(
-        [](TextField& this_){
-        return (int32_t)this_.getTextHorizontalAlignment();
-      }))
+    .function("getTextHorizontalAlignment", &TextField::getTextHorizontalAlignment)
     .function("setFontSize", &TextField::setFontSize)
     .function("setPlaceHolder", &TextField::setPlaceHolder)
     .function("setCursorFromPoint", &TextField::setCursorFromPoint, allow_raw_pointers())
     .function("setPlaceHolderColor", select_overload<void(const cocos2d::Color4B&)>(&TextField::setPlaceHolderColor))
     // TODO: Only support function overloading with different number of parameters
-    .function("setTextHorizontalAlignment", optional_override(
-        [](TextField& this_, int32_t arg0){
-        return this_.setTextHorizontalAlignment((cocos2d::TextHAlignment)arg0);
-      }))
+    .function("setTextHorizontalAlignment", &TextField::setTextHorizontalAlignment)
     .function("setTextColor", &TextField::setTextColor)
     .function("setCursorChar", &TextField::setCursorChar)
     .function("getMaxLength", &TextField::getMaxLength)
     .function("isMaxLengthEnabled", &TextField::isMaxLengthEnabled)
     .function("setDetachWithIME", &TextField::setDetachWithIME)
-    .function("getTextVerticalAlignment", optional_override(
-        [](TextField& this_){
-        return (int32_t)this_.getTextVerticalAlignment();
-      }))
+    .function("getTextVerticalAlignment", &TextField::getTextVerticalAlignment)
     .function("setTouchAreaEnabled", &TextField::setTouchAreaEnabled)
     .function("setMaxLength", &TextField::setMaxLength)
     .function("setCursorEnabled", &TextField::setCursorEnabled)
@@ -988,10 +835,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getIndicatorPositionAsAnchorPoint", &PageView::getIndicatorPositionAsAnchorPoint)
     .function("getCurrentPageIndex", &PageView::getCurrentPageIndex)
     .function("removePage", &PageView::removePage, allow_raw_pointers())
-    .function("setIndicatorIndexNodesTexture", optional_override(
-        [](PageView& this_, const std::string& arg0, int32_t arg1){
-        return this_.setIndicatorIndexNodesTexture(arg0, (cocos2d::ui::Widget::TextureResType)arg1);
-      }))
+    .function("setIndicatorIndexNodesTexture", &PageView::setIndicatorIndexNodesTexture)
     .function("setIndicatorIndexNodesTexture", optional_override(
         [](PageView& this_, const std::string& arg0){
         return this_.setIndicatorIndexNodesTexture(arg0);
@@ -1021,10 +865,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
 
   class_<RichElement>("ccui.RichElement")
     .constructor(&cc_bindings_constructor<RichElement>, allow_raw_pointers())
-    .function("equalType", optional_override(
-        [](RichElement& this_, int32_t arg0){
-        return this_.equalType((cocos2d::ui::RichElement::Type)arg0);
-      }))
+    .function("equalType", &RichElement::equalType)
     .function("init", &RichElement::init)
     .function("setColor", &RichElement::setColor)
     .property("_className",  optional_override([](const RichElement& _) -> std::string {return "RichElement";}))    
@@ -1102,10 +943,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
   class_<RichElementImage, base<RichElement>>("ccui.RichElementImage")
     .constructor(&cc_bindings_constructor<RichElementImage>, allow_raw_pointers())
     .function("setHeight", &RichElementImage::setHeight)
-    .function("init", optional_override(
-        [](RichElementImage& this_, int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3, const std::string& arg4, int32_t arg5){
-        return this_.init(arg0, arg1, arg2, arg3, arg4, (cocos2d::ui::Widget::TextureResType)arg5);
-      }))
+    .function("init", &RichElementImage::init)
     .function("init", optional_override(
         [](RichElementImage& this_, int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3){
         return this_.init(arg0, arg1, arg2, arg3);
@@ -1116,10 +954,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
       }))
     .function("setWidth", &RichElementImage::setWidth)
     .function("setUrl", &RichElementImage::setUrl)
-    .class_function("create", optional_override(
-      [](int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3, const std::string& arg4, int32_t arg5){
-        return RichElementImage::create(arg0, arg1, arg2, arg3, arg4, (cocos2d::ui::Widget::TextureResType)arg5);
-      }), allow_raw_pointers())
+    .class_function("create", &RichElementImage::create, allow_raw_pointers())
     .class_function("create", optional_override(
       [](int arg0, const cocos2d::Color3B& arg1, unsigned char arg2, const std::string& arg3){
         return RichElementImage::create(arg0, arg1, arg2, arg3);
@@ -1191,14 +1026,8 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         [](RichText& this_, bool arg0){
         return this_.setAnchorTextGlow(arg0);
       }))
-    .function("getHorizontalAlignment", optional_override(
-        [](RichText& this_){
-        return (int32_t)this_.getHorizontalAlignment();
-      }))
-    .function("setHorizontalAlignment", optional_override(
-        [](RichText& this_, int32_t arg0){
-        return this_.setHorizontalAlignment((cocos2d::ui::RichText::HorizontalAlignment)arg0);
-      }))
+    .function("getHorizontalAlignment", &RichText::getHorizontalAlignment)
+    .function("setHorizontalAlignment", &RichText::setHorizontalAlignment)
     .function("setAnchorTextDel", &RichText::setAnchorTextDel)
     .function("getAnchorTextOutlineColor3B", &RichText::getAnchorTextOutlineColor3B)
     .function("stringWithColor4B", &RichText::stringWithColor4B)
@@ -1222,10 +1051,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setVerticalSpace", &RichText::setVerticalSpace)
     .function("isAnchorTextDelEnabled", &RichText::isAnchorTextDelEnabled)
     .function("setDefaults", &RichText::setDefaults)
-    .function("setWrapMode", optional_override(
-        [](RichText& this_, int32_t arg0){
-        return this_.setWrapMode((cocos2d::ui::RichText::WrapMode)arg0);
-      }))
+    .function("setWrapMode", &RichText::setWrapMode)
     .function("setFontSize", &RichText::setFontSize)
     .function("removeElement", select_overload<void(cocos2d::ui::RichElement*)>(&RichText::removeElement), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -1236,10 +1062,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("stringWithColor3B", &RichText::stringWithColor3B)
     .function("isAnchorTextOutlineEnabled", &RichText::isAnchorTextOutlineEnabled)
     .function("getFontColor3B", &RichText::getFontColor3B)
-    .function("getWrapMode", optional_override(
-        [](RichText& this_){
-        return (int32_t)this_.getWrapMode();
-      }))
+    .function("getWrapMode", &RichText::getWrapMode)
     .function("setAnchorTextUnderline", &RichText::setAnchorTextUnderline)
     .function("color3BWithString", &RichText::color3BWithString)
     .class_function("create", &RichText::create, allow_raw_pointers())
@@ -1293,35 +1116,23 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("updateWithSprite", select_overload<bool(cocos2d::Sprite*, const cocos2d::Rect&, bool, const cocos2d::Rect&)>(&Scale9Sprite::updateWithSprite), allow_raw_pointers())
     .function("resizableSpriteWithCapInsets", &Scale9Sprite::resizableSpriteWithCapInsets, allow_raw_pointers())
     .function("getCapInsets", &Scale9Sprite::getCapInsets)
-    .function("setState", optional_override(
-        [](Scale9Sprite& this_, int32_t arg0){
-        return this_.setState((cocos2d::ui::Scale9Sprite::State)arg0);
-      }))
+    .function("setState", &Scale9Sprite::setState)
     .function("setInsetBottom", &Scale9Sprite::setInsetBottom)
     .function("getSprite", &Scale9Sprite::getSprite, allow_raw_pointers())
     .function("setInsetTop", &Scale9Sprite::setInsetTop)
-    .function("setRenderingType", optional_override(
-        [](Scale9Sprite& this_, int32_t arg0){
-        return this_.setRenderingType((cocos2d::ui::Scale9Sprite::RenderingType)arg0);
-      }))
+    .function("setRenderingType", &Scale9Sprite::setRenderingType)
     .function("init", select_overload<bool(cocos2d::Sprite*, const cocos2d::Rect&, const cocos2d::Rect&)>(&Scale9Sprite::init), allow_raw_pointers())
     .function("init", select_overload<bool(cocos2d::Sprite*, const cocos2d::Rect&, bool, const cocos2d::Rect&)>(&Scale9Sprite::init), allow_raw_pointers())
     .function("init", select_overload<bool(cocos2d::Sprite*, const cocos2d::Rect&, bool, const cocos2d::Vec2&, const cocos2d::Size&, const cocos2d::Rect&)>(&Scale9Sprite::init), allow_raw_pointers())
     .function("setPreferredSize", &Scale9Sprite::setPreferredSize)
     .function("copyTo", &Scale9Sprite::copyTo, allow_raw_pointers())
     .function("setSpriteFrame", select_overload<void(SpriteFrame *, const Rect&)>(&Scale9Sprite::setSpriteFrame), allow_raw_pointers())
-    .function("getState", optional_override(
-        [](Scale9Sprite& this_){
-        return (int32_t)this_.getState();
-      }))
+    .function("getState", &Scale9Sprite::getState)
     .function("getInsetBottom", &Scale9Sprite::getInsetBottom)
     .function("setScale9Enabled", &Scale9Sprite::setScale9Enabled)
     .function("isScale9Enabled", &Scale9Sprite::isScale9Enabled)
     .function("resetRender", &Scale9Sprite::resetRender)
-    .function("getRenderingType", optional_override(
-        [](Scale9Sprite& this_){
-        return (int32_t)this_.getRenderingType();
-      }))
+    .function("getRenderingType", &Scale9Sprite::getRenderingType)
     .function("getInsetRight", &Scale9Sprite::getInsetRight)
     .function("getOriginalSize", &Scale9Sprite::getOriginalSize)
     .function("initWithFile", select_overload<bool(const cocos2d::Rect&, const std::string&)>(&Scale9Sprite::initWithFile))
@@ -1361,15 +1172,9 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setMaxLength", &EditBox::setMaxLength)
     .function("openKeyboard", &EditBox::openKeyboard)
     .function("setFontSize", &EditBox::setFontSize)
-    .function("getInputMode", optional_override(
-        [](EditBox& this_){
-        return (int32_t)this_.getInputMode();
-      }))
+    .function("getInputMode", &EditBox::getInputMode)
     .function("initWithSizeAndBackgroundSprite", select_overload<bool(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*)>(&EditBox::initWithSizeAndBackgroundSprite), allow_raw_pointers())
-    .function("initWithSizeAndBackgroundSprite", optional_override(
-        [](EditBox& this_, const cocos2d::Size& arg0, const std::string& arg1, int32_t arg2){
-            return this_.initWithSizeAndBackgroundSprite(arg0, arg1, (cocos2d::ui::Widget::TextureResType)arg2);
-        }))
+    .function("initWithSizeAndBackgroundSprite", select_overload<bool(const cocos2d::Size&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::initWithSizeAndBackgroundSprite))
     // TODO: Only support function overloading with different number of parameters
     .function("initWithSizeAndBackgroundSprite", select_overload<bool(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*)>(&EditBox::initWithSizeAndBackgroundSprite), allow_raw_pointers())
     .function("getPlaceholderFontName", &EditBox::getPlaceholderFontName, allow_raw_pointers())
@@ -1381,29 +1186,17 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setString", &EditBox::setText, allow_raw_pointers())
     .function("setCapInsetsDisabledRenderer", &EditBox::setCapInsetsDisabledRenderer)
     .function("setPlaceholderFontSize", &EditBox::setPlaceholderFontSize)
-    .function("setInputMode", optional_override(
-        [](EditBox& this_, int32_t arg0){
-        return this_.setInputMode((cocos2d::ui::EditBox::InputMode)arg0);
-      }))
+    .function("setInputMode", &EditBox::setInputMode)
     .function("setPlaceholderFontColor", select_overload<void(const cocos2d::Color4B&)>(&EditBox::setPlaceholderFontColor))
     // TODO: Only support function overloading with different number of parameters
-    .function("getReturnType", optional_override(
-        [](EditBox& this_){
-        return (int32_t)this_.getReturnType();
-      }))
+    .function("getReturnType", &EditBox::getReturnType)
     .function("setFontColor", select_overload<void(const cocos2d::Color4B&)>(&EditBox::setFontColor))
     // TODO: Only support function overloading with different number of parameters
     .function("getFontName", &EditBox::getFontName, allow_raw_pointers())
     .function("setCapInsetsNormalRenderer", &EditBox::setCapInsetsNormalRenderer)
     .function("getFontColor", &EditBox::getFontColor)
-    .function("getInputFlag", optional_override(
-        [](EditBox& this_){
-        return (int32_t)this_.getInputFlag();
-      }))
-    .function("initWithSizeAndTexture", optional_override(
-        [](EditBox& this_, const cocos2d::Size& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, int32_t arg4){
-        return this_.initWithSizeAndTexture(arg0, arg1, arg2, arg3, (cocos2d::ui::Widget::TextureResType)arg4);
-      }))
+    .function("getInputFlag", &EditBox::getInputFlag)
+    .function("initWithSizeAndTexture", &EditBox::initWithSizeAndTexture)
     .function("initWithSizeAndTexture", optional_override(
         [](EditBox& this_, const cocos2d::Size& arg0, const std::string& arg1){
         return this_.initWithSizeAndTexture(arg0, arg1);
@@ -1416,16 +1209,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         [](EditBox& this_, const cocos2d::Size& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3){
         return this_.initWithSizeAndTexture(arg0, arg1, arg2, arg3);
       }))
-    .function("getTextHorizontalAlignment", optional_override(
-        [](EditBox& this_){
-        return (int32_t)this_.getTextHorizontalAlignment();
-      }))
+    .function("getTextHorizontalAlignment", &EditBox::getTextHorizontalAlignment)
     .function("getCapInsetsNormalRenderer", &EditBox::getCapInsetsNormalRenderer)
     .function("getCapInsetsPressedRenderer", &EditBox::getCapInsetsPressedRenderer)
-    .function("loadTextures", optional_override(
-        [](EditBox& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, int32_t arg3){
-        return this_.loadTextures(arg0, arg1, arg2, (cocos2d::ui::Widget::TextureResType)arg3);
-      }))
+    .function("loadTextures", &EditBox::loadTextures)
     .function("loadTextures", optional_override(
         [](EditBox& this_, const std::string& arg0, const std::string& arg1){
         return this_.loadTextures(arg0, arg1);
@@ -1435,35 +1222,20 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         return this_.loadTextures(arg0, arg1, arg2);
       }))
     .function("setPlaceHolder", &EditBox::setPlaceHolder, allow_raw_pointers())
-    .function("setInputFlag", optional_override(
-        [](EditBox& this_, int32_t arg0){
-        return this_.setInputFlag((cocos2d::ui::EditBox::InputFlag)arg0);
-      }))
-    .function("setReturnType", optional_override(
-        [](EditBox& this_, int32_t arg0){
-        return this_.setReturnType((cocos2d::ui::EditBox::KeyboardReturnType)arg0);
-      }))
+    .function("setInputFlag", &EditBox::setInputFlag)
+    .function("setReturnType", &EditBox::setReturnType)
     .function("getMaxLength", &EditBox::getMaxLength)
     .function("setCapInsetsPressedRenderer", &EditBox::setCapInsetsPressedRenderer)
     .function("setPlaceholderFont", &EditBox::setPlaceholderFont, allow_raw_pointers())
     .function("getPlaceholderFontColor", &EditBox::getPlaceholderFontColor)
     .function("setCapInsets", &EditBox::setCapInsets)
     .function("setFont", &EditBox::setFont, allow_raw_pointers())
-    .function("setTextHorizontalAlignment", optional_override(
-        [](EditBox& this_, int32_t arg0){
-        return this_.setTextHorizontalAlignment((cocos2d::TextHAlignment)arg0);
-      }))
-    .class_function("create", optional_override(
-        [](const cocos2d::Size& arg0, const std::string& arg1, int32_t arg2){
-            return EditBox::create(arg0, arg1, (cocos2d::ui::Widget::TextureResType)arg2);
-        }), allow_raw_pointers())
+    .function("setTextHorizontalAlignment", &EditBox::setTextHorizontalAlignment)
+    .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*)>(&EditBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
-    .class_function("create", optional_override(
-        [](const cocos2d::Size& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, int32_t arg4){
-            return EditBox::create(arg0, arg1, arg2, arg3, (cocos2d::ui::Widget::TextureResType)arg4);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
     // TODO: Only support function overloading with different number of parameters
@@ -1486,17 +1258,11 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setAnchorPosition", &LayoutComponent::setAnchorPosition)
     .function("refreshLayout", &LayoutComponent::refreshLayout)
     .function("isPercentWidthEnabled", &LayoutComponent::isPercentWidthEnabled)
-    .function("setVerticalEdge", optional_override(
-        [](LayoutComponent& this_, int32_t arg0){
-        return this_.setVerticalEdge((cocos2d::ui::LayoutComponent::VerticalEdge)arg0);
-      }))
+    .function("setVerticalEdge", &LayoutComponent::setVerticalEdge)
     .function("getTopMargin", &LayoutComponent::getTopMargin)
     .function("setSizeWidth", &LayoutComponent::setSizeWidth)
     .function("getPercentContentSize", &LayoutComponent::getPercentContentSize)
-    .function("getVerticalEdge", optional_override(
-        [](LayoutComponent& this_){
-        return (int32_t)this_.getVerticalEdge();
-      }))
+    .function("getVerticalEdge", &LayoutComponent::getVerticalEdge)
     .function("setPercentWidthEnabled", &LayoutComponent::setPercentWidthEnabled)
     .function("isStretchWidthEnabled", &LayoutComponent::isStretchWidthEnabled)
     .function("setLeftMargin", &LayoutComponent::setLeftMargin)
@@ -1514,10 +1280,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("isPositionPercentYEnabled", &LayoutComponent::isPositionPercentYEnabled)
     .function("setPercentHeight", &LayoutComponent::setPercentHeight)
     .function("setPercentOnlyEnabled", &LayoutComponent::setPercentOnlyEnabled)
-    .function("setHorizontalEdge", optional_override(
-        [](LayoutComponent& this_, int32_t arg0){
-        return this_.setHorizontalEdge((cocos2d::ui::LayoutComponent::HorizontalEdge)arg0);
-      }))
+    .function("setHorizontalEdge", &LayoutComponent::setHorizontalEdge)
     .function("setPosition", &LayoutComponent::setPosition)
     .function("setUsingPercentContentSize", &LayoutComponent::setUsingPercentContentSize)
     .function("getLeftMargin", &LayoutComponent::getLeftMargin)
@@ -1529,10 +1292,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setPercentContentSize", &LayoutComponent::setPercentContentSize)
     .function("isPercentHeightEnabled", &LayoutComponent::isPercentHeightEnabled)
     .function("getPercentWidth", &LayoutComponent::getPercentWidth)
-    .function("getHorizontalEdge", optional_override(
-        [](LayoutComponent& this_){
-        return (int32_t)this_.getHorizontalEdge();
-      }))
+    .function("getHorizontalEdge", &LayoutComponent::getHorizontalEdge)
     .function("isStretchHeightEnabled", &LayoutComponent::isStretchHeightEnabled)
     .function("setBottomMargin", &LayoutComponent::setBottomMargin)
     .function("setSize", &LayoutComponent::setSize)
@@ -1554,16 +1314,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getTitleRenderer", &TabHeader::getTitleRenderer, allow_raw_pointers())
     .function("setTitleText", &TabHeader::setTitleText)
     .function("setTitleColor", &TabHeader::setTitleColor)
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, int32_t arg3){
-            return TabHeader::create(arg0, arg1, arg2, (cocos2d::ui::Widget::TextureResType)arg3);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::TabHeader*(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&TabHeader::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::TabHeader*()>(&TabHeader::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4, const std::string& arg5, int32_t arg6){
-            return TabHeader::create(arg0, arg1, arg2, arg3, arg4, arg5, (cocos2d::ui::Widget::TextureResType)arg6);
-        }), allow_raw_pointers())
+    .class_function("create", select_overload<cocos2d::ui::TabHeader*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&TabHeader::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const TabHeader& _) -> std::string {return "TabHeader";}))    
     ;
@@ -1572,18 +1326,12 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setHeaderWidth", &TabControl::setHeaderWidth)
     .function("removeTab", &TabControl::removeTab)
     .function("getTabCount", &TabControl::getTabCount)
-    .function("getHeaderDockPlace", optional_override(
-        [](TabControl& this_){
-        return (int32_t)this_.getHeaderDockPlace();
-      }))
+    .function("getHeaderDockPlace", &TabControl::getHeaderDockPlace)
     .function("getSelectedTabIndex", &TabControl::getSelectedTabIndex)
     .function("insertTab", &TabControl::insertTab, allow_raw_pointers())
     .function("ignoreHeadersTextureSize", &TabControl::ignoreHeadersTextureSize)
     .function("getHeaderWidth", &TabControl::getHeaderWidth)
-    .function("setHeaderDockPlace", optional_override(
-        [](TabControl& this_, int32_t arg0){
-        return this_.setHeaderDockPlace((cocos2d::ui::TabControl::Dock)arg0);
-      }))
+    .function("setHeaderDockPlace", &TabControl::setHeaderDockPlace)
     .function("setSelectTab", select_overload<void(cocos2d::ui::TabHeader*)>(&TabControl::setSelectTab), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .function("getTabHeader", &TabControl::getTabHeader, allow_raw_pointers())
@@ -1611,10 +1359,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setPositionFromCorner", &ScrollViewBar::setPositionFromCorner)
     .function("getAutoHideTime", &ScrollViewBar::getAutoHideTime)
     .function("setWidth", &ScrollViewBar::setWidth)
-    .class_function("create", optional_override(
-      [](cocos2d::ui::ScrollView* arg0, int32_t arg1){
-        return ScrollViewBar::create(arg0, (cocos2d::ui::ScrollView::Direction)arg1);
-      }), allow_raw_pointers())
+    .class_function("create", &ScrollViewBar::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollViewBar& _) -> std::string {return "ScrollViewBar";})) 
     // TODO: it doesn't compile   
     // .allow_subclass<wrapper<ScrollViewBar>>("ccui.ScrollViewBar._extend")

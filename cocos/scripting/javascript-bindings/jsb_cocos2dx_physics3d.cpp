@@ -19,10 +19,7 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("initBox", &Physics3DShape::initBox)
     .function("initCapsule", &Physics3DShape::initCapsule)
     .function("initCylinder", &Physics3DShape::initCylinder)
-    .function("getShapeType", optional_override(
-        [](Physics3DShape& this_){
-        return (int32_t)this_.getShapeType();
-      }))
+    .function("getShapeType", &Physics3DShape::getShapeType)
     .class_function("createBox", &Physics3DShape::createBox, allow_raw_pointers())
     .class_function("createCylinder", &Physics3DShape::createCylinder, allow_raw_pointers())
     .class_function("createConvexHull", &Physics3DShape::createConvexHull, allow_raw_pointers())
@@ -35,10 +32,7 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
   class_<Physics3DObject>("jsb.Physics3DObject")
     .function("setUserData", &Physics3DObject::setUserData, allow_raw_pointers())
     .function("getUserData", &Physics3DObject::getUserData, allow_raw_pointers())
-    .function("getObjType", optional_override(
-        [](Physics3DObject& this_){
-        return (int32_t)this_.getObjType();
-      }))
+    .function("getObjType", &Physics3DObject::getObjType)
     .function("setPhysicsWorld", &Physics3DObject::setPhysicsWorld, allow_raw_pointers())
     .function("getWorldTransform", &Physics3DObject::getWorldTransform)
     .function("getPhysicsWorld", &Physics3DObject::getPhysicsWorld, allow_raw_pointers())
@@ -115,10 +109,7 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("syncPhysicsToNode", &Physics3DComponent::syncPhysicsToNode)
     .function("getPhysics3DObject", &Physics3DComponent::getPhysics3DObject, allow_raw_pointers())
     .function("setPhysics3DObject", &Physics3DComponent::setPhysics3DObject, allow_raw_pointers())
-    .function("setSyncFlag", optional_override(
-        [](Physics3DComponent& this_, int32_t arg0){
-        return this_.setSyncFlag((cocos2d::Physics3DComponent::PhysicsSyncFlag)arg0);
-      }))
+    .function("setSyncFlag", &Physics3DComponent::setSyncFlag)
     .function("setTransformInPhysics", &Physics3DComponent::setTransformInPhysics)
     .class_function("create", select_overload<cocos2d::Physics3DComponent*(cocos2d::Physics3DObject*, const cocos2d::Vec3&, const cocos2d::Quaternion&)>(&Physics3DComponent::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -135,10 +126,7 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("syncNodeToPhysics", &PhysicsSprite3D::syncNodeToPhysics)
     .function("syncPhysicsToNode", &PhysicsSprite3D::syncPhysicsToNode)
     .function("getPhysicsObj", &PhysicsSprite3D::getPhysicsObj, allow_raw_pointers())
-    .function("setSyncFlag", optional_override(
-        [](PhysicsSprite3D& this_, int32_t arg0){
-        return this_.setSyncFlag((cocos2d::Physics3DComponent::PhysicsSyncFlag)arg0);
-      }))
+    .function("setSyncFlag", &PhysicsSprite3D::setSyncFlag)
     .property("_className",  optional_override([](const PhysicsSprite3D& _) -> std::string {return "PhysicsSprite3D";}))
     ;
 
@@ -182,10 +170,7 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("getOverrideNumSolverIterations", &Physics3DConstraint::getOverrideNumSolverIterations)
     .function("getBodyB", &Physics3DConstraint::getBodyB, allow_raw_pointers())
     .function("setOverrideNumSolverIterations", &Physics3DConstraint::setOverrideNumSolverIterations)
-    .function("getConstraintType", optional_override(
-        [](Physics3DConstraint& this_){
-        return (int32_t)this_.getConstraintType();
-      }))
+    .function("getConstraintType", &Physics3DConstraint::getConstraintType)
     .function("setUserData", &Physics3DConstraint::setUserData, allow_raw_pointers())
     .function("getbtContraint", &Physics3DConstraint::getbtContraint, allow_raw_pointers())
     .property("_className",  optional_override([](const Physics3DConstraint& _) -> std::string {return "Physics3DConstraint";}))    

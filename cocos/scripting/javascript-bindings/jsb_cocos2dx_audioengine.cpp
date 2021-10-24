@@ -54,10 +54,7 @@ COCOS_BINDINGS(jsb_cocos2dx_audioengine) {
       [](const std::string& arg0, bool arg1, float arg2){
         return AudioEngine::play2d(arg0, arg1, arg2);
       }))
-    .class_function("getState", optional_override(
-      [](int arg0){
-        return (int32_t)AudioEngine::getState(arg0);
-      }))
+    .class_function("getState", &AudioEngine::getState)
     .class_function("resume", &AudioEngine::resume)
     .class_function("stop", &AudioEngine::stop)
     .class_function("getDuration", &AudioEngine::getDuration)

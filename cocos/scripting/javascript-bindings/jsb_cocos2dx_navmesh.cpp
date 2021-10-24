@@ -28,14 +28,8 @@ COCOS_BINDINGS(jsb_cocos2dx_navmesh) {
     .function("getMaxSpeed", &NavMeshAgent::getMaxSpeed)
     .function("getCurrentOffMeshLinkData", &NavMeshAgent::getCurrentOffMeshLinkData)
     .function("getRadius", &NavMeshAgent::getRadius)
-    .function("setSyncFlag", optional_override(
-        [](NavMeshAgent& this_, int32_t arg0){
-        return this_.setSyncFlag((const cocos2d::NavMeshAgent::NavMeshAgentSyncFlag&)arg0);
-      }))
-    .function("getSyncFlag", optional_override(
-        [](NavMeshAgent& this_){
-        return (int32_t)this_.getSyncFlag();
-      }))
+    .function("setSyncFlag", &NavMeshAgent::setSyncFlag)
+    .function("getSyncFlag", &NavMeshAgent::getSyncFlag)
     .function("resume", &NavMeshAgent::resume)
     .function("stop", &NavMeshAgent::stop)
     .function("setMaxAcceleration", &NavMeshAgent::setMaxAcceleration)
@@ -54,18 +48,12 @@ COCOS_BINDINGS(jsb_cocos2dx_navmesh) {
 
   class_<NavMeshObstacle, base<Component>>("jsb.NavMeshObstacle")
     .constructor(&cc_bindings_constructor<NavMeshObstacle>, allow_raw_pointers())
-    .function("getSyncFlag", optional_override(
-        [](NavMeshObstacle& this_){
-        return (int32_t)this_.getSyncFlag();
-      }))
+    .function("getSyncFlag", &NavMeshObstacle::getSyncFlag)
     .function("initWith", &NavMeshObstacle::initWith)
     .function("syncToObstacle", &NavMeshObstacle::syncToObstacle)
     .function("syncToNode", &NavMeshObstacle::syncToNode)
     .function("getHeight", &NavMeshObstacle::getHeight)
-    .function("setSyncFlag", optional_override(
-        [](NavMeshObstacle& this_, int32_t arg0){
-        return this_.setSyncFlag((const cocos2d::NavMeshObstacle::NavMeshObstacleSyncFlag&)arg0);
-      }))
+    .function("setSyncFlag", &NavMeshObstacle::setSyncFlag)
     .function("getRadius", &NavMeshObstacle::getRadius)
     .class_function("create", &NavMeshObstacle::create, allow_raw_pointers())
     .class_function("getNavMeshObstacleComponentName", &NavMeshObstacle::getNavMeshObstacleComponentName)

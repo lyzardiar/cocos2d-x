@@ -73,10 +73,7 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
       }), allow_raw_pointers())
     .function("setDisposeListener", &SkeletonAnimation::setDisposeListener)
     .function("setTrackInterruptListener", &SkeletonAnimation::setTrackInterruptListener, allow_raw_pointers())
-    .function("onTrackEntryEvent", optional_override(
-        [](SkeletonAnimation& this_, spTrackEntry* arg0, int32_t arg1, spEvent* arg2){
-        return this_.onTrackEntryEvent(arg0, (spEventType)arg1, arg2);
-      }), allow_raw_pointers())
+    .function("onTrackEntryEvent", &SkeletonAnimation::onTrackEntryEvent, allow_raw_pointers())
     .function("setEndListener", &SkeletonAnimation::setEndListener)
     .function("getState", &SkeletonAnimation::getState, allow_raw_pointers())
     .function("setTrackDisposeListener", &SkeletonAnimation::setTrackDisposeListener, allow_raw_pointers())
@@ -89,10 +86,7 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
         return this_.clearTrack();
       }))
     .function("setInterruptListener", &SkeletonAnimation::setInterruptListener)
-    .function("onAnimationStateEvent", optional_override(
-        [](SkeletonAnimation& this_, spTrackEntry* arg0, int32_t arg1, spEvent* arg2){
-        return this_.onAnimationStateEvent(arg0, (spEventType)arg1, arg2);
-      }), allow_raw_pointers())
+    .function("onAnimationStateEvent", &SkeletonAnimation::onAnimationStateEvent, allow_raw_pointers())
     .function("setEmptyAnimations", &SkeletonAnimation::setEmptyAnimations)
     .function("clearTracks", &SkeletonAnimation::clearTracks)
     .function("setTrackEndListener", &SkeletonAnimation::setTrackEndListener, allow_raw_pointers())

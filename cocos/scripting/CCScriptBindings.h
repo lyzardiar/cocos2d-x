@@ -214,6 +214,27 @@ struct TypeID<T,
     static constexpr TYPEID get() { return TypeID<val>::get(); }
 };
 
+// enum to int32_t auto binding
+// NOTE: For now we don't use embind's enum solution. That says it's compatable with latest cocos2d-x, 
+// but we have to declare enum value somewhere in JS, which cocos2d-x already did
+// (or we still can if we want for specific case? e.g. we don't have a proper js file to declare enum in some plugin)
+template<typename T>
+struct BindingType<T, typename std::enable_if<std::is_enum<T>::value>::type> {
+  typedef typename BindingType<int32_t>::WireType WireType;
+
+  constexpr static WireType toWireType(const T& v) {
+    return BindingType<int32_t>::toWireType(static_cast<int32_t>(v));
+  }
+  constexpr static T fromWireType(WireType v) {
+    return static_cast<T>(BindingType<int32_t>::fromWireType(v));
+  }
+};
+
+template <typename T>
+struct TypeID<T, typename std::enable_if<std::is_enum<T>::value>::type> {
+    static constexpr TYPEID get() { return TypeID<int32_t>::get(); }
+};
+
 }  // namespace internal
 }  // namespace emscripten
 
