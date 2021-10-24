@@ -363,17 +363,17 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)
     .property("width", 
-      optional_override([](const Node& this_){return this_.getContentSize().width;}), 
-      optional_override([](Node& this_, float width){this_.setContentSize(Size(width, this_.getContentSize().height));}))
+      optional_override([](const Node& this_){return this_.getContentSize().width;}), 
+      optional_override([](Node& this_, float width){this_.setContentSize(Size(width, this_.getContentSize().height));}))
     .property("height", 
-      optional_override([](const Node& this_){return this_.getContentSize().height;}), 
-      optional_override([](Node& this_, float height){this_.setContentSize(Size(this_.getContentSize().width, height));}))
+      optional_override([](const Node& this_){return this_.getContentSize().height;}), 
+      optional_override([](Node& this_, float height){this_.setContentSize(Size(this_.getContentSize().width, height));}))
     .property("anchorX", 
-      optional_override([](const Node& this_){return this_.getAnchorPoint().x;}), 
-      optional_override([](Node& this_, float x){this_.setAnchorPoint(Vec2(x, this_.getAnchorPoint().y));}))
+      optional_override([](const Node& this_){return this_.getAnchorPoint().x;}), 
+      optional_override([](Node& this_, float x){this_.setAnchorPoint(Vec2(x, this_.getAnchorPoint().y));}))
     .property("anchorY", 
-      optional_override([](const Node& this_){return this_.getAnchorPoint().y;}), 
-      optional_override([](Node& this_, float y){this_.setAnchorPoint(Vec2(this_.getAnchorPoint().x, y));}))
+      optional_override([](const Node& this_){return this_.getAnchorPoint().y;}), 
+      optional_override([](Node& this_, float y){this_.setAnchorPoint(Vec2(this_.getAnchorPoint().x, y));}))
     .property("skewX", &Node::getSkewX, &Node::setSkewX)
     .property("skewY", &Node::getSkewY, &Node::setSkewY)
     .property("zIndex", &Node::getLocalZOrder, &Node::setLocalZOrder)
@@ -2828,11 +2828,11 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       })
       )
     .property("boundingWidth", 
-      optional_override([](const LabelTTF& this_){return this_.getDimensions().width;}), 
-      optional_override([](LabelTTF& this_, float width){this_.setDimensions(Size(width, this_.getDimensions().height));}))
+      optional_override([](const LabelTTF& this_){return this_.getDimensions().width;}), 
+      optional_override([](LabelTTF& this_, float width){this_.setDimensions(Size(width, this_.getDimensions().height));}))
     .property("boundingHeight", 
-      optional_override([](const LabelTTF& this_){return this_.getDimensions().height;}), 
-      optional_override([](LabelTTF& this_, float height){this_.setDimensions(Size(this_.getDimensions().width, height));}))
+      optional_override([](const LabelTTF& this_){return this_.getDimensions().height;}), 
+      optional_override([](LabelTTF& this_, float height){this_.setDimensions(Size(this_.getDimensions().width, height));}))
     .property("fillStyle", optional_override(
         [](const LabelTTF& this_) {
         CCLOG("LabelTTF.fillStyle is write-only");
@@ -4430,17 +4430,17 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
         return const_cast<TMXLayer&>(this_).getLayerName();
       }), &TMXLayer::setLayerName)
     .property("layerWidth", 
-      optional_override([](const TMXLayer& this_){return this_.getLayerSize().width;}), 
-      optional_override([](TMXLayer& this_, float width){this_.setLayerSize(Size(width, this_.getLayerSize().height));}))
+      optional_override([](const TMXLayer& this_){return this_.getLayerSize().width;}), 
+      optional_override([](TMXLayer& this_, float width){this_.setLayerSize(Size(width, this_.getLayerSize().height));}))
     .property("layerHeight", 
-      optional_override([](const TMXLayer& this_){return this_.getLayerSize().height;}), 
-      optional_override([](TMXLayer& this_, float height){this_.setLayerSize(Size(this_.getLayerSize().width, height));}))
+      optional_override([](const TMXLayer& this_){return this_.getLayerSize().height;}), 
+      optional_override([](TMXLayer& this_, float height){this_.setLayerSize(Size(this_.getLayerSize().width, height));}))
     .property("tileWidth", 
-      optional_override([](const TMXLayer& this_){return this_.getMapTileSize().width;}), 
-      optional_override([](TMXLayer& this_, float width){this_.setMapTileSize(Size(width, this_.getMapTileSize().height));}))
+      optional_override([](const TMXLayer& this_){return this_.getMapTileSize().width;}), 
+      optional_override([](TMXLayer& this_, float width){this_.setMapTileSize(Size(width, this_.getMapTileSize().height));}))
     .property("tileHeight", 
-      optional_override([](const TMXLayer& this_){return this_.getMapTileSize().height;}), 
-      optional_override([](TMXLayer& this_, float height){this_.setMapTileSize(Size(this_.getMapTileSize().width, height));}))
+      optional_override([](const TMXLayer& this_){return this_.getMapTileSize().height;}), 
+      optional_override([](TMXLayer& this_, float height){this_.setMapTileSize(Size(this_.getMapTileSize().width, height));}))
     .property("texture", &TMXLayer::getTexture, &TMXLayer::setTexture)
     .class_function("create", &TMXLayer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXLayer& _) -> std::string {return "TMXLayer";}))    
@@ -4502,17 +4502,17 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
         return const_cast<Vector<TMXObjectGroup*>&>(this_.getObjectGroups());
       }), &TMXTiledMap::setObjectGroups)
     .property("mapWidth", 
-      optional_override([](const TMXTiledMap& this_){return this_.getMapSize().width;}), 
-      optional_override([](TMXTiledMap& this_, float width){this_.setMapSize(Size(width, this_.getMapSize().height));}))
+      optional_override([](const TMXTiledMap& this_){return this_.getMapSize().width;}), 
+      optional_override([](TMXTiledMap& this_, float width){this_.setMapSize(Size(width, this_.getMapSize().height));}))
     .property("mapHeight", 
-      optional_override([](const TMXTiledMap& this_){return this_.getMapSize().height;}), 
-      optional_override([](TMXTiledMap& this_, float height){this_.setMapSize(Size(this_.getMapSize().width, height));}))
+      optional_override([](const TMXTiledMap& this_){return this_.getMapSize().height;}), 
+      optional_override([](TMXTiledMap& this_, float height){this_.setMapSize(Size(this_.getMapSize().width, height));}))
     .property("tileWidth", 
-      optional_override([](const TMXTiledMap& this_){return this_.getTileSize().width;}), 
-      optional_override([](TMXTiledMap& this_, float width){this_.setTileSize(Size(width, this_.getTileSize().height));}))
+      optional_override([](const TMXTiledMap& this_){return this_.getTileSize().width;}), 
+      optional_override([](TMXTiledMap& this_, float width){this_.setTileSize(Size(width, this_.getTileSize().height));}))
     .property("tileHeight", 
-      optional_override([](const TMXTiledMap& this_){return this_.getTileSize().height;}), 
-      optional_override([](TMXTiledMap& this_, float height){this_.setTileSize(Size(this_.getTileSize().width, height));}))
+      optional_override([](const TMXTiledMap& this_){return this_.getTileSize().height;}), 
+      optional_override([](TMXTiledMap& this_, float height){this_.setTileSize(Size(this_.getTileSize().width, height));}))
     .class_function("create", &TMXTiledMap::create, allow_raw_pointers())
     .class_function("createWithXML", &TMXTiledMap::createWithXML, allow_raw_pointers())
     .property("_className",  optional_override([](const TMXTiledMap& _) -> std::string {return "TMXTiledMap";}))    

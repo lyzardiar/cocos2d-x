@@ -154,6 +154,33 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setBright", &Widget::setBright)
     .function("setCallbackType", &Widget::setCallbackType)
     .function("isSwallowTouches", &Widget::isSwallowTouches)
+    .property("xPercent", 
+      optional_override([](const Widget& this_){return const_cast<Widget&>(this_).getPositionPercent().x;}), 
+      optional_override([](Widget& this_, float x){this_.setPositionPercent(Vec2(x, this_.getPositionPercent().y));}))
+    .property("yPercent", 
+      optional_override([](const Widget& this_){return const_cast<Widget&>(this_).getPositionPercent().y;}), 
+      optional_override([](Widget& this_, float y){this_.setPositionPercent(Vec2(this_.getPositionPercent().x, y));}))
+    .property("widthPercent", 
+      optional_override([](const Widget& this_){return const_cast<Widget&>(this_).getSizePercent().x;}), 
+      optional_override([](Widget& this_, float x){this_.setSizePercent(Vec2(x, this_.getSizePercent().y));}))
+    .property("heightPercent", 
+      optional_override([](const Widget& this_){return const_cast<Widget&>(this_).getSizePercent().y;}), 
+      optional_override([](Widget& this_, float y){this_.setSizePercent(Vec2(this_.getSizePercent().x, y));}))
+    // cocos2d-x js only, in cpp its protected
+    // .property("widgetParent", &Widget::getWidgetParent)
+    .property("enabled", &Widget::isEnabled, &Widget::setEnabled)
+    .property("focused", &Widget::isFocused, &Widget::setFocused)
+    .property("sizeType", &Widget::getSizeType, &Widget::setSizeType)
+    // cocos2d-x js only
+    // .property("widgetType", &Widget::getWidgetType)
+    .property("touchEnabled", &Widget::isTouchEnabled, &Widget::setTouchEnabled)
+    // nothere I can find it
+    // .property("updateEnabled", &Widget::isUpdateEnabled, &Widget::setUpdateEnabled)
+    .property("bright", &Widget::isBright, &Widget::setBright)
+    .property("name", &Widget::getName, &Widget::setName)
+    .property("actionTag", &Widget::getActionTag, &Widget::setActionTag)
+    .property("flippedX", &Widget::isFlippedX, &Widget::setFlippedX)
+    .property("flippedY", &Widget::isFlippedY, &Widget::setFlippedY)
     .class_function("enableDpadNavigation", &Widget::enableDpadNavigation)
     .class_function("create", &Widget::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Widget& _) -> std::string {return "Widget";}))    
@@ -224,6 +251,9 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         [](Layout& this_, int32_t arg0){
         return this_.setLayoutType((cocos2d::ui::Layout::Type)arg0);
       }))
+    .property("clippingEnabled", &Layout::isClippingEnabled, &Layout::setClippingEnabled)
+    .property("clippingType", &Layout::getClippingType, &Layout::setClippingType)
+    .property("layoutType", &Layout::getLayoutType, &Layout::setLayoutType)
     .class_function("create", &Layout::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Layout& _) -> std::string {return "Layout";}))    
     .allow_subclass<wrapper<Layout>>("ccui.Layout._extend")
@@ -286,6 +316,35 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getTitleColor", &Button::getTitleColor)
     .function("setPressedActionEnabled", &Button::setPressedActionEnabled)
     .function("setZoomScale", &Button::setZoomScale)
+    .property("titleText", &Button::getTitleText, &Button::setTitleText)
+    .property("titleFont", optional_override(
+        [](const Button& this_) -> std::string {
+        float size = this_.getTitleFontSize();
+        const std::string& name = this_.getTitleFontName();
+        return std::to_string(size) + "px '" + name + "'";
+      })
+      , optional_override(
+        [](Button& this_, const std::string& font) { 
+        size_t found = font.find("px ");
+        if (found != std::string::npos)
+        {
+          this_.setTitleFontSize(stoi(font.substr(0, found)));
+          this_.setTitleFontName(font.substr(found + 4, font.size() - found - 5));  
+        } else 
+        {
+          CCLOG("Failed to parse font '%s'", font.c_str());
+        }
+      })
+      )
+    .property("titleFontSize", &Button::getTitleFontSize, &Button::setTitleFontSize)
+    .property("titleFontName", &Button::getTitleFontName, &Button::setTitleFontName)
+    // NOTE: it should be TitleColor, comment it for backward compatiblity
+    // .property("titleFontColor", &Button::getTitleFontColor, &Button::setTitleFontColor)
+    .property("pressedActionEnabled", optional_override([](const Button& this_)
+      {
+        CCLOG("Button.pressedActionEnabled is write-only");
+        return false;
+      }), &Button::setPressedActionEnabled)
     .class_function("create", optional_override(
         [](const std::string& arg0, const std::string& arg1, const std::string& arg2, int32_t arg3){
             return Button::create(arg0, arg1, arg2, (cocos2d::ui::Widget::TextureResType)arg3);
@@ -483,6 +542,21 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         [](Text& this_, int32_t arg0){
         return this_.setTextHorizontalAlignment((cocos2d::TextHAlignment)arg0);
       }))
+    .property("boundingWidth", 
+      optional_override([](const Text& this_){return this_.getTextAreaSize().width;}), 
+      optional_override([](Text& this_, float width){this_.setTextAreaSize(Size(width, this_.getTextAreaSize().height));}))
+    .property("boundingHeight", 
+      optional_override([](const Text& this_){return this_.getTextAreaSize().height;}), 
+      optional_override([](Text& this_, float height){this_.setTextAreaSize(Size(this_.getTextAreaSize().width, height));}))
+    .property("string", &Text::getString, &Text::setString)
+    .property("stringLength", &Text::getStringLength)
+    // cocos2d-js only
+    // .property("font", &Text::_getFont, &Text::_setFont)
+    .property("fontName", &Text::getFontName, &Text::setFontName)
+    .property("fontSize", &Text::getFontSize, &Text::setFontSize)
+    .property("textAlign", &Text::getTextHorizontalAlignment, &Text::setTextHorizontalAlignment)
+    .property("verticalAlign", &Text::getTextVerticalAlignment, &Text::setTextVerticalAlignment)
+    .property("touchScaleEnabled", &Text::isTouchScaleChangeEnabled, &Text::setTouchScaleChangeEnabled)
     .class_function("create", select_overload<cocos2d::ui::Text*(const std::string&, const std::string&, float)>(&Text::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Text*()>(&Text::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Text& _) -> std::string {return "Text";}))    
@@ -499,6 +573,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getRenderFile", &TextAtlas::getRenderFile)
     .function("setProperty", &TextAtlas::setProperty)
     .function("adaptRenderers", &TextAtlas::adaptRenderers)
+    .property("string", &TextAtlas::getString, &TextAtlas::setString)
     .class_function("create", select_overload<cocos2d::ui::TextAtlas*(const std::string&, const std::string&, int, int, const std::string&)>(&TextAtlas::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextAtlas*()>(&TextAtlas::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextAtlas& _) -> std::string {return "TextAtlas";}))    
@@ -524,6 +599,8 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getCapInsets", &LoadingBar::getCapInsets)
     .function("isScale9Enabled", &LoadingBar::isScale9Enabled)
     .function("getPercent", &LoadingBar::getPercent)
+    .property("direction", &LoadingBar::getDirection, &LoadingBar::setDirection)
+    .property("percent", &LoadingBar::getPercent, &LoadingBar::setPercent)
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, float)>(&LoadingBar::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*()>(&LoadingBar::create), allow_raw_pointers())
@@ -607,6 +684,15 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("jumpToRight", &ScrollView::jumpToRight)
     .function("getInnerContainerSize", &ScrollView::getInnerContainerSize)
     .function("jumpToPercentHorizontal", &ScrollView::jumpToPercentHorizontal)
+    .property("innerWidth", 
+      optional_override([](const ScrollView& this_){return this_.getInnerContainerSize().width;}), 
+      optional_override([](ScrollView& this_, float width){this_.setInnerContainerSize(Size(width, this_.getInnerContainerSize().height));}))
+    .property("innerHeight", 
+      optional_override([](const ScrollView& this_){return this_.getInnerContainerSize().height;}), 
+      optional_override([](ScrollView& this_, float height){this_.setInnerContainerSize(Size(this_.getInnerContainerSize().width, height));}))
+    .property("bounceEnabled", &ScrollView::isBounceEnabled, &ScrollView::setBounceEnabled)
+    .property("inertiaScrollEnabled", &ScrollView::isInertiaScrollEnabled, &ScrollView::setInertiaScrollEnabled)
+    .property("layoutType", &ScrollView::getLayoutType, &ScrollView::setLayoutType)
     .class_function("create", &ScrollView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
     .allow_subclass<wrapper<ScrollView>>("ccui.ScrollView._extend")
@@ -717,6 +803,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setCapInsets", &Slider::setCapInsets)
     .function("getSlidBallNormalRenderer", &Slider::getSlidBallNormalRenderer, allow_raw_pointers())
     .function("setZoomScale", &Slider::setZoomScale)
+    .property("percent", &Slider::getPercent, &Slider::setPercent)
     .class_function("create", optional_override(
         [](const std::string& arg0, const std::string& arg1, int32_t arg2){
             return Slider::create(arg0, arg1, (cocos2d::ui::Widget::TextureResType)arg2);
@@ -821,6 +908,32 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setCursorEnabled", &TextField::setCursorEnabled)
     .function("setTouchSize", &TextField::setTouchSize)
     .function("getTouchSize", &TextField::getTouchSize)
+    .property("maxLengthEnabled", &TextField::isMaxLengthEnabled, &TextField::setMaxLengthEnabled)
+    .property("maxLength", &TextField::getMaxLength, &TextField::setMaxLength)
+    .property("passwordEnabled", &TextField::isPasswordEnabled, &TextField::setPasswordEnabled)
+    .property("string", &TextField::getString, &TextField::setString)
+    .property("font", optional_override(
+        [](const TextField& this_) -> std::string {
+        float size = this_.getFontSize();
+        const std::string& name = this_.getFontName();
+        return std::to_string(size) + "px '" + name + "'";
+      })
+      , optional_override(
+        [](TextField& this_, const std::string& font) { 
+        size_t found = font.find("px ");
+        if (found != std::string::npos)
+        {
+          this_.setFontSize(stoi(font.substr(0, found)));
+          this_.setFontName(font.substr(found + 4, font.size() - found - 5));  
+        } else 
+        {
+          CCLOG("Failed to parse font '%s'", font.c_str());
+        }
+      })
+      )
+    .property("fontSize", &TextField::getFontSize, &TextField::setFontSize)
+    .property("fontName", &TextField::getFontName, &TextField::setFontName)
+    .property("placeHolder", &TextField::getPlaceHolder, &TextField::setPlaceHolder)
     .class_function("create", select_overload<cocos2d::ui::TextField*(const std::string&, const std::string&, int)>(&TextField::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextField*()>(&TextField::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextField& _) -> std::string {return "TextField";}))    
@@ -837,6 +950,7 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getRenderFile", &TextBMFont::getRenderFile)
     .function("setFntFile", &TextBMFont::setFntFile)
     .function("resetRender", &TextBMFont::resetRender)
+    .property("string", &TextBMFont::getString, &TextBMFont::setString)
     .class_function("create", select_overload<cocos2d::ui::TextBMFont*(const std::string&, const std::string&)>(&TextBMFont::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TextBMFont*()>(&TextBMFont::create), allow_raw_pointers())
     .property("_className",  optional_override([](const TextBMFont& _) -> std::string {return "TextBMFont";}))    
@@ -1219,6 +1333,12 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setCapInsets", &Scale9Sprite::setCapInsets)
     .function("getInsetLeft", &Scale9Sprite::getInsetLeft)
     .function("setInsetRight", &Scale9Sprite::setInsetRight)
+    .property("preferredSize", &Scale9Sprite::getPreferredSize, &Scale9Sprite::setPreferredSize)
+    .property("capInsets", &Scale9Sprite::getCapInsets, &Scale9Sprite::setCapInsets)
+    .property("insetLeft", &Scale9Sprite::getInsetLeft, &Scale9Sprite::setInsetLeft)
+    .property("insetTop", &Scale9Sprite::getInsetTop, &Scale9Sprite::setInsetTop)
+    .property("insetRight", &Scale9Sprite::getInsetRight, &Scale9Sprite::setInsetRight)
+    .property("insetBottom", &Scale9Sprite::getInsetBottom, &Scale9Sprite::setInsetBottom)
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const std::string&, const cocos2d::Rect&, const cocos2d::Rect&)>(&Scale9Sprite::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*()>(&Scale9Sprite::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const cocos2d::Rect&, const std::string&)>(&Scale9Sprite::create), allow_raw_pointers())
