@@ -10,6 +10,19 @@ using namespace cocos2d::bindings;
 using namespace cocostudio;
 using namespace cocostudio::timeline;
 
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::BoneData);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::Armature);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::FrameData);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::Bone);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::Tween);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::DisplayManager);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::ArmatureData);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::BatchNode);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::ArmatureAnimation);
+#if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT
+    CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::ColliderFilter);
+#endif
+
 COCOS_BINDINGS(jsb_cocos2dx_studio) {
 
 
@@ -141,7 +154,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .property("_className",  optional_override([](const ColliderBody& _) -> std::string {return "ColliderBody";}))    
     ;
 
-  class_<ColliderDetector>("ccs.ColliderDetector")
+  auto colliderDetectorClazz = class_<ColliderDetector>("ccs.ColliderDetector")
     .function("getBone", &ColliderDetector::getBone, allow_raw_pointers())
     .function("getActive", &ColliderDetector::getActive)
     .function("getColliderBodyList", &ColliderDetector::getColliderBodyList)
@@ -151,11 +164,23 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("init", select_overload<bool()>(&ColliderDetector::init))
     .function("setActive", &ColliderDetector::setActive)
     .function("setBone", &ColliderDetector::setBone, allow_raw_pointers())
+    .property("active", optional_override([](const ColliderDetector& this_)
+      {
+        return const_cast<ColliderDetector&>(this_).getActive();
+      }), &ColliderDetector::setActive)
     .class_function("create", select_overload<cocostudio::ColliderDetector*(cocostudio::Bone*)>(&ColliderDetector::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::ColliderDetector*()>(&ColliderDetector::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ColliderDetector& _) -> std::string {return "ColliderDetector";}))
     .allow_subclass<wrapper<ColliderDetector>>("ccs.ColliderDetector._extend")    
     ;
+#if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT
+    colliderDetectorClazz
+      .property("body", &ColliderDetector::getBody, &ColliderDetector::setBody)
+      .property("colliderFilter", optional_override([](const ColliderDetector& this_)
+      {
+        return const_cast<ColliderDetector&>(this_).getColliderFilter();
+      }), &ColliderDetector::setColliderFilter);
+#endif
 
   class_<DecorativeDisplay>("ccs.DecorativeDisplay")
     .function("getColliderDetector", &DecorativeDisplay::getColliderDetector, allow_raw_pointers())
@@ -203,7 +228,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     ;
 
 
-  class_<Bone, base<Node>>("ccs.Bone")
+  auto boneClazz = class_<Bone, base<Node>>("ccs.Bone")
     .constructor(&cc_bindings_constructor<Bone>, allow_raw_pointers())
     .function("isTransformDirty", &Bone::isTransformDirty)
     .function("setBlendFunc", &Bone::setBlendFunc)
@@ -237,11 +262,42 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getNodeToArmatureTransform", &Bone::getNodeToArmatureTransform)
     .function("getDisplayManager", &Bone::getDisplayManager, allow_raw_pointers())
     .function("getArmature", &Bone::getArmature, allow_raw_pointers())
+    .property("boneData", &Bone::getBoneData, &Bone::setBoneData)
+    .property("armature", &Bone::getArmature, &Bone::setArmature)
+    .property("parentBone", optional_override([](const Bone& this_)
+      {
+        return const_cast<Bone&>(this_).getParentBone();
+      }), &Bone::setParentBone)
+    .property("childArmature", &Bone::getChildArmature, &Bone::setChildArmature)
+    // cocos2d-js only
+    // .property("childrenBone", &Bone::getChildrenBone)
+    .property("tween", optional_override([](const Bone& this_)
+      {
+        return const_cast<Bone&>(this_).getTween();
+      }))
+    .property("tweenData", &Bone::getTweenData)
+    .property("transformDirty", optional_override([](const Bone& this_)
+      {
+        return const_cast<Bone&>(this_).isTransformDirty();
+      }), &Bone::setTransformDirty)
+    .property("displayManager", &Bone::getDisplayManager)
+    .property("ignoreMovementBoneData", &Bone::getIgnoreMovementBoneData, &Bone::setIgnoreMovementBoneData)
+    .property("name", &Bone::getName, &Bone::setName)
+    .property("blendDirty", optional_override([](const Bone& this_)
+      {
+        return const_cast<Bone&>(this_).isBlendDirty();
+      }), &Bone::setBlendDirty)
     .class_function("create", select_overload<cocostudio::Bone*(const std::string&)>(&Bone::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Bone*()>(&Bone::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Bone& _) -> std::string {return "Bone";}))
     .allow_subclass<wrapper<Bone>>("ccs.Bone._extend")    
     ;
+#if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT
+    boneClazz.property("colliderFilter", optional_override([](const Bone& this_)
+      {
+        return const_cast<Bone&>(this_).getColliderFilter();
+      }), &Bone::setColliderFilter);
+#endif
 
   class_<BatchNode, base<Node>>("ccs.BatchNode")
     .class_function("create", &BatchNode::create, allow_raw_pointers())
@@ -342,7 +398,7 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     ;
 
 
-  class_<Armature, base<Node>>("ccs.Armature")
+  auto armatureClazz = class_<Armature, base<Node>>("ccs.Armature")
     .constructor(&cc_bindings_constructor<Armature>, allow_raw_pointers())
     .function("getBone", &Armature::getBone, allow_raw_pointers())
     .function("changeBoneParent", &Armature::changeBoneParent, allow_raw_pointers())
@@ -368,6 +424,12 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getOffsetPoints", &Armature::getOffsetPoints)
     .function("setBlendFunc", &Armature::setBlendFunc)
     .function("getBoneDic", &Armature::getBoneDic)
+    .property("parentBone", &Armature::getParentBone, &Armature::setParentBone)
+    .property("animation", &Armature::getAnimation, &Armature::setAnimation)
+    .property("armatureData", &Armature::getArmatureData, &Armature::setArmatureData)
+    .property("name", &Armature::getName, &Armature::setName)
+    .property("batchNode", &Armature::getBatchNode, &Armature::setBatchNode)
+    .property("version", &Armature::getVersion, &Armature::setVersion)
     .class_function("create", select_overload<cocostudio::Armature*(const std::string&)>(&Armature::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Armature*()>(&Armature::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Armature*(const std::string&, cocostudio::Bone*)>(&Armature::create), allow_raw_pointers())
@@ -375,7 +437,15 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .allow_subclass<wrapper<Armature>>("ccs.Armature._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
-
+#if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT
+    armatureClazz
+      .property("body", &Armature::getBody, &Armature::setBody)
+      .property("colliderFilter", optional_override([](const Armature& this_)
+      {
+        CCLOG("Armature.colliderFilter is write-only");
+        return nullptr;
+      }), &Armature::setColliderFilter);
+#endif
 
   class_<Skin, base<Sprite>>("ccs.Skin")
     .constructor(&cc_bindings_constructor<Skin>, allow_raw_pointers())
@@ -384,6 +454,9 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getDisplayName", &Skin::getDisplayName)
     .function("updateArmatureTransform", &Skin::updateArmatureTransform)
     .function("setBone", &Skin::setBone, allow_raw_pointers())
+    .property("skinData", &Skin::getSkinData, &Skin::setSkinData)
+    .property("bone", &Skin::getBone, &Skin::setBone)
+    .property("displayName", &Skin::getDisplayName)
     .class_function("create", select_overload<cocostudio::Skin*(const std::string&)>(&Skin::create), allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::Skin*()>(&Skin::create), allow_raw_pointers())
     .class_function("createWithSpriteFrameName", &Skin::createWithSpriteFrameName, allow_raw_pointers())
