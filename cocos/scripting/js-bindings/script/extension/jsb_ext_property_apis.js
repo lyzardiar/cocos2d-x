@@ -21,6 +21,7 @@
  * THE SOFTWARE.
  */
 
+if (cc.sys.platform != cc.sys.EMSCRIPTEN) {
 var _proto = cc.Control.prototype;
 cc.defineGetterSetter(_proto, "opacityModifyRGB", _proto.isOpacityModifyRGB, _proto.setOpacityModifyRGB);
 cc.defineGetterSetter(_proto, "state", _proto.getState);
@@ -101,3 +102,4 @@ cc.defineGetterSetter(_proto, "plusSLabel", _proto.getPlusSLabel, _proto.setPlus
 
 _proto = cc.TableViewCell.prototype;
 cc.defineGetterSetter(_proto, "objectId", _proto.getObjectID, _proto.setObjectID);
+}

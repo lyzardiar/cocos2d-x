@@ -8,6 +8,10 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::extension;
 
+CC_BINDINGS_ALLOW_RAW_POINTERS(Sprite)
+CC_BINDINGS_ALLOW_RAW_POINTERS(Label)
+CC_BINDINGS_ALLOW_RAW_POINTERS(ProgressTimer)
+
 COCOS_BINDINGS(jsb_cocos2dx_extension) {
 
 
@@ -25,6 +29,10 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("setHighlighted", &Control::setHighlighted)
     .function("getTouchLocation", &Control::getTouchLocation, allow_raw_pointers())
     .function("isHighlighted", &Control::isHighlighted)
+    .property("state", &Control::getState)
+    .property("enabled", &Control::isEnabled, &Control::setEnabled)
+    .property("selected", &Control::isSelected, &Control::setSelected)
+    .property("highlighted", &Control::isHighlighted, &Control::setHighlighted)
     .class_function("create", &Control::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Control& _) -> std::string {return "Control";}))
     ;
@@ -71,6 +79,13 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("initWithLabelAndBackgroundSprite", &ControlButton::initWithLabelAndBackgroundSprite, allow_raw_pointers())
     .function("getZoomOnTouchDown", &ControlButton::getZoomOnTouchDown)
     .function("getTitleForState", &ControlButton::getTitleForState)
+    .property("adjustBackgroundImage", optional_override([](const ControlButton& this_)
+      {
+        return const_cast<ControlButton&>(this_).doesAdjustBackgroundImage();
+      }), &ControlButton::setAdjustBackgroundImage)
+    .property("zoomOnTouchDown", &ControlButton::getZoomOnTouchDown, &ControlButton::setZoomOnTouchDown)
+    .property("preferredSize", &ControlButton::getPreferredSize, &ControlButton::setPreferredSize)
+    .property("labelAnchor", &ControlButton::getLabelAnchorPoint, &ControlButton::setLabelAnchorPoint)
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*()>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::Node*, cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
@@ -94,6 +109,11 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getBackground", &ControlHuePicker::getBackground, allow_raw_pointers())
     .function("getHuePercentage", &ControlHuePicker::getHuePercentage)
     .function("setSlider", &ControlHuePicker::setSlider, allow_raw_pointers())
+    .property("hue", &ControlHuePicker::getHue, &ControlHuePicker::setHue)
+    .property("huePercent", &ControlHuePicker::getHuePercentage, &ControlHuePicker::setHuePercentage)
+    .property("background", &ControlHuePicker::getBackground)
+    .property("slider", &ControlHuePicker::getSlider)
+    .property("startPos", &ControlHuePicker::getStartPos)
     .class_function("create", &ControlHuePicker::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlHuePicker& _) -> std::string {return "ControlHuePicker";}))
     ;
@@ -109,6 +129,13 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getBackground", &ControlSaturationBrightnessPicker::getBackground, allow_raw_pointers())
     .function("getSaturation", &ControlSaturationBrightnessPicker::getSaturation)
     .function("getBrightness", &ControlSaturationBrightnessPicker::getBrightness)
+    .property("saturation", &ControlSaturationBrightnessPicker::getSaturation)
+    .property("brightness", &ControlSaturationBrightnessPicker::getBrightness)
+    .property("background", &ControlSaturationBrightnessPicker::getBackground)
+    .property("overlay", &ControlSaturationBrightnessPicker::getOverlay)
+    .property("shadow", &ControlSaturationBrightnessPicker::getShadow)
+    .property("slider", &ControlSaturationBrightnessPicker::getSlider)
+    .property("startPos", &ControlSaturationBrightnessPicker::getStartPos)
     .class_function("create", &ControlSaturationBrightnessPicker::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlSaturationBrightnessPicker& _) -> std::string {return "ControlSaturationBrightnessPicker";}))
     ;
@@ -124,6 +151,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("colourSliderValueChanged", &ControlColourPicker::colourSliderValueChanged, allow_raw_pointers())
     .function("setHuePicker", &ControlColourPicker::setHuePicker, allow_raw_pointers())
     .function("getBackground", &ControlColourPicker::getBackground, allow_raw_pointers())
+    .property("background", &ControlColourPicker::getBackground)
     .class_function("create", &ControlColourPicker::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlColourPicker& _) -> std::string {return "ControlColourPicker";}))    
     .allow_subclass<wrapper<ControlColourPicker>>("cc.ControlColourPicker._extend")
@@ -151,6 +179,21 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getThumbSprite", &ControlPotentiometer::getThumbSprite, allow_raw_pointers())
     .function("initWithTrackSprite_ProgressTimer_ThumbSprite", &ControlPotentiometer::initWithTrackSprite_ProgressTimer_ThumbSprite, allow_raw_pointers())
     .function("potentiometerMoved", &ControlPotentiometer::potentiometerMoved)
+    .property("value", optional_override([](const ControlPotentiometer& this_)
+      {
+        return const_cast<ControlPotentiometer&>(this_).getValue();
+      }), &ControlPotentiometer::setValue)
+    .property("minValue", optional_override([](const ControlPotentiometer& this_)
+      {
+        return const_cast<ControlPotentiometer&>(this_).getMinimumValue();
+      }), &ControlPotentiometer::setMinimumValue)
+    .property("maxValue", optional_override([](const ControlPotentiometer& this_)
+      {
+        return const_cast<ControlPotentiometer&>(this_).getMaximumValue();
+      }), &ControlPotentiometer::setMaximumValue)
+    .property("progressTimer", &ControlPotentiometer::getProgressTimer, &ControlPotentiometer::setProgressTimer)
+    .property("thumbSprite", &ControlPotentiometer::getThumbSprite, &ControlPotentiometer::setThumbSprite)
+    .property("prevLocation", &ControlPotentiometer::getPreviousLocation, &ControlPotentiometer::setPreviousLocation)
     .class_function("create", &ControlPotentiometer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlPotentiometer& _) -> std::string {return "ControlPotentiometer";}))    
     .allow_subclass<wrapper<ControlPotentiometer>>("cc.ControlPotentiometer._extend")
@@ -213,6 +256,32 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getPlusSprite", &ControlStepper::getPlusSprite, allow_raw_pointers())
     .function("setPlusSprite", &ControlStepper::setPlusSprite, allow_raw_pointers())
     .function("setMinusSprite", &ControlStepper::setMinusSprite, allow_raw_pointers())
+    .property("wraps", optional_override([](const ControlStepper& this_)
+      {
+        CCLOG("ControlStepper.wraps is write-only");
+        return false;
+      }), &ControlStepper::setWraps)
+    .property("value", &ControlStepper::getValue, &ControlStepper::setValue)
+    .property("minValue", optional_override([](const ControlStepper& this_) -> double
+      {
+        CCLOG("ControlStepper.minValue is write-only");
+        return 0;
+      }), &ControlStepper::setMinimumValue)
+    .property("maxValue", optional_override([](const ControlStepper& this_) -> double
+      {
+        CCLOG("ControlStepper.maxValue is write-only");
+        return 0;
+      }), &ControlStepper::setMaximumValue)
+    .property("stepValue", optional_override([](const ControlStepper& this_) -> double
+      {
+        CCLOG("ControlStepper.stepValue is write-only");
+        return 0;
+      }), &ControlStepper::setStepValue)
+    .property("continuous", &ControlStepper::isContinuous)
+    .property("minusSprite", &ControlStepper::getMinusSprite, &ControlStepper::setMinusSprite)
+    .property("plusSprite", &ControlStepper::getPlusSprite, &ControlStepper::setPlusSprite)
+    .property("minusLabel", &ControlStepper::getMinusLabel, &ControlStepper::setMinusLabel)
+    .property("plusLabel", &ControlStepper::getPlusLabel, &ControlStepper::setPlusLabel)
     .class_function("create", &ControlStepper::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ControlStepper& _) -> std::string {return "ControlStepper";}))    
     .allow_subclass<wrapper<ControlStepper>>("cc.ControlStepper._extend")
@@ -281,6 +350,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getDirection", &ScrollView::getDirection)
     .function("setZoomScale", select_overload<void(float, bool)>(&ScrollView::setZoomScale))
     .function("setZoomScale", select_overload<void(float)>(&ScrollView::setZoomScale))
+    .property("direction", &ScrollView::getDirection, &ScrollView::setDirection)
     .class_function("create", select_overload<cocos2d::extension::ScrollView*()>(&ScrollView::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ScrollView*(cocos2d::Size, cocos2d::Node*)>(&ScrollView::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
@@ -295,6 +365,8 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("reset", &TableViewCell::reset)
     .function("getIdx", &TableViewCell::getIdx)
     .function("setIdx", &TableViewCell::setIdx)
+    // cocos2d-js only
+    // .property("objectId", &TableViewCell::getObjectID, &TableViewCell::setObjectID)
     .class_function("create", &TableViewCell::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TableViewCell& _) -> std::string {return "TableViewCell";}))    
     .allow_subclass<wrapper<TableViewCell>>("cc.TableViewCell._extend")

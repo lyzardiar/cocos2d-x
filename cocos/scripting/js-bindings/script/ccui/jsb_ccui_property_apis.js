@@ -21,6 +21,7 @@
  * THE SOFTWARE.
  */
 
+if (cc.sys.platform != cc.sys.EMSCRIPTEN) {
 var _proto = ccui.Widget.prototype;
 cc.defineGetterSetter(_proto, "xPercent", _proto._getXPercent, _proto._setXPercent);
 cc.defineGetterSetter(_proto, "yPercent", _proto._getYPercent, _proto._setYPercent);
@@ -179,3 +180,4 @@ cc.defineGetterSetter(_proto, "flippedX", _proto.isFlippedX, _proto.setFlippedX)
 cc.defineGetterSetter(_proto, "flippedY", _proto.isFlippedY, _proto.setFlippedY);
 cc.defineGetterSetter(_proto, "width", _proto._getWidth, _proto._setWidth);
 cc.defineGetterSetter(_proto, "height", _proto._getHeight, _proto._setHeight);
+}
