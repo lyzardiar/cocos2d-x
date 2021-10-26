@@ -9,8 +9,52 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::ui;
 
+
+class JSB_EditBoxDelegate
+: public Ref
+, public EditBoxDelegate
+{
+public:
+    JSB_EditBoxDelegate(val v)
+        : _JSDelegate(v)
+    {}
+    
+    virtual void editBoxEditingDidBegin(EditBox* editBox) override
+    {
+        _JSDelegate.call<void>("editBoxEditingDidBegin", val(editBox));
+    }
+    
+    virtual void editBoxEditingDidEnd(EditBox* editBox) override
+    {
+        _JSDelegate.call<void>("editBoxEditingDidEnd", val(editBox));
+    }
+    
+    virtual void editBoxTextChanged(EditBox* editBox, const std::string& text) override
+    {
+        _JSDelegate.call<void>("editBoxTextChanged", val(editBox), val(text));
+    }
+    
+    virtual void editBoxReturn(EditBox* editBox) override
+    {
+      _JSDelegate.call<void>("editBoxReturn", val(editBox));
+    }
+    
+    void setJSDelegate(val pJSDelegate)
+    {
+        _JSDelegate = pJSDelegate;
+    }
+private:
+    val _JSDelegate;
+};
+
 COCOS_BINDINGS(jsb_cocos2dx_ui) {
 
+  value_object<Margin>("ccui._Margin")
+    .field("left", &Margin::left)
+    .field("right", &Margin::right)
+    .field("top", &Margin::top)
+    .field("bottom", &Margin::bottom)
+    ;
 
   class_<LayoutParameter>("ccui.LayoutParameter")
     .constructor(&cc_bindings_constructor<LayoutParameter>, allow_raw_pointers())
@@ -18,6 +62,14 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getLayoutType", &LayoutParameter::getLayoutType)
     .function("createCloneInstance", &LayoutParameter::createCloneInstance, allow_raw_pointers())
     .function("copyProperties", &LayoutParameter::copyProperties, allow_raw_pointers())
+    // from manual
+    .function("setMargin", &LayoutParameter::setMargin)
+    .function("getMargin", &LayoutParameter::getMargin)
+    .function("setMargin", optional_override([](LinearLayoutParameter& this_, float l, float t, float r, float b)  
+    {
+      this_.setMargin(Margin(l, t, r, b));
+    }))
+    // end of manual
     .class_function("create", &LayoutParameter::create, allow_raw_pointers())
     .property("_className",  optional_override([](const LayoutParameter& _) -> std::string {return "LayoutParameter";}))    
     ;
@@ -1231,6 +1283,15 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setCapInsets", &EditBox::setCapInsets)
     .function("setFont", &EditBox::setFont, allow_raw_pointers())
     .function("setTextHorizontalAlignment", &EditBox::setTextHorizontalAlignment)
+    // from manual
+    .function("setDeledate", optional_override(
+        [](EditBox& this_, const val& arg0){
+          JSB_EditBoxDelegate* nativeDelegate = new (std::nothrow) JSB_EditBoxDelegate(arg0);
+          nativeDelegate->autorelease();
+          this_.setUserObject(nativeDelegate);
+          this_.setDelegate(nativeDelegate);
+      }))
+    // end of manual
     .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*)>(&EditBox::create), allow_raw_pointers())
     // TODO: Only support function overloading with different number of parameters
