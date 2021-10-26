@@ -15,8 +15,8 @@ class JSB_EditBoxDelegate
 , public EditBoxDelegate
 {
 public:
-    JSB_EditBoxDelegate(val v)
-        : _JSDelegate(v)
+    JSB_EditBoxDelegate()
+        : _JSDelegate(val::undefined())
     {}
     
     virtual void editBoxEditingDidBegin(EditBox* editBox) override
@@ -39,7 +39,7 @@ public:
       _JSDelegate.call<void>("editBoxReturn", val(editBox));
     }
     
-    void setJSDelegate(val pJSDelegate)
+    void setJSDelegate(const val& pJSDelegate)
     {
         _JSDelegate = pJSDelegate;
     }
@@ -1286,8 +1286,9 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     // from manual
     .function("setDeledate", optional_override(
         [](EditBox& this_, const val& arg0){
-          JSB_EditBoxDelegate* nativeDelegate = new (std::nothrow) JSB_EditBoxDelegate(arg0);
+          JSB_EditBoxDelegate* nativeDelegate = new (std::nothrow) JSB_EditBoxDelegate();
           nativeDelegate->autorelease();
+          nativeDelegate->setJSDelegate(arg0);
           this_.setUserObject(nativeDelegate);
           this_.setDelegate(nativeDelegate);
       }))
