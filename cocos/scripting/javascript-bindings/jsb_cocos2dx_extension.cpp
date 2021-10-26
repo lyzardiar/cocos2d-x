@@ -75,7 +75,6 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getTitleLabelForState", &ControlButton::getTitleLabelForState, allow_raw_pointers())
     .function("setMargins", &ControlButton::setMargins)
     .function("getCurrentTitle", select_overload<std::string()>(&ControlButton::getCurrentTitle))
-    // TODO: Only support function overloading with different number of parameters
     .function("initWithLabelAndBackgroundSprite", &ControlButton::initWithLabelAndBackgroundSprite, allow_raw_pointers())
     .function("getZoomOnTouchDown", &ControlButton::getZoomOnTouchDown)
     .function("getTitleForState", &ControlButton::getTitleForState)
@@ -89,8 +88,16 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*()>(&ControlButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ControlButton*(cocos2d::Node*, cocos2d::ui::Scale9Sprite*)>(&ControlButton::create), allow_raw_pointers())
-    .class_function("create", select_overload<cocos2d::extension::ControlButton*(const std::string&, const std::string&, float)>(&ControlButton::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+      [](const val& arg0, const val& arg1, const val& arg2){
+      if (!arg2.isNumber())
+      {
+        return ControlButton::create(arg0.as<cocos2d::Node*>(allow_raw_pointers()), arg1.as<cocos2d::ui::Scale9Sprite*>(allow_raw_pointers()), arg2.as<bool>());
+      } else 
+      {
+        return ControlButton::create(arg0.as<std::string>(), arg1.as<std::string>(), arg2.as<float>());
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const ControlButton& _) -> std::string {return "ControlButton";}))    
     .allow_subclass<wrapper<ControlButton>>("cc.ControlButton._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -224,10 +231,26 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getProgressSprite", &ControlSlider::getProgressSprite, allow_raw_pointers())
     .function("setSelectedThumbSprite", &ControlSlider::setSelectedThumbSprite, allow_raw_pointers())
     .function("setMaximumAllowedValue", &ControlSlider::setMaximumAllowedValue)
-    .class_function("create", select_overload<cocos2d::extension::ControlSlider*(cocos2d::Sprite*, cocos2d::Sprite*, cocos2d::Sprite*)>(&ControlSlider::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<cocos2d::extension::ControlSlider*(const char*, const char*, const char*, const char*)>(&ControlSlider::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+      [](const val& arg0, const val& arg1, const val& arg2){
+      if (arg0.isString())
+      {
+        return ControlSlider::create(arg0.as<std::string>().c_str(), arg1.as<std::string>().c_str(), arg2.as<std::string>().c_str());
+      } else 
+      {
+        return ControlSlider::create(arg0.as<cocos2d::Sprite*>(allow_raw_pointers()), arg1.as<cocos2d::Sprite*>(allow_raw_pointers()), arg2.as<cocos2d::Sprite*>(allow_raw_pointers()));
+      }
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](const val& arg0, const val& arg1, const val& arg2, const val& arg3){
+      if (!arg0.isString())
+      {
+        return ControlSlider::create(arg0.as<cocos2d::Sprite*>(allow_raw_pointers()), arg1.as<cocos2d::Sprite*>(allow_raw_pointers()), arg2.as<cocos2d::Sprite*>(allow_raw_pointers()), arg3.as<cocos2d::Sprite*>(allow_raw_pointers()));
+      } else 
+      {
+        return ControlSlider::create(arg0.as<std::string>().c_str(), arg1.as<std::string>().c_str(), arg2.as<std::string>().c_str(), arg3.as<std::string>().c_str());
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const ControlSlider& _) -> std::string {return "ControlSlider";}))    
     .allow_subclass<wrapper<ControlSlider>>("cc.ControlSlider._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -353,7 +376,6 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .property("direction", &ScrollView::getDirection, &ScrollView::setDirection)
     .class_function("create", select_overload<cocos2d::extension::ScrollView*()>(&ScrollView::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ScrollView*(cocos2d::Size, cocos2d::Node*)>(&ScrollView::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const ScrollView& _) -> std::string {return "ScrollView";}))    
     .allow_subclass<wrapper<ScrollView>>("cc.ScrollView._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)

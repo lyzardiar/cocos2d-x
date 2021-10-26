@@ -61,8 +61,16 @@ COCOS_BINDINGS(jsb_cocos2dx_audioengine) {
     .class_function("setLoop", &AudioEngine::setLoop)
     .class_function("getDefaultProfile", &AudioEngine::getDefaultProfile, allow_raw_pointers())
     .class_function("setFinishCallback", &AudioEngine::setFinishCallback)
-    .class_function("getProfile", select_overload<cocos2d::experimental::AudioProfile*(const std::string&)>(&AudioEngine::getProfile), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("getProfile", optional_override(
+      [](const val& arg0){
+      if (!arg0.isString())
+      {
+        return AudioEngine::getProfile(arg0.as<int>());
+      } else 
+      {
+        return AudioEngine::getProfile(arg0.as<std::string>());
+      }
+      }), allow_raw_pointers())
     .class_function("getPlayingAudioCount", &AudioEngine::getPlayingAudioCount)
     .property("_className",  optional_override([](const AudioEngine& _) -> std::string {return "AudioEngine";}))    
     ;
