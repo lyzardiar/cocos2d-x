@@ -123,6 +123,8 @@ public:
     */
     virtual bool parseConfig(ConfigType type, const std::string& str) override;
 
+    virtual void removeScriptObjectByObject(Ref* pObj) override;
+
     virtual void setCalledFromScript(bool callFromScript) override { _callFromScript = callFromScript; };
     virtual bool isCalledFromScript() override { return _callFromScript; };
 private:
