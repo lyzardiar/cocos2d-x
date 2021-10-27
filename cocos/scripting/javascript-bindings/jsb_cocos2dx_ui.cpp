@@ -329,9 +329,18 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
         return false;
       }), &Button::setPressedActionEnabled)
     .class_function("create", select_overload<cocos2d::ui::Button*(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Button::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0){
+            return Button::create(arg0);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1){
+            return Button::create(arg0, arg1);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, const std::string& arg2){
+            return Button::create(arg0, arg1, arg2);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Button*()>(&Button::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Button& _) -> std::string {return "Button";}))    
     .allow_subclass<wrapper<Button>>("ccui.Button._extend")
@@ -366,10 +375,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .constructor(&cc_bindings_constructor<CheckBox>, allow_raw_pointers())
     .function("addEventListener", &CheckBox::addEventListener)
     .class_function("create", select_overload<cocos2d::ui::CheckBox*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&CheckBox::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4){
+            return CheckBox::create(arg0, arg1, arg2, arg3, arg4);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::CheckBox*()>(&CheckBox::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::CheckBox*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&CheckBox::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1){
+            return CheckBox::create(arg0, arg1);
+        }), allow_raw_pointers())
     .property("_className",  optional_override([](const CheckBox& _) -> std::string {return "CheckBox";}))    
     .allow_subclass<wrapper<CheckBox>>("ccui.CheckBox._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -380,10 +395,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .constructor(&cc_bindings_constructor<RadioButton>, allow_raw_pointers())
     .function("addEventListener", &RadioButton::addEventListener)
     .class_function("create", select_overload<cocos2d::ui::RadioButton*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&RadioButton::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4){
+            return RadioButton::create(arg0, arg1, arg2, arg3, arg4);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::RadioButton*()>(&RadioButton::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::RadioButton*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&RadioButton::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1){
+            return RadioButton::create(arg0, arg1);
+        }), allow_raw_pointers())
     .property("_className",  optional_override([](const RadioButton& _) -> std::string {return "RadioButton";}))    
     .allow_subclass<wrapper<RadioButton>>("ccui.RadioButton._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -396,15 +417,31 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("isAllowedNoSelection", &RadioButtonGroup::isAllowedNoSelection)
     .function("getSelectedButtonIndex", &RadioButtonGroup::getSelectedButtonIndex)
     .function("setAllowedNoSelection", &RadioButtonGroup::setAllowedNoSelection)
-    .function("setSelectedButtonWithoutEvent", select_overload<void(cocos2d::ui::RadioButton*)>(&RadioButtonGroup::setSelectedButtonWithoutEvent), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setSelectedButtonWithoutEvent", optional_override(
+      [](RadioButtonGroup& this_, const val& arg0){
+      if (arg0.isNumber())
+      {
+        return this_.setSelectedButtonWithoutEvent(arg0.as<int>());
+      } else 
+      {
+        return this_.setSelectedButtonWithoutEvent(arg0.as<cocos2d::ui::RadioButton*>(allow_raw_pointers()));
+      }
+    }))
     .function("addEventListener", &RadioButtonGroup::addEventListener)
     .function("removeAllRadioButtons", &RadioButtonGroup::removeAllRadioButtons)
     .function("getRadioButtonByIndex", &RadioButtonGroup::getRadioButtonByIndex, allow_raw_pointers())
     .function("getNumberOfRadioButtons", &RadioButtonGroup::getNumberOfRadioButtons)
     .function("addRadioButton", &RadioButtonGroup::addRadioButton, allow_raw_pointers())
-    .function("setSelectedButton", select_overload<void(cocos2d::ui::RadioButton*)>(&RadioButtonGroup::setSelectedButton), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setSelectedButton", optional_override(
+      [](RadioButtonGroup& this_, const val& arg0){
+      if (arg0.isNumber())
+      {
+        return this_.setSelectedButton(arg0.as<int>());
+      } else 
+      {
+        return this_.setSelectedButton(arg0.as<cocos2d::ui::RadioButton*>(allow_raw_pointers()));
+      }
+    }))
     .class_function("create", &RadioButtonGroup::create, allow_raw_pointers())
     .property("_className",  optional_override([](const RadioButtonGroup& _) -> std::string {return "RadioButtonGroup";}))    
     .allow_subclass<wrapper<RadioButtonGroup>>("ccui.RadioButtonGroup._extend")
@@ -423,7 +460,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getCapInsets", &ImageView::getCapInsets)
     .function("isScale9Enabled", &ImageView::isScale9Enabled)
     .class_function("create", select_overload<cocos2d::ui::ImageView*(const std::string&, cocos2d::ui::Widget::TextureResType)>(&ImageView::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0){
+            return ImageView::create(arg0);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::ImageView*()>(&ImageView::create), allow_raw_pointers())
     .property("_className",  optional_override([](const ImageView& _) -> std::string {return "ImageView";}))    
     .allow_subclass<wrapper<ImageView>>("ccui.ImageView._extend")
@@ -536,11 +576,15 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("getPercent", &LoadingBar::getPercent)
     .property("direction", &LoadingBar::getDirection, &LoadingBar::setDirection)
     .property("percent", &LoadingBar::getPercent, &LoadingBar::setPercent)
+    // NOTE: it's ambiguous for LoadingBar::create(string, float) and LoadingBar::create(string, TextureResType) on script side. (TextureResType is int32)
+    // As a matter of fact, it always call LoadingBar::create(string, float) in spidermonkey bindings.
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, float)>(&LoadingBar::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0){
+            return LoadingBar::create(arg0);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*()>(&LoadingBar::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::LoadingBar*(const std::string&, cocos2d::ui::Widget::TextureResType, float)>(&LoadingBar::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const LoadingBar& _) -> std::string {return "LoadingBar";}))    
     .allow_subclass<wrapper<LoadingBar>>("ccui.LoadingBar._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -719,7 +763,10 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setZoomScale", &Slider::setZoomScale)
     .property("percent", &Slider::getPercent, &Slider::setPercent)
     .class_function("create", select_overload<cocos2d::ui::Slider*(const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&Slider::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1){
+            return Slider::create(arg0, arg1);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Slider*()>(&Slider::create), allow_raw_pointers())
     .property("_className",  optional_override([](const Slider& _) -> std::string {return "Slider";}))    
     .allow_subclass<wrapper<Slider>>("ccui.Slider._extend")
@@ -793,8 +840,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setFontSize", &TextField::setFontSize)
     .function("setPlaceHolder", &TextField::setPlaceHolder)
     .function("setCursorFromPoint", &TextField::setCursorFromPoint, allow_raw_pointers())
-    .function("setPlaceHolderColor", select_overload<void(const cocos2d::Color4B&)>(&TextField::setPlaceHolderColor))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setPlaceHolderColor", optional_override(
+      [](TextField& this_, const val& arg0){
+      if (!arg0.hasOwnProperty("a"))
+      {
+        return this_.setPlaceHolderColor(arg0.as<const cocos2d::Color3B&>());
+      } else 
+      {
+        return this_.setPlaceHolderColor(arg0.as<const cocos2d::Color4B&>());
+      }
+    }))
     .function("setTextHorizontalAlignment", &TextField::setTextHorizontalAlignment)
     .function("setTextColor", &TextField::setTextColor)
     .function("setCursorChar", &TextField::setCursorChar)
@@ -1105,8 +1160,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setDefaults", &RichText::setDefaults)
     .function("setWrapMode", &RichText::setWrapMode)
     .function("setFontSize", &RichText::setFontSize)
-    .function("removeElement", select_overload<void(cocos2d::ui::RichElement*)>(&RichText::removeElement), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("removeElement", optional_override(
+      [](RichText& this_, const val& arg0){
+      if (arg0.isNumber())
+      {
+        return this_.removeElement(arg0.as<int>());
+      } else 
+      {
+        return this_.removeElement(arg0.as<cocos2d::ui::RichElement*>(allow_raw_pointers()));
+      }
+    }))
     .function("setAnchorTextItalic", &RichText::setAnchorTextItalic)
     .function("getAnchorTextShadowOffset", &RichText::getAnchorTextShadowOffset)
     .function("isAnchorTextBoldEnabled", &RichText::isAnchorTextBoldEnabled)
@@ -1204,8 +1267,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .property("insetBottom", &Scale9Sprite::getInsetBottom, &Scale9Sprite::setInsetBottom)
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const std::string&, const cocos2d::Rect&, const cocos2d::Rect&)>(&Scale9Sprite::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*()>(&Scale9Sprite::create), allow_raw_pointers())
-    .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const cocos2d::Rect&, const std::string&)>(&Scale9Sprite::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+      [](const val& arg0, const val& arg1){
+      if (!arg1.isString())
+      {
+        return Scale9Sprite::create(arg0.as<std::string>(), arg1.as<const cocos2d::Rect&>());
+      } else 
+      {
+        return Scale9Sprite::create(arg0.as<const cocos2d::Rect&>(), arg1.as<std::string>());
+      }
+      }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::Scale9Sprite*(const std::string&)>(&Scale9Sprite::create), allow_raw_pointers())
     .class_function("createWithSpriteFrameName", select_overload<cocos2d::ui::Scale9Sprite*(const std::string&, const cocos2d::Rect&)>(&Scale9Sprite::createWithSpriteFrameName), allow_raw_pointers())
     .class_function("createWithSpriteFrameName", select_overload<cocos2d::ui::Scale9Sprite*(const std::string&)>(&Scale9Sprite::createWithSpriteFrameName), allow_raw_pointers())
@@ -1225,9 +1296,17 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("openKeyboard", &EditBox::openKeyboard)
     .function("setFontSize", &EditBox::setFontSize)
     .function("getInputMode", &EditBox::getInputMode)
-    .function("initWithSizeAndBackgroundSprite", select_overload<bool(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*)>(&EditBox::initWithSizeAndBackgroundSprite), allow_raw_pointers())
+    .function("initWithSizeAndBackgroundSprite", optional_override(
+      [](EditBox& this_, const cocos2d::Size& arg0, const val& arg1){
+      if (!arg1.isString())
+      {
+        return this_.initWithSizeAndBackgroundSprite(arg0, arg1.as<Scale9Sprite*>(allow_raw_pointers()));
+      } else 
+      {
+        return this_.initWithSizeAndBackgroundSprite(arg0, arg1.as<std::string>());
+      }
+      }), allow_raw_pointers())
     .function("initWithSizeAndBackgroundSprite", select_overload<bool(const cocos2d::Size&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::initWithSizeAndBackgroundSprite))
-    // TODO: Only support function overloading with different number of parameters
     .function("initWithSizeAndBackgroundSprite", select_overload<bool(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*)>(&EditBox::initWithSizeAndBackgroundSprite), allow_raw_pointers())
     .function("getPlaceholderFontName", &EditBox::getPlaceholderFontName, allow_raw_pointers())
     .function("setPlaceholderFontName", &EditBox::setPlaceholderFontName, allow_raw_pointers())
@@ -1239,11 +1318,27 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setCapInsetsDisabledRenderer", &EditBox::setCapInsetsDisabledRenderer)
     .function("setPlaceholderFontSize", &EditBox::setPlaceholderFontSize)
     .function("setInputMode", &EditBox::setInputMode)
-    .function("setPlaceholderFontColor", select_overload<void(const cocos2d::Color4B&)>(&EditBox::setPlaceholderFontColor))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setPlaceholderFontColor", optional_override(
+      [](EditBox& this_, const val& arg0){
+      if (!arg0.hasOwnProperty("a"))
+      {
+        return this_.setPlaceholderFontColor(arg0.as<const cocos2d::Color3B&>());
+      } else 
+      {
+        return this_.setPlaceholderFontColor(arg0.as<const cocos2d::Color4B&>());
+      }
+    }))
     .function("getReturnType", &EditBox::getReturnType)
-    .function("setFontColor", select_overload<void(const cocos2d::Color4B&)>(&EditBox::setFontColor))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setFontColor", optional_override(
+      [](EditBox& this_, const val& arg0){
+      if (!arg0.hasOwnProperty("a"))
+      {
+        return this_.setFontColor(arg0.as<const cocos2d::Color3B&>());
+      } else 
+      {
+        return this_.setFontColor(arg0.as<const cocos2d::Color4B&>());
+      }
+    }))
     .function("getFontName", &EditBox::getFontName, allow_raw_pointers())
     .function("setCapInsetsNormalRenderer", &EditBox::setCapInsetsNormalRenderer)
     .function("getFontColor", &EditBox::getFontColor)
@@ -1293,14 +1388,42 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
           this_.setDelegate(nativeDelegate);
       }))
     // end of manual
-    .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::create), allow_raw_pointers())
-    .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*, cocos2d::ui::Scale9Sprite*)>(&EditBox::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const cocos2d::Size& arg0, const val& arg1){
+          if (arg1.isString())
+		  {
+			return EditBox::create(arg0, arg1.as<std::string>());
+		  } else 
+		  {
+			return EditBox::create(arg0, arg1.as<Scale9Sprite*>(allow_raw_pointers()));
+		  }
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const cocos2d::Size& arg0, const val& arg1, const val& arg2){
+          if (arg2.isString())
+		  {
+		  	  return EditBox::create(arg0, arg1.as<std::string>(), arg2.as<std::string>());
+		  }
+		  else if (arg1.isString())
+		  {
+		  	  return EditBox::create(arg0, arg1.as<std::string>(), arg2.as<TextureResType>());
+		  }
+		  else
+		  {
+		  	  return EditBox::create(arg0, arg1.as<Scale9Sprite*>(allow_raw_pointers()), arg2.as<Scale9Sprite*>(allow_raw_pointers()));
+		  }
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const cocos2d::Size& arg0, const val& arg1, const val& arg2, const val& arg3){
+          if (arg1.isString())
+		  {
+			return EditBox::create(arg0, arg1.as<std::string>(), arg2.as<std::string>(), arg3.as<std::string>());
+		  } else 
+		  {
+			return EditBox::create(arg0, arg1.as<Scale9Sprite*>(allow_raw_pointers()), arg2.as<Scale9Sprite*>(allow_raw_pointers()), arg3.as<Scale9Sprite*>(allow_raw_pointers()));
+		  }
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::EditBox*(const cocos2d::Size&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&EditBox::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const EditBox& _) -> std::string {return "EditBox";}))    
     .allow_subclass<wrapper<EditBox>>("ccui.EditBox._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -1377,10 +1500,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("setTitleText", &TabHeader::setTitleText)
     .function("setTitleColor", &TabHeader::setTitleColor)
     .class_function("create", select_overload<cocos2d::ui::TabHeader*(const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&TabHeader::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, const std::string& arg2){
+            return TabHeader::create(arg0, arg1, arg2);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TabHeader*()>(&TabHeader::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::ui::TabHeader*(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, cocos2d::ui::Widget::TextureResType)>(&TabHeader::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg4, const std::string& arg5){
+            return TabHeader::create(arg0, arg1, arg2, arg3, arg4, arg5);
+        }), allow_raw_pointers())
     .property("_className",  optional_override([](const TabHeader& _) -> std::string {return "TabHeader";}))    
     ;
 
@@ -1394,8 +1523,16 @@ COCOS_BINDINGS(jsb_cocos2dx_ui) {
     .function("ignoreHeadersTextureSize", &TabControl::ignoreHeadersTextureSize)
     .function("getHeaderWidth", &TabControl::getHeaderWidth)
     .function("setHeaderDockPlace", &TabControl::setHeaderDockPlace)
-    .function("setSelectTab", select_overload<void(cocos2d::ui::TabHeader*)>(&TabControl::setSelectTab), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setSelectTab", optional_override(
+      [](TabControl& this_, const val& arg0){
+      if (arg0.isNumber())
+      {
+        return this_.setSelectTab(arg0.as<int>());
+      } else 
+      {
+        return this_.setSelectTab(arg0.as<cocos2d::ui::TabHeader*>(allow_raw_pointers()));
+      }
+    }))
     .function("getTabHeader", &TabControl::getTabHeader, allow_raw_pointers())
     .function("isIgnoreHeadersTextureSize", &TabControl::isIgnoreHeadersTextureSize)
     .function("setTabChangedEventListener", &TabControl::setTabChangedEventListener)
