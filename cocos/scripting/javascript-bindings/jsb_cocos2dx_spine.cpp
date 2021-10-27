@@ -15,8 +15,7 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
         // TODO: overloaded constructor
     .function("setTimeScale", &SkeletonRenderer::setTimeScale)
     .function("getDebugSlotsEnabled", &SkeletonRenderer::getDebugSlotsEnabled)
-    .function("setAttachment", select_overload<bool(const std::string&, const char*)>(&SkeletonRenderer::setAttachment), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setAttachment", select_overload<bool(const std::string&, const std::string&)>(&SkeletonRenderer::setAttachment), allow_raw_pointers())
     .function("setBonesToSetupPose", &SkeletonRenderer::setBonesToSetupPose)
     .function("initWithData", &SkeletonRenderer::initWithData, allow_raw_pointers())
     .function("initWithData", optional_override(
@@ -24,15 +23,47 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
         return this_.initWithData(arg0);
       }), allow_raw_pointers())
     .function("setDebugSlotsEnabled", &SkeletonRenderer::setDebugSlotsEnabled)
-    .function("initWithJsonFile", select_overload<void(const std::string&, const std::string&, float)>(&SkeletonRenderer::initWithJsonFile))
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithJsonFile", optional_override(
+        [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1){
+          if (!arg1.isString())
+		  {
+			return this_.initWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+		  } else 
+		  {
+			return this_.initWithJsonFile(arg0, arg1.as<std::string>());
+		  }
+        }))
+    .function("initWithJsonFile", optional_override(
+      [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1, float arg2){
+      if (!arg1.isString())
+      {
+        return this_.initWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()), arg2);
+      } else 
+      {
+        return this_.initWithJsonFile(arg0, arg1.as<std::string>(), arg2);
+      }
+    }), allow_raw_pointers())
     .function("setSlotsToSetupPose", &SkeletonRenderer::setSlotsToSetupPose)
-    .function("initWithBinaryFile", select_overload<void(const std::string&, const std::string&, float)>(&SkeletonRenderer::initWithBinaryFile))
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithBinaryFile", optional_override(
+        [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1){
+          if (!arg1.isString())
+		  {
+			return this_.initWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+		  } else 
+		  {
+			return this_.initWithBinaryFile(arg0, arg1.as<std::string>());
+		  }
+        }))
+    .function("initWithBinaryFile", optional_override(
+      [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1, float arg2){
+      if (!arg1.isString())
+      {
+        return this_.initWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()), arg2);
+      } else 
+      {
+        return this_.initWithBinaryFile(arg0, arg1.as<std::string>(), arg2);
+      }
+    }), allow_raw_pointers())
     .function("setToSetupPose", &SkeletonRenderer::setToSetupPose)
     .function("setDebugMeshesEnabled", &SkeletonRenderer::setDebugMeshesEnabled)
     .function("isTwoColorTint", &SkeletonRenderer::isTwoColorTint)
@@ -45,16 +76,40 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     .function("getDebugMeshesEnabled", &SkeletonRenderer::getDebugMeshesEnabled)
     .function("setBlendFunc", &SkeletonRenderer::setBlendFunc)
     .function("setVertexEffect", &SkeletonRenderer::setVertexEffect, allow_raw_pointers())
-    .function("setSkin", select_overload<bool(const char*)>(&SkeletonRenderer::setSkin), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setSkin", optional_override(
+      [](SkeletonRenderer& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.setSkin(arg0.as<std::string>());
+      } else 
+      {
+        return this_.setSkin(arg0.as<const char*>(allow_raw_pointers()));
+      }
+    }))
     .function("updateWorldTransform", &SkeletonRenderer::updateWorldTransform)
     .function("getSkeleton", &SkeletonRenderer::getSkeleton, allow_raw_pointers())
     .function("drawDebug", &SkeletonRenderer::drawDebug, allow_raw_pointers())
-    .class_function("create", select_overload<spine::SkeletonRenderer*(const std::string&, spAtlas*, float)>(&SkeletonRenderer::createWithFile), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const val& arg1){
+		  if (arg1.isString())
+		  {
+			return SkeletonRenderer::createWithFile(arg0, arg1.as<std::string>());
+		  } else 
+		  {
+			return SkeletonRenderer::createWithFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+		  }
+        }), allow_raw_pointers())
     .class_function("create", select_overload<spine::SkeletonRenderer*()>(&SkeletonRenderer::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+      [](const std::string& arg0, const val& arg1, float arg2){
+      if (arg1.isString())
+      {
+        return SkeletonRenderer::createWithFile(arg0, arg1.as<std::string>(), arg2);
+      } else 
+      {
+        return SkeletonRenderer::createWithFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()), arg2);
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const SkeletonRenderer& _) -> std::string {return "SkeletonRenderer";}))    
     ;
 
@@ -91,14 +146,46 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     .function("clearTracks", &SkeletonAnimation::clearTracks)
     .function("setTrackEndListener", &SkeletonAnimation::setTrackEndListener, allow_raw_pointers())
     .function("setStartListener", &SkeletonAnimation::setStartListener)
-    .class_function("createWithBinaryFile", select_overload<spine::SkeletonAnimation*(const std::string&, const std::string&, float)>(&SkeletonAnimation::createWithBinaryFile), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("createWithJsonFile", select_overload<spine::SkeletonAnimation*(const std::string&, const std::string&, float)>(&SkeletonAnimation::createWithJsonFile), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("createWithBinaryFile", optional_override(
+        [](const std::string& arg0, const val& arg1){
+		  if (!arg1.isString())
+		  {
+			return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+		  } else 
+		  {
+			return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<std::string>());
+		  }
+        }), allow_raw_pointers())
+    .class_function("createWithBinaryFile", optional_override(
+      [](const std::string& arg0, const val& arg1, float arg2){
+      if (!arg1.isString())
+      {
+        return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()), arg2);
+      } else 
+      {
+        return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<std::string>(), arg2);
+      }
+      }), allow_raw_pointers())
+    .class_function("createWithJsonFile", optional_override(
+        [](const std::string& arg0, const val& arg1){
+		  if (!arg1.isString())
+		  {
+			return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+		  } else 
+		  {
+			return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<std::string>());
+		  }
+        }), allow_raw_pointers())
+    .class_function("createWithJsonFile", optional_override(
+      [](const std::string& arg0, const val& arg1, float arg2){
+      if (!arg1.isString())
+      {
+        return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()), arg2);
+      } else 
+      {
+        return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<std::string>(), arg2);
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const SkeletonAnimation& _) -> std::string {return "SkeletonAnimation";}))    
     .allow_subclass<wrapper<SkeletonAnimation>>("sp.SkeletonAnimation._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)

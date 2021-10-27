@@ -208,8 +208,16 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("init", &DisplayManager::init, allow_raw_pointers())
     .function("getContentSize", &DisplayManager::getContentSize)
     .function("getBoundingBox", &DisplayManager::getBoundingBox)
-    .function("addDisplay", select_overload<void(cocos2d::Node*, int)>(&DisplayManager::addDisplay), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("addDisplay", optional_override(
+      [](DisplayManager& this_, const val& arg0, int arg1){
+      if (arg0["_className"].as<std::string>() != "Node")
+      {
+        return this_.addDisplay(arg0.as<cocostudio::DisplayData*>(allow_raw_pointers()), arg1);
+      } else 
+      {
+        return this_.addDisplay(arg0.as<cocos2d::Node*>(allow_raw_pointers()), arg1);
+      }
+    }), allow_raw_pointers())
     .function("containPoint", select_overload<bool(float, float)>(&DisplayManager::containPoint))
     .function("containPoint", select_overload<bool(cocos2d::Vec2&)>(&DisplayManager::containPoint))
     .function("initDisplayList", &DisplayManager::initDisplayList, allow_raw_pointers())
@@ -246,8 +254,16 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("removeDisplay", &Bone::removeDisplay)
     .function("setBoneData", &Bone::setBoneData, allow_raw_pointers())
     .function("setParentBone", &Bone::setParentBone, allow_raw_pointers())
-    .function("addDisplay", select_overload<void(cocos2d::Node*, int)>(&Bone::addDisplay), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("addDisplay", optional_override(
+      [](Bone& this_, const val& arg0, int arg1){
+      if (arg0["_className"].as<std::string>() != "Node")
+      {
+        return this_.addDisplay(arg0.as<cocostudio::DisplayData*>(allow_raw_pointers()), arg1);
+      } else 
+      {
+        return this_.addDisplay(arg0.as<cocos2d::Node*>(allow_raw_pointers()), arg1);
+      }
+    }), allow_raw_pointers())
     .function("setIgnoreMovementBoneData", &Bone::setIgnoreMovementBoneData)
     .function("getBlendFunc", &Bone::getBlendFunc)
     .function("removeFromParent", select_overload<void(bool)>(&Bone::removeFromParent))
@@ -809,22 +825,28 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .constructor(&cc_bindings_constructor<BoneNode>, allow_raw_pointers())
     .function("getDebugDrawWidth", &BoneNode::getDebugDrawWidth)
     .function("getChildBones", select_overload<cocos2d::Vector<cocostudio::timeline::BoneNode *>&()>(&BoneNode::getChildBones))
-    // TODO: Only support function overloading with different number of parameters
     .function("getBlendFunc", &BoneNode::getBlendFunc)
     .function("getAllSubBones", &BoneNode::getAllSubBones)
     .function("setBlendFunc", &BoneNode::setBlendFunc)
     .function("setDebugDrawEnabled", &BoneNode::setDebugDrawEnabled)
     .function("getVisibleSkinsRect", &BoneNode::getVisibleSkinsRect)
     .function("getAllSubSkins", &BoneNode::getAllSubSkins)
-    .function("displaySkin", select_overload<void(const std::string&, bool)>(&BoneNode::displaySkin))
-    // TODO: Only support function overloading with different number of parameters
+    .function("displaySkin", optional_override(
+      [](BoneNode& this_, const val& arg0, bool arg1){
+      if (!arg0.isString())
+      {
+        return this_.displaySkin(arg0.as<cocos2d::Node*>(allow_raw_pointers()), arg1);
+      } else 
+      {
+        return this_.displaySkin(arg0.as<std::string>(), arg1);
+      }
+    }), allow_raw_pointers())
     .function("isDebugDrawEnabled", &BoneNode::isDebugDrawEnabled)
     .function("addSkin", select_overload<void(cocos2d::Node*, bool, bool)>(&BoneNode::addSkin), allow_raw_pointers())
     .function("addSkin", select_overload<void(cocos2d::Node*, bool)>(&BoneNode::addSkin), allow_raw_pointers())
     .function("getRootSkeletonNode", &BoneNode::getRootSkeletonNode, allow_raw_pointers())
     .function("setDebugDrawLength", &BoneNode::setDebugDrawLength)
     .function("getSkins", select_overload<cocos2d::Vector<cocos2d::Node *>&()>(&BoneNode::getSkins))
-    // TODO: Only support function overloading with different number of parameters
     .function("getVisibleSkins", &BoneNode::getVisibleSkins)
     .function("setDebugDrawWidth", &BoneNode::setDebugDrawWidth)
     .function("getDebugDrawLength", &BoneNode::getDebugDrawLength)
@@ -841,8 +863,16 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
   class_<SkeletonNode, base<BoneNode>>("ccs.SkeletonNode")
     .constructor(&cc_bindings_constructor<SkeletonNode>, allow_raw_pointers())
     .function("getBoneNode", &SkeletonNode::getBoneNode, allow_raw_pointers())
-    .function("changeSkins", select_overload<void(const std::string&)>(&SkeletonNode::changeSkins))
-    // TODO: Only support function overloading with different number of parameters
+    .function("changeSkins", optional_override(
+      [](SkeletonNode& this_, const val& arg0){
+      if (!arg0.isString())
+      {
+        return this_.changeSkins(arg0.as<const std::map<std::string, std::string>&>());
+      } else 
+      {
+        return this_.changeSkins(arg0.as<std::string>());
+      }
+    }))
     .function("addSkinGroup", &SkeletonNode::addSkinGroup)
     .function("getAllSubBonesMap", &SkeletonNode::getAllSubBonesMap)
     .class_function("create", &SkeletonNode::create, allow_raw_pointers())

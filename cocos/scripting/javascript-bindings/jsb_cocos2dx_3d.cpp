@@ -69,12 +69,31 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .constructor(&cc_bindings_constructor<BillBoard>, allow_raw_pointers())
     .function("getMode", &BillBoard::getMode)
     .function("setMode", &BillBoard::setMode)
-    .class_function("create", select_overload<cocos2d::BillBoard*(const std::string&, cocos2d::BillBoard::Mode)>(&BillBoard::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<cocos2d::BillBoard*(cocos2d::BillBoard::Mode)>(&BillBoard::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const val& arg1){
+		  if (arg1.isNumber())
+		  {
+			return BillBoard::create(arg0, arg1.as<cocos2d::BillBoard::Mode>());
+		  } else 
+		  {
+			return BillBoard::create(arg0, arg1.as<Rect>());
+		  }
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](const val& arg0){
+      if (!arg0.isString())
+      {
+        return BillBoard::create(arg0.as<cocos2d::BillBoard::Mode>());
+      } else 
+      {
+        return BillBoard::create(arg0.as<std::string>());
+      }
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](){
+            return BillBoard::create();
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::BillBoard*(const std::string&, const cocos2d::Rect&, cocos2d::BillBoard::Mode)>(&BillBoard::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .class_function("createWithTexture", &BillBoard::createWithTexture, allow_raw_pointers())
     .class_function("createWithTexture", optional_override(
       [](cocos2d::Texture2D* arg0){
@@ -144,8 +163,16 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
   class_<Sprite3D, base<Node>>("jsb.Sprite3D")
     .constructor(&cc_bindings_constructor<Sprite3D>, allow_raw_pointers())
     .function("setCullFaceEnabled", &Sprite3D::setCullFaceEnabled)
-    .function("setTexture", select_overload<void(cocos2d::Texture2D*)>(&Sprite3D::setTexture), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setTexture", optional_override(
+      [](Sprite3D& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.setTexture(arg0.as<std::string>());
+      } else 
+      {
+        return this_.setTexture(arg0.as<cocos2d::Texture2D*>(allow_raw_pointers()));
+      }
+    }))
     .function("getLightMask", &Sprite3D::getLightMask)
     .function("createAttachSprite3DNode", &Sprite3D::createAttachSprite3DNode, allow_raw_pointers())
     .function("loadFromFile", &Sprite3D::loadFromFile, allow_raw_pointers())
@@ -212,10 +239,22 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("convertToTerrainSpace", &Terrain::convertToTerrainSpace)
     .function("initTextures", &Terrain::initTextures)
     .function("initProperties", &Terrain::initProperties)
-    .function("getHeight", select_overload<float(const cocos2d::Vec2&, cocos2d::Vec3*) const>(&Terrain::getHeight), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("getHeight", optional_override(
+        [](Terrain& this_, const cocos2d::Vec2& arg0){
+            return this_.getHeight(arg0);
+        }))
+    .function("getHeight", optional_override(
+        [](Terrain& this_, const val& arg0, const val& arg1){
+            if(arg0.isNumber())
+            {
+            	return this_.getHeight(arg0.as<float>(), arg1.as<float>());
+            }
+            else
+            {
+            	return this_.getHeight(arg0.as<Vec2>(), arg1.as<cocos2d::Vec3*>(allow_raw_pointers()));
+            }
+        }))
     .function("getHeight", select_overload<float(float, float, cocos2d::Vec3*) const>(&Terrain::getHeight), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("initWithTerrainData", &Terrain::initWithTerrainData)
     .function("setLODDistance", &Terrain::setLODDistance)
     .function("getTerrainSize", &Terrain::getTerrainSize)
