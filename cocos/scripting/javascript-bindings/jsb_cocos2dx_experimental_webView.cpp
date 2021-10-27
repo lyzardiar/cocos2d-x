@@ -38,6 +38,40 @@ COCOS_BINDINGS(jsb_cocos2dx_experimental_webView) {
     .function("reload", &WebView::reload)
     .function("setJavascriptInterfaceScheme", &WebView::setJavascriptInterfaceScheme)
     .function("getOnDidFinishLoading", &WebView::getOnDidFinishLoading)
+    // from manual
+    .function("setOnShouldStartLoading", optional_override([](WebView& this_, const val& func) 
+    {
+      const std::val& thisv = cached_val(&this_);
+      this_.setOnShouldStartLoading([thisv, func](WebView *sender, const std::string &url) -> void
+      {
+        func.call<void>("call", thisv, cached_val(sender), val(url));
+      });
+    }))
+    .function("setOnDidFinishLoading", optional_override([](WebView& this_, const val& func) 
+    {
+      const std::val& thisv = cached_val(&this_);
+      this_.setOnDidFinishLoading([thisv, func](WebView *sender, const std::string &url) -> void
+      {
+        func.call<void>("call", thisv, cached_val(sender), val(url));
+      });
+    }))
+    .function("setOnDidFailLoading", optional_override([](WebView& this_, const val& func) 
+    {
+      const std::val& thisv = cached_val(&this_);
+      this_.setOnDidFailLoading([thisv, func](WebView *sender, const std::string &url) -> void
+      {
+        func.call<void>("call", thisv, cached_val(sender), val(url));
+      });
+    }))
+    .function("setOnJSCallback", optional_override([](WebView& this_, const val& func) 
+    {
+      const std::val& thisv = cached_val(&this_);
+      this_.setOnJSCallback([thisv, func](WebView *sender, const std::string &url) -> void
+      {
+        func.call<void>("call", thisv, cached_val(sender), val(url));
+      });
+    }))
+    // end of manual
     .class_function("create", &WebView::create, allow_raw_pointers())
     .property("_className",  optional_override([](const WebView& _) -> std::string {return "WebView";}))    
     ;

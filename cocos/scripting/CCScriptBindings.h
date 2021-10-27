@@ -55,6 +55,11 @@ namespace cocos2d {
 
     using val = emscripten::val;
 
+    inline val cached_val(Ref * ref) {
+        auto v = emscripten::val::global("Module")["cocosRefs"][(int)ref];
+        return v.isUndefined() ? val(ref) : v;
+    }
+
     template<typename BaseClass>
       using base = emscripten::base<BaseClass>;
 

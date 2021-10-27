@@ -31,6 +31,16 @@ COCOS_BINDINGS(jsb_cocos2dx_experimental_video) {
     .function("isPlaying", &VideoPlayer::isPlaying)
     .function("setLooping", &VideoPlayer::setLooping)
     .function("setUserInputEnabled", &VideoPlayer::setUserInputEnabled)
+    // from manual
+    .function("addEventListener", optional_override([](VideoPlayer& this_, const val& func) 
+    {
+      const std::val& thisv = cached_val(&this_);
+      this_.addEventListener([thisv, func](Ref* widget, experimental::ui::VideoPlayer::EventType type) -> void
+      {
+        func.call<void>("call", thisv, cached_val(widget), val(type));
+      });
+    }))
+    // end of manual
     .class_function("create", &VideoPlayer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const VideoPlayer& _) -> std::string {return "VideoPlayer";}))    
     ;
