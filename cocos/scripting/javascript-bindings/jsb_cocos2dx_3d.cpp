@@ -8,8 +8,36 @@ using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
 
+bool val_to_TerrainData(const val& v, cocos2d::Terrain::TerrainData& data)
+{
+  data._heightMapSrc = v["heightMap"].as<std::string>();
+  data._alphaMapSrc = v["alphaMap"].as<std::string>();
+  data._chunkSize = v["chunkSize"].as<Size>();
+  data._mapHeight = v["mapHeight"].as<float>();
+  data._mapScale = v["mapScale"].as<float>();
+  for(unsigned i = 0; i < v["detailMap"]["length"].as<unsigned>(); i++)
+  {
+    data._detailMaps[i]._detailMapSrc = v["detailMap"][i]["file"].as<std::string>();
+    data._detailMaps[i]._detailMapSize = v["detailMap"][i]["size"].as<float>();
+  }
+
+  return true;
+}
+
 COCOS_BINDINGS(jsb_cocos2dx_3d) {
 
+
+  value_object<AABB>("_.AABB")
+    .field("min", &AABB::_min)
+    .field("max", &AABB::_max)
+    ;
+
+  value_object<MeshVertexAttrib>("_.MeshVertexAttrib")
+    .field("size", &MeshVertexAttrib::size)
+    .field("type", &MeshVertexAttrib::type)
+    .field("vertexAttrib", &MeshVertexAttrib::vertexAttrib)
+    .field("attribSizeBytes", &MeshVertexAttrib::attribSizeBytes)
+    ;
 
   class_<Animation3D>("jsb.Animation3D")
     .constructor(&cc_bindings_constructor<Animation3D>, allow_raw_pointers())
@@ -17,6 +45,13 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("init", &Animation3D::init)
     .function("getBoneCurveByName", &Animation3D::getBoneCurveByName, allow_raw_pointers())
     .function("getDuration", &Animation3D::getDuration)
+    // from manual
+    .class_function("create", &Animation3D::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](std::string arg0, std::string arg1){
+        return Animation3D::create(arg0, arg1);
+      }), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const Animation3D& _) -> std::string {return "Animation3D";}))    
     ;
 
@@ -53,6 +88,13 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
   class_<TextureCube, base<Texture2D>>("jsb.TextureCube")
     .constructor(&cc_bindings_constructor<TextureCube>, allow_raw_pointers())
     .function("reloadTexture", &TextureCube::reloadTexture)
+    // from manual
+    .function("setTexParameters", optional_override(
+      [](TextureCube& this_, GLuint arg0, GLuint arg1, GLuint arg2, GLuint arg3){
+        Texture2D::TexParams param = { arg0, arg1, arg2, arg3 };
+        this_.setTexParameters(param);
+      }))
+    // end of manual
     .class_function("create", &TextureCube::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TextureCube& _) -> std::string {return "TextureCube";}))    
     ;
@@ -130,6 +172,9 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("getIndexBuffer", &Mesh::getIndexBuffer)
     .function("setGLProgramState", &Mesh::setGLProgramState, allow_raw_pointers())
     .function("setVisible", &Mesh::setVisible)
+    // from manual
+    .function("getMeshVertexAttribute", &Mesh::getMeshVertexAttribute)
+    // end of manual
     .property("_className",  optional_override([](const Mesh& _) -> std::string {return "Mesh";}))    
     ;
 
@@ -212,6 +257,27 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .class_function("create", select_overload<cocos2d::Sprite3D*(const std::string&)>(&Sprite3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Sprite3D*()>(&Sprite3D::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Sprite3D*(const std::string&, const std::string&)>(&Sprite3D::create), allow_raw_pointers())
+    // from manual
+    .function("getAABB", &Sprite3D::getAABB)
+    .class_function("createAsync", optional_override(
+      [](const std::string &modelPath, const val& callback, const val& thisv, const val& callbackparam){
+        ValHolder* valHolder = new ValHolder(callbackparam);
+        auto lambda = [callback, thisv, valHolder](Sprite3D* sprite3D, void* larg1) -> void{
+            callback.call<void>("call", thisv, val(sprite3D), valHolder->getVal());
+            delete (ValHolder*)valHolder;
+        };
+        Sprite3D::createAsync(modelPath, lambda, valHolder);
+      }))
+    .class_function("createAsync", optional_override(
+      [](const std::string &modelPath, const std::string &texturePath, const val& callback, const val& thisv, const val& callbackparam){
+        ValHolder* valHolder = new ValHolder(callbackparam);
+        auto lambda = [callback, thisv, valHolder](Sprite3D* sprite3D, void* larg1) -> void{
+            callback.call<void>("call", thisv, val(sprite3D), valHolder->getVal());
+            delete (ValHolder*)valHolder;
+        };
+        Sprite3D::createAsync(modelPath, texturePath, lambda, valHolder);
+      }))
+    // end of manual
     .property("_className",  optional_override([](const Sprite3D& _) -> std::string {return "Sprite3D";}))    
     .allow_subclass<wrapper<Sprite3D>>("jsb.Sprite3D._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -267,6 +333,21 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("setIsEnableFrustumCull", &Terrain::setIsEnableFrustumCull)
     .function("getMinHeight", &Terrain::getMinHeight)
     .function("getMaxHeight", &Terrain::getMaxHeight)
+    // from manual
+    .function("getHeightData", &Terrain::getHeightData)
+    .class_function("create", optional_override(
+      [](const val& parameter){
+        cocos2d::Terrain::TerrainData data;
+        val_to_TerrainData(parameter, data);
+        return Terrain::create(data);
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](const val& parameter, cocos2d::Terrain::CrackFixedType fixedType){
+        cocos2d::Terrain::TerrainData data;
+        val_to_TerrainData(parameter, data);
+        return Terrain::create(data, fixedType);
+      }), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const Terrain& _) -> std::string {return "Terrain";}))
     .allow_subclass<wrapper<Terrain>>("jsb.Terrain._extend")    
     ;
@@ -282,6 +363,9 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .function("loadMeshDatas", &Bundle3D::loadMeshDatas)
     .function("loadNodes", &Bundle3D::loadNodes)
     .function("loadAnimationData", &Bundle3D::loadAnimationData, allow_raw_pointers())
+    // from manual
+    .class_function("getTrianglesList", &Bundle3D::getTrianglesList)
+    // end of manual
     .class_function("createBundle", &Bundle3D::createBundle, allow_raw_pointers())
     .class_function("destroyBundle", &Bundle3D::destroyBundle, allow_raw_pointers())
     .class_function("loadObj", &Bundle3D::loadObj, allow_raw_pointers())

@@ -105,6 +105,15 @@ namespace cocos2d {
       T *obj = new (std::nothrow) T(std::forward<Args>(args)...);
       return obj;
     }
+
+    class ValHolder 
+    {
+    public:
+        ValHolder(const val& v): v_(v) {}
+        val getVal() const { return v_; }
+    private:
+        val v_;
+    };
   }
 }
 
