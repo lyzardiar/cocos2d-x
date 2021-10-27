@@ -25,6 +25,11 @@ CC_BINDINGS_ALLOW_RAW_POINTERS(cocostudio::ArmatureAnimation);
 
 COCOS_BINDINGS(jsb_cocos2dx_studio) {
 
+  value_object<AnimationInfo>("_.AnimationInfo")
+    .field("startIndex", &AnimationInfo::startIndex)
+    .field("endIndex", &AnimationInfo::endIndex)
+    .field("name", &AnimationInfo::name)
+    ;
 
   class_<ActionObject>("ccs.ActionObject")
     .constructor(&cc_bindings_constructor<ActionObject>, allow_raw_pointers())
@@ -58,6 +63,32 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("playActionByName", select_overload<cocostudio::ActionObject*(const char*, const char*, cocos2d::CallFunc*)>(&ActionManagerEx::playActionByName), allow_raw_pointers())
     .function("playActionByName", select_overload<cocostudio::ActionObject*(const char*, const char*)>(&ActionManagerEx::playActionByName), allow_raw_pointers())
     .function("releaseActions", &ActionManagerEx::releaseActions)
+    // from manual
+    .function("initWithDictionaryEx", optional_override(
+      [](ActionManagerEx& this_, const std::string& arg0, const std::string& arg1, Ref* arg2)
+      {
+        rapidjson::Document arg1Jsondoc;
+        arg1Jsondoc.Parse<0>(arg1.c_str());
+        if (arg1Jsondoc.HasParseError())
+        {
+            CCLOG("GetParseError %d\n",arg1Jsondoc.GetParseError());
+        }
+        this_.initWithDictionary(arg0.c_str(), arg1Jsondoc, arg2);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDictionaryEx", optional_override(
+      [](ActionManagerEx& this_, const std::string& arg0, const std::string& arg1, Ref* arg2, int version)
+      {
+        rapidjson::Document arg1Jsondoc;
+        arg1Jsondoc.Parse<0>(arg1.c_str());
+        if (arg1Jsondoc.HasParseError())
+        {
+            CCLOG("GetParseError %d\n",arg1Jsondoc.GetParseError());
+        }
+        this_.initWithDictionary(arg0.c_str(), arg1Jsondoc, arg2, version);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .class_function("destroyInstance", &ActionManagerEx::destroyInstance)
     .class_function("getInstance", &ActionManagerEx::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const ActionManagerEx& _) -> std::string {return "ActionManagerEx";}))    
@@ -68,6 +99,21 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .constructor(&cc_bindings_constructor<BaseData>, allow_raw_pointers())
     .function("getColor", &BaseData::getColor)
     .function("setColor", &BaseData::setColor)
+    // from manaul
+    .property("x", &BaseData::x)
+    .property("y", &BaseData::y)
+    .property("zOrder", &BaseData::zOrder)
+    .property("skewX", &BaseData::skewX)
+    .property("skewY", &BaseData::skewY)
+    .property("scaleX", &BaseData::scaleX)
+    .property("scaleY", &BaseData::scaleY)
+    .property("tweenRotate", &BaseData::tweenRotate)
+    .property("isUseColorInfo", &BaseData::isUseColorInfo)
+    .property("a", &BaseData::a)
+    .property("r", &BaseData::r)
+    .property("g", &BaseData::g)
+    .property("b", &BaseData::b)
+    // end of manual
     .class_function("create", &BaseData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const BaseData& _) -> std::string {return "BaseData";}))    
     ;
@@ -77,6 +123,15 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .constructor(&cc_bindings_constructor<MovementData>, allow_raw_pointers())
     .function("getMovementBoneData", &MovementData::getMovementBoneData, allow_raw_pointers())
     .function("addMovementBoneData", &MovementData::addMovementBoneData, allow_raw_pointers())
+    // from manaul
+    .property("name", &MovementData::name)
+    .property("duration", &MovementData::duration)
+    .property("scale", &MovementData::scale)
+    .property("durationTo", &MovementData::durationTo)
+    .property("durationTween", &MovementData::durationTween)
+    .property("loop", &MovementData::loop)
+    .property("tweenEasing", &MovementData::tweenEasing)
+    // end of manual
     .class_function("create", &MovementData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const MovementData& _) -> std::string {return "MovementData";}))    
     ;
@@ -87,6 +142,11 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getMovement", &AnimationData::getMovement, allow_raw_pointers())
     .function("getMovementCount", &AnimationData::getMovementCount)
     .function("addMovement", &AnimationData::addMovement, allow_raw_pointers())
+    // from manaul
+    .property("name", &AnimationData::name)
+    .property("movementNames", &AnimationData::movementNames)
+    .property("movementDataDic", &AnimationData::movementDataDic)
+    // end of manual
     .class_function("create", &AnimationData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const AnimationData& _) -> std::string {return "AnimationData";}))    
     ;
@@ -96,6 +156,10 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .constructor(&cc_bindings_constructor<ContourData>, allow_raw_pointers())
     .function("init", &ContourData::init)
     .function("addVertex", &ContourData::addVertex)
+    // from manaul
+    // NOTE: typo "vertextList"
+    .property("vertextList", &ContourData::vertexList)
+    // end of manual
     .class_function("create", &ContourData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ContourData& _) -> std::string {return "ContourData";}))    
     ;
@@ -106,6 +170,14 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("getContourData", &TextureData::getContourData, allow_raw_pointers())
     .function("init", &TextureData::init)
     .function("addContourData", &TextureData::addContourData, allow_raw_pointers())
+    // from manaul
+    .property("contourDataList", &TextureData::contourDataList)
+    .property("name", &TextureData::name)
+    .property("width", &TextureData::width)
+    .property("height", &TextureData::height)
+    .property("pivotX", &TextureData::pivotX)
+    .property("pivotY", &TextureData::pivotY)
+    // end of manual
     .class_function("create", &TextureData::create, allow_raw_pointers())
     .property("_className",  optional_override([](const TextureData& _) -> std::string {return "TextureData";}))    
     ;
@@ -151,6 +223,9 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     ;
 
   class_<ColliderBody>("ccs.ColliderBody")
+    // from manual
+    .function("getCalculatedVertexList", &ColliderBody::getCalculatedVertexList)
+    // end of manual
     .property("_className",  optional_override([](const ColliderBody& _) -> std::string {return "ColliderBody";}))    
     ;
 
@@ -369,6 +444,64 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
         return this_.playWithIndex(arg0, arg1);
       }))
     .function("getCurrentMovementID", &ArmatureAnimation::getCurrentMovementID)
+    // from manual
+    .function("setMovementEventCallFunc", optional_override([](ArmatureAnimation& this_, const val& callback)
+    {
+      if (callback.isNull() || callback.isUndefined())
+      {
+        this_.setMovementEventCallFunc(nullptr);
+      }
+      else
+      {
+        this_.setMovementEventCallFunc([callback](Armature *armature, MovementEventType movementType, const std::string& movementID)
+        {
+          callback.call<void>("call", val::undefined(), val(armature), val(movementType), val(movementID));
+        });
+      }
+    }))
+    .function("setMovementEventCallFunc", optional_override([](ArmatureAnimation& this_, const val& callback, const val& thisv)
+    {
+      if (callback.isNull() || callback.isUndefined())
+      {
+        this_.setMovementEventCallFunc(nullptr);
+      }
+      else
+      {
+        this_.setMovementEventCallFunc([callback, thisv](Armature *armature, MovementEventType movementType, const std::string& movementID)
+        {
+          callback.call<void>("call", thisv, val(armature), val(movementType), val(movementID));
+        });
+      }
+    }))
+    .function("setFrameEventCallFunc", optional_override([](ArmatureAnimation& this_, const val& callback)
+    {
+      if (callback.isNull() || callback.isUndefined())
+      {
+        this_.setFrameEventCallFunc(nullptr);
+      }
+      else
+      {
+        this_.setFrameEventCallFunc([callback](Bone *bone, const std::string& frameEventName, int originFrameIndex, int currentFrameIndex)
+        {
+          callback.call<void>("call", val::undefined(), val(bone), val(frameEventName), val(originFrameIndex), val(currentFrameIndex));
+        });
+      }
+    }))
+    .function("setFrameEventCallFunc", optional_override([](ArmatureAnimation& this_, const val& callback, const val& thisv)
+    {
+      if (callback.isNull() || callback.isUndefined())
+      {
+        this_.setFrameEventCallFunc(nullptr);
+      }
+      else
+      {
+        this_.setFrameEventCallFunc([callback, thisv](Bone *bone, const std::string& frameEventName, int originFrameIndex, int currentFrameIndex)
+        {
+          callback.call<void>("call", thisv, val(bone), val(frameEventName), val(originFrameIndex), val(currentFrameIndex));
+        });
+      }
+    }))
+    // end of manual
     .class_function("create", &ArmatureAnimation::create, allow_raw_pointers())
     .property("_className",  optional_override([](const ArmatureAnimation& _) -> std::string {return "ArmatureAnimation";}))
     .allow_subclass<wrapper<ArmatureAnimation>>("ccs.ArmatureAnimation._extend")    
@@ -408,6 +541,18 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
         [](ArmatureDataManager& this_, const std::string& arg0, const std::string& arg1){
         return this_.addSpriteFrameFromFile(arg0, arg1);
       }))
+    // from manual
+    .function("addArmatureFileInfoAsync", optional_override([](ArmatureDataManager& this_, const std::string& arg0, const val& callback, const val& thisv)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      this_.addArmatureFileInfoAsync(arg0, wrapper, schedule_selector(SelectorWrapper::schedule_callback));
+    }))
+    .function("addArmatureFileInfoAsync", optional_override([](ArmatureDataManager& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, const val& callback, const val& thisv)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      this_.addArmatureFileInfoAsync(arg0, arg1, arg2, wrapper, schedule_selector(SelectorWrapper::schedule_callback));
+    }))
+    // end of manual
     .class_function("destroyInstance", &ArmatureDataManager::destroyInstance)
     .class_function("getInstance", &ArmatureDataManager::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const ArmatureDataManager& _) -> std::string {return "ArmatureDataManager";}))    
@@ -602,6 +747,10 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     .function("setTween", &Frame::setTween)
     .function("getTimeline", &Frame::getTimeline, allow_raw_pointers())
     .function("getNode", &Frame::getNode, allow_raw_pointers())
+    // from manual
+    .function("setEasingParams", &Frame::setEasingParams)
+    .function("getEasingParams", &Frame::getEasingParams)
+    // end of manual
     .property("_className",  optional_override([](const Frame& _) -> std::string {return "Frame";}))    
     ;
 

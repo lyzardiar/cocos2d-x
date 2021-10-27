@@ -262,18 +262,18 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .class_function("createAsync", optional_override(
       [](const std::string &modelPath, const val& callback, const val& thisv, const val& callbackparam){
         ValHolder* valHolder = new ValHolder(callbackparam);
-        auto lambda = [callback, thisv, valHolder](Sprite3D* sprite3D, void* larg1) -> void{
-            callback.call<void>("call", thisv, val(sprite3D), valHolder->getVal());
-            delete (ValHolder*)valHolder;
+        auto lambda = [callback, thisv](Sprite3D* sprite3D, void* larg1) -> void{
+            callback.call<void>("call", thisv, val(sprite3D), ((ValHolder*)larg1)->getVal());
+            delete (ValHolder*)larg1;
         };
         Sprite3D::createAsync(modelPath, lambda, valHolder);
       }))
     .class_function("createAsync", optional_override(
       [](const std::string &modelPath, const std::string &texturePath, const val& callback, const val& thisv, const val& callbackparam){
         ValHolder* valHolder = new ValHolder(callbackparam);
-        auto lambda = [callback, thisv, valHolder](Sprite3D* sprite3D, void* larg1) -> void{
-            callback.call<void>("call", thisv, val(sprite3D), valHolder->getVal());
-            delete (ValHolder*)valHolder;
+        auto lambda = [callback, thisv](Sprite3D* sprite3D, void* larg1) -> void{
+            callback.call<void>("call", thisv, val(sprite3D), ((ValHolder*)larg1)->getVal());
+            delete (ValHolder*)larg1;
         };
         Sprite3D::createAsync(modelPath, texturePath, lambda, valHolder);
       }))

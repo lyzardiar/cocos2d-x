@@ -29,6 +29,7 @@
 
 #include "base/ccConfig.h"
 #include "base/CCVector.h"
+#include "2d/CCNode.h"
 #include <functional>
 #include <emscripten/bind.h>
 
@@ -113,6 +114,73 @@ namespace cocos2d {
         val getVal() const { return v_; }
     private:
         val v_;
+    };
+
+    class SelectorWrapper: public Ref
+    {
+    public:
+        SelectorWrapper(const val& callback, const val& thisv):
+        callback_(callback),
+        thisv_(thisv)
+        {
+        }
+
+        SelectorWrapper(const val& callback):
+        callback_(callback),
+        thisv_(val::undefined())
+        {
+        }
+
+        static SelectorWrapper* create(const val& callback, const val& thisv)
+        {
+            SelectorWrapper* wrapper = new (std::nothrow)SelectorWrapper(callback, thisv);
+            wrapper->autorelease();
+            return wrapper;
+        }
+
+        static SelectorWrapper* create(const val& callback)
+        {
+            SelectorWrapper* wrapper = new (std::nothrow)SelectorWrapper(callback);
+            wrapper->autorelease();
+            return wrapper;
+        }
+        
+        /**
+        NOTE: this callback take arg1 as ValHolder* and delete it. 
+        */
+        void callFuncND_callback(Node* arg0, void* arg1)
+        {
+            callback_.call<void>("call", thisv_, cached_val(arg0), ((ValHolder*)arg1)->getVal());
+            delete (ValHolder*)arg1;
+        }
+
+        void callFuncN_callback(Node* arg0)
+        {
+            callback_.call<void>("call", thisv_, cached_val(arg0));
+        }
+
+        void callFuncO_callback(Ref* arg0)
+        {
+            callback_.call<void>("call", thisv_, cached_val(arg0));
+        }
+
+        void callFunc_callback()
+        {
+            callback_.call<void>("call", thisv_);
+        }
+
+        void menuHandler_callback(Ref* arg0)
+        {
+            callback_.call<void>("call", thisv_, cached_val(arg0));
+        }
+
+        void schedule_callback(float arg0)
+        {
+            callback_.call<void>("call", thisv_, val(arg0));
+        }
+    private:
+        val callback_;
+        val thisv_;
     };
   }
 }
