@@ -48,8 +48,16 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .constructor(&cc_bindings_constructor<Physics3DRigidBody>, allow_raw_pointers())
     .function("setGravity", &Physics3DRigidBody::setGravity)
     .function("getFriction", &Physics3DRigidBody::getFriction)
-    .function("setAngularFactor", select_overload<void(float)>(&Physics3DRigidBody::setAngularFactor))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setAngularFactor", optional_override(
+      [](Physics3DRigidBody& this_, const val& arg0){
+      if (!arg0.isNumber())
+      {
+        return this_.setAngularFactor(arg0.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return this_.setAngularFactor(arg0.as<float>());
+      }
+    }))
     .function("addConstraint", &Physics3DRigidBody::addConstraint, allow_raw_pointers())
     .function("getRigidBody", &Physics3DRigidBody::getRigidBody, allow_raw_pointers())
     .function("getTotalForce", &Physics3DRigidBody::getTotalForce)
@@ -82,8 +90,16 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("getRollingFriction", &Physics3DRigidBody::getRollingFriction)
     .function("setCenterOfMassTransform", &Physics3DRigidBody::setCenterOfMassTransform)
     .function("setInvInertiaDiagLocal", &Physics3DRigidBody::setInvInertiaDiagLocal)
-    .function("removeConstraint", select_overload<void(unsigned int)>(&Physics3DRigidBody::removeConstraint))
-    // TODO: Only support function overloading with different number of parameters
+    .function("removeConstraint", optional_override(
+      [](Physics3DRigidBody& this_, const val& arg0){
+      if (!arg0.isNumber())
+      {
+        return this_.removeConstraint(arg0.as<cocos2d::Physics3DConstraint*>(allow_raw_pointers()));
+      } else 
+      {
+        return this_.removeConstraint(arg0.as<unsigned int>());
+      }
+    }), allow_raw_pointers())
     .function("getTotalTorque", &Physics3DRigidBody::getTotalTorque)
     .function("getInvMass", &Physics3DRigidBody::getInvMass)
     .function("getConstraint", &Physics3DRigidBody::getConstraint, allow_raw_pointers())
@@ -112,8 +128,14 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("setSyncFlag", &Physics3DComponent::setSyncFlag)
     .function("setTransformInPhysics", &Physics3DComponent::setTransformInPhysics)
     .class_function("create", select_overload<cocos2d::Physics3DComponent*(cocos2d::Physics3DObject*, const cocos2d::Vec3&, const cocos2d::Quaternion&)>(&Physics3DComponent::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](cocos2d::Physics3DObject* arg0){
+            return Physics3DComponent::create(arg0);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](cocos2d::Physics3DObject* arg0, const cocos2d::Vec3& arg1){
+            return Physics3DComponent::create(arg0, arg1);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Physics3DComponent*()>(&Physics3DComponent::create), allow_raw_pointers())
     .class_function("getPhysics3DComponentName", &Physics3DComponent::getPhysics3DComponentName)
     .property("_className",  optional_override([](const Physics3DComponent& _) -> std::string {return "Physics3DComponent";}))
@@ -224,19 +246,49 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
         [](Physics3DHingeConstraint& this_, float arg0, float arg1, float arg2, float arg3){
         return this_.setLimit(arg0, arg1, arg2, arg3);
       }))
-    .function("setMotorTarget", select_overload<void(float, float)>(&Physics3DHingeConstraint::setMotorTarget))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setMotorTarget", optional_override(
+      [](Physics3DHingeConstraint& this_, const val& arg0, float arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setMotorTarget(arg0.as<const cocos2d::Quaternion&>(), arg1);
+      } else 
+      {
+        return this_.setMotorTarget(arg0.as<float>(), arg1);
+      }
+    }))
     .function("getAngularOnly", &Physics3DHingeConstraint::getAngularOnly)
     .function("setAxis", &Physics3DHingeConstraint::setAxis)
     .function("getAFrame", &Physics3DHingeConstraint::getAFrame)
-    .class_function("create", select_overload<cocos2d::Physics3DHingeConstraint*(cocos2d::Physics3DRigidBody*, const cocos2d::Vec3&, const cocos2d::Vec3&, bool)>(&Physics3DHingeConstraint::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<cocos2d::Physics3DHingeConstraint*(cocos2d::Physics3DRigidBody*, const cocos2d::Mat4&, bool)>(&Physics3DHingeConstraint::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](cocos2d::Physics3DRigidBody* arg0, const cocos2d::Mat4& arg1){
+            return Physics3DHingeConstraint::create(arg0, arg1);
+        }), allow_raw_pointers())
+	.class_function("create", optional_override(
+	  [](cocos2d::Physics3DRigidBody* arg0, const val& arg1, const val& arg2){
+	  if (arg2.isTrue() || arg2.isFalse())
+	  {
+		return Physics3DHingeConstraint::create(arg0, arg1.as<const cocos2d::Mat4&>(), arg2.as<bool>());
+	  } else 
+	  {
+		return Physics3DHingeConstraint::create(arg0, arg1.as<const cocos2d::Vec3&>(), arg2.as<const cocos2d::Vec3&>());
+	  }
+	  }), allow_raw_pointers())
+	.class_function("create", optional_override(
+	  [](cocos2d::Physics3DRigidBody* arg0, const val& arg1, const val& arg2, const val& arg3){
+	  if (arg3.isTrue() || arg3.isFalse())
+	  {
+	  	  return Physics3DHingeConstraint::create(arg0, arg1.as<const cocos2d::Vec3&>(), arg2.as<const cocos2d::Vec3&>(), arg3.as<bool>());
+	  } else 
+	  {
+	  	  return Physics3DHingeConstraint::create(arg0, arg1.as<Physics3DRigidBody*>(allow_raw_pointers()), arg2.as<const cocos2d::Mat4&>(), arg3.as<const cocos2d::Mat4&>());
+	  }
+	  }), allow_raw_pointers())
+	.class_function("create", select_overload<cocos2d::Physics3DHingeConstraint*(cocos2d::Physics3DRigidBody*, cocos2d::Physics3DRigidBody*, const cocos2d::Mat4&, const cocos2d::Mat4&, bool)>(&Physics3DHingeConstraint::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](cocos2d::Physics3DRigidBody* arg0, cocos2d::Physics3DRigidBody* arg1, const cocos2d::Vec3& arg2, const cocos2d::Vec3& arg3, cocos2d::Vec3& arg4, cocos2d::Vec3& arg5){
+            return Physics3DHingeConstraint::create(arg0, arg1, arg2, arg3, arg4, arg5);
+        }), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::Physics3DHingeConstraint*(cocos2d::Physics3DRigidBody*, cocos2d::Physics3DRigidBody*, const cocos2d::Vec3&, const cocos2d::Vec3&, cocos2d::Vec3&, cocos2d::Vec3&, bool)>(&Physics3DHingeConstraint::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<cocos2d::Physics3DHingeConstraint*(cocos2d::Physics3DRigidBody*, cocos2d::Physics3DRigidBody*, const cocos2d::Mat4&, const cocos2d::Mat4&, bool)>(&Physics3DHingeConstraint::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .property("_className",  optional_override([](const Physics3DHingeConstraint& _) -> std::string {return "Physics3DHingeConstraint";}))    
     ;
 
