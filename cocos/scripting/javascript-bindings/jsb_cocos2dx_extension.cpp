@@ -46,6 +46,18 @@ public:
         : _JSDelegate(val::undefined())
     {}
 
+    static JSB_TableViewDelegate* create(const val& pJSDelegate)
+    {
+      JSB_TableViewDelegate* delegate = new (std::nothrow)JSB_TableViewDelegate();
+      if (delegate)
+      {
+        delegate->setJSDelegate(pJSDelegate);
+        delegate->autorelease();
+      }
+      
+      return delegate;
+    }
+
     virtual void scrollViewDidScroll(ScrollView* view) override
     {
         _JSDelegate.call<void>("scrollViewDidScroll", val(view));
@@ -92,6 +104,18 @@ public:
     JSB_TableViewDataSource()
         : _JSTableViewDataSource(val::undefined())
     {
+    }
+
+    static JSB_TableViewDataSource* create(const val& pJSSource)
+    {
+      JSB_TableViewDataSource* dataSource = new (std::nothrow)JSB_TableViewDataSource();
+      if (dataSource)
+      {
+        dataSource->setTableViewDataSource(pJSSource);
+        dataSource->autorelease();
+      }
+      
+      return dataSource;
     }
 
     virtual Size tableCellSizeForIndex(TableView *table, ssize_t idx) override
@@ -158,6 +182,26 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("setHighlighted", &Control::setHighlighted)
     .function("getTouchLocation", &Control::getTouchLocation, allow_raw_pointers())
     .function("isHighlighted", &Control::isHighlighted)
+    // from manaul
+    .function("addTargetWithActionForControlEvents", optional_override(
+      [](Control& this_, const val& target, const val& action, Control::EventType controlEvents)
+      {
+        SelectorWrapper* wrapper = SelectorWrapper::create(action, target);
+        this_.addTargetWithActionForControlEvents(wrapper, cccontrol_selector(SelectorWrapper::cccontrol_callback), controlEvents);
+      }
+    ))
+    // Without changing Control, removeTargetWithActionForControlEvents require binding code to self-cache selectors somewhere else.
+    // Which makes a double cache (Control already cached selectors)
+    // Makes me think it's not a good idea.
+    // TODO: I'd say it might be better to do it with std::function, something like Node::schedule(function, string).
+    // Though I understand we don't use c++ 11 when this API came to cocos2d-x.
+    .function("removeTargetWithActionForControlEvents", optional_override(
+      [](Control& this_, const val& target, const val& action, Control::EventType controlEvents)
+      {
+        CCLOG("Control.removeTargetWithActionForControlEvents not implemented");
+      }
+    ))
+    // end if manaul
     .property("state", &Control::getState)
     .property("enabled", &Control::isEnabled, &Control::setEnabled)
     .property("selected", &Control::isSelected, &Control::setSelected)
@@ -503,7 +547,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("setZoomScale", select_overload<void(float, bool)>(&ScrollView::setZoomScale))
     .function("setZoomScale", select_overload<void(float)>(&ScrollView::setZoomScale))
     // from manual
-    .function("setDeledate", optional_override(
+    .function("setDelegate", optional_override(
         [](ScrollView& this_, const val& arg0){
           JSB_ScrollViewDelegate* nativeDelegate = new (std::nothrow) JSB_ScrollViewDelegate();
           nativeDelegate->setJSDelegate(arg0);
@@ -554,56 +598,31 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("cellAtIndex", &TableView::cellAtIndex, allow_raw_pointers())
     .function("dequeueCell", &TableView::dequeueCell, allow_raw_pointers())
     // from manual
-    .function("setDeledate", optional_override(
+    .function("setDelegate", optional_override(
         [](TableView& this_, const val& arg0) {
-          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
-          nativeDelegate->setJSDelegate(arg0);
-          this_.setDelegate(nativeDelegate);
-          nativeDelegate->release();
+          this_.setDelegate(JSB_TableViewDelegate::create(arg0));
+      }))
+    .function("setDataSource", optional_override(
+        [](TableView& this_, const val& arg0) {
+          this_.setDataSource(JSB_TableViewDataSource::create(arg0));
       }))
     .function("_init", optional_override(
         [](TableView& this_, const val& arg0, const Size& arg1) {
-          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
-          nativeDelegate->setJSDelegate(arg0);
-          this_.setDelegate(nativeDelegate);
-          nativeDelegate->release();
-
+          this_.setDelegate(JSB_TableViewDelegate::create(arg0));
           return this_.initWithViewSize(arg1);
       }))
     .function("_init", optional_override(
         [](TableView& this_, const val& arg0, const Size& arg1, Node* arg2) {
-          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
-          nativeDelegate->setJSDelegate(arg0);
-          this_.setDelegate(nativeDelegate);
-          nativeDelegate->release();
-
+          this_.setDelegate(JSB_TableViewDelegate::create(arg0));
           return this_.initWithViewSize(arg1, arg2);
       }), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const val& arg0, const Size& arg1) {
-          TableView* this_ = new (std::nothrow) TableView();
-          this_->autorelease();
-
-          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
-          nativeDelegate->setJSDelegate(arg0);
-          this_->setDelegate(nativeDelegate);
-          nativeDelegate->release();
-
-          this_->initWithViewSize(arg1);
-          return this_;
+          return TableView::create(JSB_TableViewDataSource::create(arg0), arg1);
       }), allow_raw_pointers())
     .class_function("create", optional_override(
         [](const val& arg0, const Size& arg1, Node* arg2) {
-          TableView* this_ = new (std::nothrow) TableView();
-          this_->autorelease();
-
-          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
-          nativeDelegate->setJSDelegate(arg0);
-          this_->setDelegate(nativeDelegate);
-          nativeDelegate->release();
-
-          this_->initWithViewSize(arg1, arg2);
-          return this_;
+          return TableView::create(JSB_TableViewDataSource::create(arg0), arg1, arg2);
       }), allow_raw_pointers())
     // end of manual
     .property("_className",  optional_override([](const TableView& _) -> std::string {return "TableView";}))    
