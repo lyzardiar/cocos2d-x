@@ -330,6 +330,8 @@
           window["__cleanScript"] = Module["__cleanScript"]
           window["__isObjectValid"] = Module["__isObjectValid"]
           window["close"] = Module["close"]
+          // end of jsb_core.cpp
+          window.jsb["loadRemoteImg"] = Module["__jsb_loadRemoteImg"]
 
           await loadScript("script/jsb_boot.js")
           await loadScript(mainSrc)

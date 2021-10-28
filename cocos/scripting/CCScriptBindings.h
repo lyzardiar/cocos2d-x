@@ -30,6 +30,7 @@
 #include "base/ccConfig.h"
 #include "base/CCVector.h"
 #include "2d/CCNode.h"
+#include "extensions/GUI/CCControlExtension/CCControl.h"
 #include <functional>
 #include <emscripten/bind.h>
 
@@ -178,6 +179,12 @@ namespace cocos2d {
         {
             callback_.call<void>("call", thisv_, val(arg0));
         }
+
+        void cccontrol_callback(Ref* arg0, extension::Control::EventType arg1)
+        {
+            callback_.call<void>("call", thisv_, cached_val(arg0), val(arg1));
+        }
+
     private:
         val callback_;
         val thisv_;

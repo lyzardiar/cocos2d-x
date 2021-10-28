@@ -1,12 +1,141 @@
 #include "scripting/CCScriptBindings.h"
 #include "scripting/javascript-bindings/jsb_cocos2dx_extension.hpp"
 #include "cocos-ext.h"
+#include "renderer/CCTextureCache.h"
 
 using namespace std;
 using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::extension;
+
+class JSB_ScrollViewDelegate
+: public Ref
+, public ScrollViewDelegate
+{
+public:
+    JSB_ScrollViewDelegate()
+        : _JSDelegate(val::undefined())
+    {}
+    
+    virtual void scrollViewDidScroll(ScrollView* scrollView) override
+    {
+        _JSDelegate.call<void>("scrollViewDidScroll", val(scrollView));
+    }
+    
+    virtual void scrollViewDidZoom(ScrollView* scrollView) override
+    {
+        _JSDelegate.call<void>("scrollViewDidZoom", val(scrollView));
+    }
+    
+    void setJSDelegate(const val& pJSDelegate)
+    {
+        _JSDelegate = pJSDelegate;
+    }
+private:
+    val _JSDelegate;
+};
+
+
+class JSB_TableViewDelegate
+: public Ref
+, public TableViewDelegate
+{
+public:
+    JSB_TableViewDelegate()
+        : _JSDelegate(val::undefined())
+    {}
+
+    virtual void scrollViewDidScroll(ScrollView* view) override
+    {
+        _JSDelegate.call<void>("scrollViewDidScroll", val(view));
+    }
+
+    virtual void scrollViewDidZoom(ScrollView* view) override
+    {
+        _JSDelegate.call<void>("scrollViewDidZoom", val(view));
+    }
+
+    virtual void tableCellTouched(TableView* table, TableViewCell* cell) override
+    {
+        _JSDelegate.call<void>("tableCellTouched", val(table), val(cell));
+    }
+
+    virtual void tableCellHighlight(TableView* table, TableViewCell* cell) override
+    {
+        _JSDelegate.call<void>("tableCellHighlight", val(table), val(cell));
+    }
+
+    virtual void tableCellUnhighlight(TableView* table, TableViewCell* cell) override
+    {
+        _JSDelegate.call<void>("tableCellUnhighlight", val(table), val(cell));
+    }
+
+    virtual void tableCellWillRecycle(TableView* table, TableViewCell* cell) override
+    {
+        _JSDelegate.call<void>("tableCellWillRecycle", val(table), val(cell));
+    }
+
+    void setJSDelegate(const val& pJSDelegate)
+    {
+        _JSDelegate = pJSDelegate;
+    }
+private:
+    val _JSDelegate;
+};
+
+class JSB_TableViewDataSource
+: public Ref
+, public TableViewDataSource
+{
+public:
+    JSB_TableViewDataSource()
+        : _JSTableViewDataSource(val::undefined())
+    {
+    }
+
+    virtual Size tableCellSizeForIndex(TableView *table, ssize_t idx) override
+    {
+      if (_JSTableViewDataSource.hasOwnProperty("tableCellWillRecycle"))
+      {
+        return _JSTableViewDataSource.call<Size>("tableCellWillRecycle", val(table), val(idx));
+      }
+      else
+      {
+        return _JSTableViewDataSource.call<Size>("cellSizeForTable", val(table));
+      }
+    }
+
+    virtual TableViewCell* tableCellAtIndex(TableView *table, ssize_t idx) override
+    {
+      val ret = _JSTableViewDataSource.call<val>("tableCellAtIndex", val(table), val(idx));
+      return ret.as<TableViewCell*>(allow_raw_pointers());
+    }
+
+    virtual ssize_t numberOfCellsInTableView(TableView *table) override
+    {
+      return _JSTableViewDataSource.call<ssize_t>("numberOfCellsInTableView", val(table));
+    }
+
+    void setTableViewDataSource(const val& pJSSource)
+    {
+      _JSTableViewDataSource = pJSSource;
+    }
+
+private:
+    val _JSTableViewDataSource;
+};
+
+class JSDownloaderDelegator : public Ref
+{
+public:
+  JSDownloaderDelegator()
+  {
+      _downloader = std::make_shared<cocos2d::network::Downloader>();
+  }
+
+  std::shared_ptr<cocos2d::network::Downloader> _downloader;
+};
 
 CC_BINDINGS_ALLOW_RAW_POINTERS(Sprite)
 CC_BINDINGS_ALLOW_RAW_POINTERS(Label)
@@ -373,6 +502,16 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getDirection", &ScrollView::getDirection)
     .function("setZoomScale", select_overload<void(float, bool)>(&ScrollView::setZoomScale))
     .function("setZoomScale", select_overload<void(float)>(&ScrollView::setZoomScale))
+    // from manual
+    .function("setDeledate", optional_override(
+        [](ScrollView& this_, const val& arg0){
+          JSB_ScrollViewDelegate* nativeDelegate = new (std::nothrow) JSB_ScrollViewDelegate();
+          nativeDelegate->setJSDelegate(arg0);
+          this_.setDelegate(nativeDelegate);
+          this_.setUserObject(nativeDelegate);
+          nativeDelegate->release();
+      }))
+    // end of manual
     .property("direction", &ScrollView::getDirection, &ScrollView::setDirection)
     .class_function("create", select_overload<cocos2d::extension::ScrollView*()>(&ScrollView::create), allow_raw_pointers())
     .class_function("create", select_overload<cocos2d::extension::ScrollView*(cocos2d::Size, cocos2d::Node*)>(&ScrollView::create), allow_raw_pointers())
@@ -414,6 +553,59 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("insertCellAtIndex", &TableView::insertCellAtIndex)
     .function("cellAtIndex", &TableView::cellAtIndex, allow_raw_pointers())
     .function("dequeueCell", &TableView::dequeueCell, allow_raw_pointers())
+    // from manual
+    .function("setDeledate", optional_override(
+        [](TableView& this_, const val& arg0) {
+          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
+          nativeDelegate->setJSDelegate(arg0);
+          this_.setDelegate(nativeDelegate);
+          nativeDelegate->release();
+      }))
+    .function("_init", optional_override(
+        [](TableView& this_, const val& arg0, const Size& arg1) {
+          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
+          nativeDelegate->setJSDelegate(arg0);
+          this_.setDelegate(nativeDelegate);
+          nativeDelegate->release();
+
+          return this_.initWithViewSize(arg1);
+      }))
+    .function("_init", optional_override(
+        [](TableView& this_, const val& arg0, const Size& arg1, Node* arg2) {
+          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
+          nativeDelegate->setJSDelegate(arg0);
+          this_.setDelegate(nativeDelegate);
+          nativeDelegate->release();
+
+          return this_.initWithViewSize(arg1, arg2);
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const val& arg0, const Size& arg1) {
+          TableView* this_ = new (std::nothrow) TableView();
+          this_->autorelease();
+
+          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
+          nativeDelegate->setJSDelegate(arg0);
+          this_->setDelegate(nativeDelegate);
+          nativeDelegate->release();
+
+          this_->initWithViewSize(arg1);
+          return this_;
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const val& arg0, const Size& arg1, Node* arg2) {
+          TableView* this_ = new (std::nothrow) TableView();
+          this_->autorelease();
+
+          JSB_TableViewDelegate* nativeDelegate = new (std::nothrow) JSB_TableViewDelegate();
+          nativeDelegate->setJSDelegate(arg0);
+          this_->setDelegate(nativeDelegate);
+          nativeDelegate->release();
+
+          this_->initWithViewSize(arg1, arg2);
+          return this_;
+      }), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const TableView& _) -> std::string {return "TableView";}))    
     .allow_subclass<wrapper<TableView>>("cc.TableView._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -430,6 +622,10 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getPercentByFile", &EventAssetsManagerEx::getPercentByFile)
     .function("getEventCode", &EventAssetsManagerEx::getEventCode)
     .function("getPercent", &EventAssetsManagerEx::getPercent)
+    // from manual
+    .function("retain", &EventAssetsManagerEx::retain)
+    .function("release", &EventAssetsManagerEx::release)
+    // end of manual
     .property("_className",  optional_override([](const EventAssetsManagerEx& _) -> std::string {return "EventAssetsManagerEx";}))    
     ;
 
@@ -441,6 +637,10 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("getVersion", &Manifest::getVersion)
     .function("getVersionFileUrl", &Manifest::getVersionFileUrl)
     .function("getSearchPaths", &Manifest::getSearchPaths)
+    // from manual
+    .function("retain", &Manifest::retain)
+    .function("release", &Manifest::release)
+    // end of manual
     .property("_className",  optional_override([](const Manifest& _) -> std::string {return "Manifest";}))    
     ;
 
@@ -465,7 +665,69 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
 
   class_<EventListenerAssetsManagerEx, base<EventListenerCustom>>("cc.EventListenerAssetsManager")
     .constructor(&cc_bindings_constructor<EventListenerAssetsManagerEx>, allow_raw_pointers())
+    // from manual 
+    .function("init", optional_override(
+      [](EventListenerAssetsManagerEx& this_, AssetsManagerEx *arg0, const val& callback)
+      {
+        val thisv(cached_val(&this_));
+        return this_.init(arg0, [callback, thisv](EventAssetsManagerEx* larg0) {
+          callback.call<void>("call", thisv, cached_val(larg0));
+        });
+      }
+    ), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](AssetsManagerEx *arg0, const val& callback)
+      {
+        val thisv(val::global("cc")["EventListenerAssetsManager"]);
+        return EventListenerAssetsManagerEx::create(arg0, [callback, thisv](EventAssetsManagerEx* larg0) {
+          callback.call<void>("call", thisv, cached_val(larg0));
+        });
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerAssetsManagerEx& _) -> std::string {return "EventListenerAssetsManagerEx";}))
     .allow_subclass<wrapper<EventListenerAssetsManagerEx>>("cc.EventListenerAssetsManagerEx._extend")    
     ;
+
+  cocos2d::bindings::function("__jsb_loadRemoteImg", optional_override(
+    [](const std::string& url, const val& callback)
+    {
+      JSDownloaderDelegator* downloader = new JSDownloaderDelegator();
+      downloader->autorelease();
+      downloader->retain();
+      downloader->_downloader->createDownloadDataTask(url);
+
+      downloader->_downloader->onDataTaskSuccess = ([downloader, callback] (const network::DownloadTask& task, std::vector<unsigned char>& data) {
+          Image* img = new (std::nothrow) Image();
+          Texture2D *tex = nullptr;
+          if (img->initWithImageData(data.data(), data.size()))
+          {
+            tex = Director::getInstance()->getTextureCache()->addImage(img, task.requestURL);
+          }
+          CC_SAFE_RELEASE(img);
+
+          if (tex)
+          {
+              callback(val(true), val(tex));
+          }
+          else
+          {
+              callback(val(false));
+          }
+
+          downloader->release();
+      });
+
+      downloader->_downloader->onTaskError = ([downloader, callback] (const network::DownloadTask& task, int errorCode, int errorCodeInternal, const std::string& errorStr) {
+          CCLOG("downloader task failed : %s, identifier(%s) error code(%d), internal error code(%d) desc(%s)"
+              , task.requestURL.c_str()
+              , task.identifier.c_str()
+              , errorCode
+              , errorCodeInternal
+              , errorStr.c_str());
+          callback(val(false));
+          downloader->release();
+      });    
+    }
+  ));
 }
