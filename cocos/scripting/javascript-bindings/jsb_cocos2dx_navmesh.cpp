@@ -10,6 +10,23 @@ using namespace cocos2d::bindings;
 
 COCOS_BINDINGS(jsb_cocos2dx_navmesh) {
 
+  value_object<NavMeshAgentParam>("_.NavMeshAgentParam")
+    .field("radius", &NavMeshAgentParam::radius)
+    .field("height", &NavMeshAgentParam::height)
+    .field("maxAcceleration", &NavMeshAgentParam::maxAcceleration)
+    .field("maxSpeed", &NavMeshAgentParam::maxSpeed)
+    .field("collisionQueryRange", &NavMeshAgentParam::collisionQueryRange)
+    .field("pathOptimizationRange", &NavMeshAgentParam::pathOptimizationRange)
+    .field("separationWeight", &NavMeshAgentParam::separationWeight)
+    .field("updateFlags", &NavMeshAgentParam::updateFlags)
+    .field("obstacleAvoidanceType", &NavMeshAgentParam::obstacleAvoidanceType)
+    .field("queryFilterType", &NavMeshAgentParam::queryFilterType)
+    ;
+
+  value_object<OffMeshLinkData>("_.OffMeshLinkData")
+    .field("startPosition", &OffMeshLinkData::startPosition)
+    .field("endPosition", &OffMeshLinkData::endPosition)
+    ;
 
   class_<NavMeshAgent, base<Component>>("jsb.NavMeshAgent")
     .constructor(&cc_bindings_constructor<NavMeshAgent>, allow_raw_pointers())
@@ -40,6 +57,22 @@ COCOS_BINDINGS(jsb_cocos2dx_navmesh) {
     .function("getVelocity", &NavMeshAgent::getVelocity)
     .function("setRadius", &NavMeshAgent::setRadius)
     .function("setObstacleAvoidanceType", &NavMeshAgent::setObstacleAvoidanceType)
+    // from manual
+    .function("move", optional_override(
+      [](NavMeshAgent& this_, const Vec3 &destination)
+      {
+        this_.move(destination);
+      }
+    ))
+    .function("move", optional_override(
+      [](NavMeshAgent& this_, const Vec3 &destination, const val &callback)
+      {
+        this_.move(destination, [callback](cocos2d::NavMeshAgent *agent, float totalTimeAfterMove)->void{
+            callback(val(agent), val(totalTimeAfterMove));
+        });
+      }
+    ))
+    // end of manual
     .class_function("getNavMeshAgentComponentName", &NavMeshAgent::getNavMeshAgentComponentName)
     .class_function("create", &NavMeshAgent::create, allow_raw_pointers())
     .property("_className",  optional_override([](const NavMeshAgent& _) -> std::string {return "NavMeshAgent";}))    
