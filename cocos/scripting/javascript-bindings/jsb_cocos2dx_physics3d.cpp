@@ -8,8 +8,38 @@ using namespace std::placeholders;
 using namespace cocos2d;
 using namespace cocos2d::bindings;
 
+CC_BINDINGS_ALLOW_RAW_POINTERS(Physics3DObject)
+CC_BINDINGS_ALLOW_RAW_POINTERS(Physics3DShape)
+
 COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
 
+  value_object<Physics3DRigidBodyDes>("_.Physics3DRigidBodyDes")
+    .field("mass", &Physics3DRigidBodyDes::mass)
+    .field("localInertia", &Physics3DRigidBodyDes::localInertia)
+    .field("originalTransform", &Physics3DRigidBodyDes::originalTransform)
+    .field("shape", &Physics3DRigidBodyDes::shape)
+    .field("disableSleep", &Physics3DRigidBodyDes::disableSleep)
+    ;
+
+  value_object<Physics3DCollisionInfo::CollisionPoint>("_.CollisionPoint")
+    .field("localPositionOnA", &Physics3DCollisionInfo::CollisionPoint::localPositionOnA)
+    .field("worldPositionOnA", &Physics3DCollisionInfo::CollisionPoint::worldPositionOnA)
+    .field("localPositionOnB", &Physics3DCollisionInfo::CollisionPoint::localPositionOnB)
+    .field("worldPositionOnB", &Physics3DCollisionInfo::CollisionPoint::worldPositionOnB)
+    .field("worldNormalOnB", &Physics3DCollisionInfo::CollisionPoint::worldNormalOnB)
+    ;
+
+  value_object<Physics3DCollisionInfo>("_.Physics3DCollisionInfo")
+    .field("objA", &Physics3DCollisionInfo::objA)
+    .field("objB", &Physics3DCollisionInfo::objB)
+    .field("collisionPointList", &Physics3DCollisionInfo::collisionPointList)
+    ;
+
+  value_object<Physics3DWorld::HitResult>("_.HitResult")
+    .field("hitPosition", &Physics3DWorld::HitResult::hitPosition)
+    .field("hitNormal", &Physics3DWorld::HitResult::hitNormal)
+    .field("hitObj", &Physics3DWorld::HitResult::hitObj)
+    ;
 
   class_<Physics3DShape>("jsb.Physics3DShape")
     .constructor(&cc_bindings_constructor<Physics3DShape>, allow_raw_pointers())
@@ -25,6 +55,38 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .class_function("createConvexHull", &Physics3DShape::createConvexHull, allow_raw_pointers())
     .class_function("createCapsule", &Physics3DShape::createCapsule, allow_raw_pointers())
     .class_function("createSphere", &Physics3DShape::createSphere, allow_raw_pointers())
+    // from manual
+    .class_function("createMesh", optional_override(
+      [](const std::vector<Vec3>& triangles, int numTriangles)
+      {
+        return Physics3DShape::createMesh(&triangles[0], numTriangles);
+      }
+    ), allow_raw_pointers())
+    .class_function("createHeightfield", optional_override(
+      [](int arg0, int arg1, const std::vector<float>& arg2, float arg3, float arg4, float arg5, bool arg6, bool arg7, bool arg8)
+      {
+        return Physics3DShape::createHeightfield(arg0, arg1, &arg2[0], arg3, arg4, arg5, arg6, arg7, arg8);
+      }
+    ), allow_raw_pointers())
+    .class_function("createHeightfield", optional_override(
+      [](int arg0, int arg1, const std::vector<float>& arg2, float arg3, float arg4, float arg5, bool arg6, bool arg7)
+      {
+        return Physics3DShape::createHeightfield(arg0, arg1, &arg2[0], arg3, arg4, arg5, arg6, arg7);
+      }
+    ), allow_raw_pointers())
+    .function("initMesh", optional_override(
+      [](Physics3DShape& this_, const std::vector<Vec3>& triangles, int numTriangles)
+      {
+        return this_.initMesh(&triangles[0], numTriangles);
+      }
+    ), allow_raw_pointers())
+    .function("initHeightfield", optional_override(
+      [](Physics3DShape& this_, int arg0, int arg1, const std::vector<float>& arg2, float arg3, float arg4, float arg5, bool arg6, bool arg7, bool arg8)
+      {
+        return this_.initHeightfield(arg0, arg1, &arg2[0], arg3, arg4, arg5, arg6, arg7, arg8);
+      }
+    ))
+    // end of manual
     .property("_className",  optional_override([](const Physics3DShape& _) -> std::string {return "Physics3DShape";}))
     .allow_subclass<wrapper<Physics3DShape>>("jsb.Physics3DShape._extend")    
     ;
@@ -40,6 +102,17 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("getCollisionCallback", &Physics3DObject::getCollisionCallback)
     .function("getMask", &Physics3DObject::getMask)
     .function("needCollisionCallback", &Physics3DObject::needCollisionCallback)
+    // from manual
+    .function("setCollisionCallback", optional_override(
+      [](Physics3DObject& this_, const val& callback, const val& thisv)
+      {
+        auto lambda = [callback, thisv](const Physics3DCollisionInfo &ci) {
+          callback.call<void>("call", thisv, val(ci));
+        };
+        this_.setCollisionCallback(lambda);
+      }
+    ))
+    // end of manuall
     .property("_className",  optional_override([](const Physics3DObject& _) -> std::string {return "Physics3DObject";}))    
     ;
 
@@ -113,6 +186,9 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("setRestitution", &Physics3DRigidBody::setRestitution)
     .function("setHitFraction", &Physics3DRigidBody::setHitFraction)
     .function("getLinearDamping", &Physics3DRigidBody::getLinearDamping)
+    // from manual
+    .class_function("create", &Physics3DRigidBody::create, allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const Physics3DRigidBody& _) -> std::string {return "Physics3DRigidBody";}))
     .allow_subclass<wrapper<Physics3DRigidBody>>("jsb.Physics3DRigidBody._extend")    
     ;
@@ -149,6 +225,18 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
     .function("syncPhysicsToNode", &PhysicsSprite3D::syncPhysicsToNode)
     .function("getPhysicsObj", &PhysicsSprite3D::getPhysicsObj, allow_raw_pointers())
     .function("setSyncFlag", &PhysicsSprite3D::setSyncFlag)
+    // from manual
+    .class_function("create", PhysicsSprite3D::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string &modelPath, Physics3DRigidBodyDes* rigidDes, const cocos2d::Vec3& translateInPhysics){
+            return PhysicsSprite3D::create(modelPath, rigidDes, translateInPhysics);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string &modelPath, Physics3DRigidBodyDes* rigidDes){
+            return PhysicsSprite3D::create(modelPath, rigidDes);
+        }), allow_raw_pointers())
+    // end of manual
+   
     .property("_className",  optional_override([](const PhysicsSprite3D& _) -> std::string {return "PhysicsSprite3D";}))
     ;
 
@@ -177,6 +265,14 @@ COCOS_BINDINGS(jsb_cocos2dx_physics3d) {
       }), allow_raw_pointers())
     .function("debugDraw", &Physics3DWorld::debugDraw, allow_raw_pointers())
     .function("sweepShape", &Physics3DWorld::sweepShape, allow_raw_pointers())
+    // from manual
+    .function("rayCast", optional_override(
+      [](Physics3DWorld& this_, const cocos2d::Vec3& startPos, const cocos2d::Vec3& endPos){
+        cocos2d::Physics3DWorld::HitResult ret;
+        this_.rayCast(startPos, endPos, &ret);
+        return ret;
+      }), allow_raw_pointers())
+    // end of manual
     .class_function("create", &Physics3DWorld::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Physics3DWorld& _) -> std::string {return "Physics3DWorld";}))
     .allow_subclass<wrapper<Physics3DWorld>>("jsb.Physics3DWorld._extend")    
