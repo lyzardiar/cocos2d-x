@@ -8,31 +8,47 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace spine;
 
-COCOS_BINDINGS(jsb_cocos2dx_spine) {
+CC_BINDINGS_ALLOW_RAW_POINTERS(spEventData)
+CC_BINDINGS_ALLOW_RAW_POINTERS(spBoneData)
+CC_BINDINGS_ALLOW_RAW_POINTERS(spBone)
+CC_BINDINGS_ALLOW_RAW_POINTERS(spColor)
+CC_BINDINGS_ALLOW_RAW_POINTERS(spAttachment)
+CC_BINDINGS_ALLOW_RAW_POINTERS(spSlotData)
 
+COCOS_BINDINGS(jsb_cocos2dx_spine) {
+  // NOTE: we don't cache since we use getter here. Property only got boxed in js object when you read it.
   value_object<spEventData>("_.spEventData")
     .field("name", 
       optional_override([](const spEventData& this_) -> std::string {return this_.name;}), 
-      optional_override([](const spEventData& this_, const std::string& arg0) {CCLOG("spEventData.name is read-only");}))
+      optional_override([](spEventData& this_, const val& arg0) {CCLOG("spEventData.name is read-only");}))
     .field("intValue", &spEventData::intValue)
     .field("floatValue", &spEventData::floatValue)
     .field("stringValue", 
       optional_override([](const spEventData& this_) -> std::string {return this_.name;}), 
-      optional_override([](const spEventData& this_, const std::string& arg0) {CCLOG("spEventData.stringValue is read-only");}))
+      optional_override([](spEventData& this_, const val& arg0) {CCLOG("spEventData.stringValue is read-only");}))
     ;
-/*
+
   value_object<spEvent>("_.spEvent")
-    .field("data", &spEvent::data)
+    .field("data",
+      optional_override([](const spEvent& this_) {return this_.data;}), 
+      optional_override([](spEvent& this_, const val& arg0) {CCLOG("spEvent.data is read-only");}))
     .field("intValue", &spEvent::intValue)
     .field("floatValue", &spEvent::floatValue)
-    .field("stringValue", &spEvent::stringValue)
+    .field("stringValue", 
+      optional_override([](const spEvent& this_) -> std::string {return this_.stringValue;}), 
+      optional_override([](spEvent& this_, const val& arg0) {CCLOG("spEvent.stringValue is read-only");}))
     ;
 
   value_object<spBoneData>("_.spBoneData")
-    .field("parent", &spBoneData::parent)
-    .field("index", &spBoneData::index)
-    .field("name", &spBoneData::name)
-    .field("parent", &spBoneData::parent)
+    .field("parent", 
+      optional_override([](const spBoneData& this_) {return this_.parent;}), 
+      optional_override([](spBoneData& this_, const val& arg0) {CCLOG("spBoneData.parent is read-only");}))
+    .field("index", 
+      optional_override([](const spBoneData& this_) {return this_.index;}),
+      optional_override([](spBoneData& this_, const val& arg0) {CCLOG("spBoneData.index is read-only");}))
+    .field("name", 
+      optional_override([](const spBoneData& this_) -> std::string {return this_.name;}), 
+      optional_override([](spBoneData& this_, const val& arg0) {CCLOG("spBoneData.name is read-only");}))
     .field("length", &spBoneData::length)
     .field("x", &spBoneData::x)
     .field("y", &spBoneData::y)
@@ -45,8 +61,12 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     ;
 
   value_object<spBone>("_.spBone")
-    .field("data", &spBone::data)
-    .field("parent", &spBone::parent)
+    .field("data",
+      optional_override([](const spBone& this_) {return this_.data;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.data is read-only");}))
+    .field("parent",
+      optional_override([](const spBone& this_) {return this_.parent;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.parent is read-only");}))
     .field("x", &spBone::x)
     .field("y", &spBone::y)
     .field("rotation", &spBone::rotation)
@@ -54,12 +74,24 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     .field("scaleY", &spBone::scaleY)
     .field("shearX", &spBone::shearX)
     .field("shearY", &spBone::shearY)
-    .field("m00", &spBone::a)
-    .field("m01", &spBone::b)
-    .field("worldX", &spBone::worldX)
-    .field("m10", &spBone::c)
-    .field("m11", &spBone::d)
-    .field("worldY", &spBone::worldY)
+    .field("m00", 
+      optional_override([](const spBone& this_) {return this_.a;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.m00 is read-only");}))
+    .field("m01", 
+      optional_override([](const spBone& this_) {return this_.b;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.m01 is read-only");}))
+    .field("worldX", 
+      optional_override([](const spBone& this_) {return this_.worldX;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.worldX is read-only");}))
+    .field("m10", 
+      optional_override([](const spBone& this_) {return this_.c;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.m10 is read-only");}))
+    .field("m11", 
+      optional_override([](const spBone& this_) {return this_.d;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.m11 is read-only");}))
+    .field("worldY", 
+      optional_override([](const spBone& this_) {return this_.worldY;}), 
+      optional_override([](spBone& this_, const val& arg0) {CCLOG("spBone.worldY is read-only");}))
     ;
 
   value_object<spSkeleton>("_.spSkeleton")
@@ -73,8 +105,12 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     ;
 
   value_object<spAttachment>("_.spAttachment")
-    .field("name", &spAttachment::name)
-    .field("type", &spAttachment::type)
+    .field("name", 
+      optional_override([](const spAttachment& this_) -> std::string {return this_.name;}), 
+      optional_override([](spAttachment& this_, const val& arg0) {CCLOG("spAttachment.name is read-only");}))
+    .field("type",
+      optional_override([](const spAttachment& this_) {return this_.type;}), 
+      optional_override([](spAttachment& this_, const val& arg0) {CCLOG("spAttachment.type is read-only");}))
     ;
 
   value_object<spColor>("_.spColor")
@@ -84,42 +120,52 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     ;
 
   value_object<spSlotData>("_.spSlotData")
-    .field("name", &spSlotData::name)
-    .field("attachmentName", &spSlotData::attachmentName)
+    .field("name", 
+      optional_override([](const spSlotData& this_) -> std::string {return this_.name;}), 
+      optional_override([](spSlotData& this_, const val& arg0) {CCLOG("spSlotData.name is read-only");}))
+    .field("attachmentName", 
+      optional_override([](const spSlotData& this_) -> std::string {return this_.attachmentName;}), 
+      optional_override([](spSlotData& this_, const val& arg0) {CCLOG("spSlotData.attachmentName is read-only");}))
     .field("color", &spSlotData::color)
     .field("darkColor", &spSlotData::darkColor)
     .field("blendMode", &spSlotData::blendMode)
-    .field("boneData", &spSlotData::boneData)
-    .field("index", &spSlotData::index)
+    .field("boneData", 
+      optional_override([](const spSlotData& this_) {return const_cast<spBoneData*>(this_.boneData);}), 
+      optional_override([](spSlotData& this_, const val& arg0) {CCLOG("spSlotData.boneData is read-only");}))
+    .field("index", 
+      optional_override([](const spSlotData& this_) {return this_.index;}), 
+      optional_override([](spSlotData& this_, const val& arg0) {CCLOG("spSlotData.index is read-only");}))
     ;
 
   value_object<spSlot>("_.spSlot")
     .field("color", &spSlot::color)
     .field("darkColor", &spSlot::darkColor)
-    .field("bone", &spSlot::bone)
-    .field("attachment", &spSlot::attachment)
-    .field("data", &spSlot::data)
+    .field("bone", 
+      optional_override([](const spSlot& this_) {return this_.bone;}), 
+      optional_override([](spSlot& this_, const val& arg0) {CCLOG("spSlot.bone is read-only");}))
+    .field("attachment",
+      optional_override([](const spSlot& this_) {return this_.attachment;}), 
+      optional_override([](spSlot& this_, const val& arg0) {CCLOG("spSlot.attachment is read-only");}))
+    .field("data", 
+      optional_override([](const spSlot& this_) {return this_.data;}), 
+      optional_override([](spSlot& this_, const val& arg0) {CCLOG("spSlot.data is read-only");}))
     .field("attachmentVerticesCapacity", &spSlot::attachmentVerticesCapacity)
     .field("attachmentVerticesCount", &spSlot::attachmentVerticesCount)
     .field("attachmentVertices", 
-    optional_override(
-      [](const spSlot& this_)
-      {
-        std::vector<float> ret(this_.attachmentVertices, this_.attachmentVertices + this_.attachmentVerticesCount);
-        return ret;
-      }
-    ), 
-    optional_override(
-      [](const spSlot& this_, const std::vector<float> arg0)
-      {
-        
-      }
-    )
-    )
+      optional_override(
+        [](const spSlot& this_)
+        {
+          std::vector<float> ret(this_.attachmentVertices, this_.attachmentVertices + this_.attachmentVerticesCount);
+          return ret;
+        }
+      ), 
+      optional_override([](spSlot& this_, const val& arg0) {CCLOG("spSlot.attachmentVertices is read-only");}))
     ;
 
   value_object<spTimeline>("_.spTimeline")
-    .field("type", &spTimeline::type)
+    .field("type", 
+      optional_override([](const spTimeline& this_) {return this_.type;}), 
+      optional_override([](spTimeline& this_, const val& arg0) {CCLOG("spTimeline.type is read-only");}))
     ;
 
   value_object<spAnimationState>("_.spAnimationState")
@@ -130,10 +176,19 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
   value_object<spAnimation>("_.spAnimation")
     .field("duration", &spAnimation::duration)
     .field("timelineCount", &spAnimation::timelinesCount)
-    .field("name", &spAnimation::name)
-    .field("timelines", &spAnimation::timelines)
+    .field("name", 
+      optional_override([](const spAnimation& this_) -> std::string {return this_.name;}), 
+      optional_override([](spAnimation& this_, const val& arg0) {CCLOG("spAnimation.name is read-only");}))
+    .field("timelines", 
+      optional_override(
+        [](const spAnimation& this_)
+        {
+          std::vector<spTimeline*> ret(this_.timelines, this_.timelines + this_.timelinesCount);
+          return ret;
+        }
+      ), 
+      optional_override([](spAnimation& this_, const val& arg0) {CCLOG("spAnimation.timelines is read-only");}))
     ;
-*/
 
   class_<SkeletonRenderer, base<Node>>("sp.Skeleton")
         // TODO: overloaded constructor
