@@ -10,6 +10,17 @@ using namespace cocos2d::network;
 
 COCOS_BINDINGS(jsb_cocos2dx_network) {
 
+  value_object<DownloaderHints>("_.DownloaderHints")
+    .field("countOfMaxProcessingTasks", &DownloaderHints::countOfMaxProcessingTasks)
+    .field("timeoutInSeconds", &DownloaderHints::timeoutInSeconds)
+    .field("tempFileNameSuffix", &DownloaderHints::tempFileNameSuffix)
+    ;
+
+  value_object<DownloadTask>("_.DownloadTask")
+    .field("identifier", &DownloadTask::identifier)
+    .field("requestURL", &DownloadTask::requestURL)
+    .field("storagePath", &DownloadTask::storagePath)
+    ;
 
   class_<Downloader>("jsb.Downloader")
         // TODO: overloaded constructor
