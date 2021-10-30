@@ -52,11 +52,26 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getName", &Texture2D::getName)
     .function("initWithString", select_overload<bool(const char*, const FontDefinition&)>(&Texture2D::initWithString), allow_raw_pointers())
     .function("initWithString", select_overload<bool(const char*, const std::string&, float, const cocos2d::Size&, cocos2d::TextHAlignment, cocos2d::TextVAlignment, bool, int)>(&Texture2D::initWithString), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithString", optional_override(
+        [](Texture2D& this_, const char* arg0, const std::string& arg1, float arg2){
+            return this_.initWithString(arg0, arg1, arg2);
+        }), allow_raw_pointers())
+    .function("initWithString", optional_override(
+        [](Texture2D& this_, const char* arg0, const std::string& arg1, float arg2, const cocos2d::Size& arg3){
+            return this_.initWithString(arg0, arg1, arg2, arg3);
+        }), allow_raw_pointers())
+    .function("initWithString", optional_override(
+        [](Texture2D& this_, const char* arg0, const std::string& arg1, float arg2, const cocos2d::Size& arg3, cocos2d::TextHAlignment arg4){
+            return this_.initWithString(arg0, arg1, arg2, arg3, arg4);
+        }), allow_raw_pointers())
+    .function("initWithString", optional_override(
+        [](Texture2D& this_, const char* arg0, const std::string& arg1, float arg2, const cocos2d::Size& arg3, cocos2d::TextHAlignment arg4, cocos2d::TextVAlignment arg5){
+            return this_.initWithString(arg0, arg1, arg2, arg3, arg4, arg5);
+        }), allow_raw_pointers())
+    .function("initWithString", optional_override(
+        [](Texture2D& this_, const char* arg0, const std::string& arg1, float arg2, const cocos2d::Size& arg3, cocos2d::TextHAlignment arg4, cocos2d::TextVAlignment arg5, bool arg6){
+            return this_.initWithString(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+        }), allow_raw_pointers())
     .function("setMaxT", &Texture2D::setMaxT)
     .function("getPath", &Texture2D::getPath)
     .function("drawInRect", &Texture2D::drawInRect)
@@ -124,8 +139,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<ComponentContainer>("cc.ComponentContainer")
     .function("visit", &ComponentContainer::visit)
-    .function("remove", select_overload<bool(Component*)>(&ComponentContainer::remove), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("remove", optional_override(
+      [](ComponentContainer& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.remove(arg0.as<std::string>());
+      } else 
+      {
+        return this_.remove(arg0.as<cocos2d::Component*>(allow_raw_pointers()));
+      }
+    }))
     .function("removeAll", &ComponentContainer::removeAll)
     .function("add", &ComponentContainer::add, allow_raw_pointers())
     .function("isEmpty", &ComponentContainer::isEmpty)
@@ -154,16 +177,31 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Node>, allow_raw_pointers())
     .function("addChild", select_overload<void(Node*, int)>(&Node::addChild), allow_raw_pointers())
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
-    .function("addChild", select_overload<void(Node*, int, int)>(&Node::addChild), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .function("removeComponent", select_overload<bool(Component*)>(&Node::removeComponent), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("addChild", optional_override(
+      [](Node& this_, cocos2d::Node* arg0, int arg1, const val& arg2){
+      if (!arg2.isNumber())
+      {
+        return this_.addChild(arg0, arg1, arg2.as<std::string>());
+      } else 
+      {
+        return this_.addChild(arg0, arg1, arg2.as<int>());
+      }
+    }), allow_raw_pointers())
+    .function("removeComponent", optional_override(
+      [](Node& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.removeComponent(arg0.as<std::string>());
+      } else 
+      {
+        return this_.removeComponent(arg0.as<cocos2d::Component*>(allow_raw_pointers()));
+      }
+    }))
     .function("setPhysicsBody", &Node::setPhysicsBody, allow_raw_pointers())
     .function("getDescription", &Node::getDescription)
     .function("setOpacityModifyRGB", &Node::setOpacityModifyRGB)
     .function("setCascadeOpacityEnabled", &Node::setCascadeOpacityEnabled)
     .function("getChildren", select_overload<const Vector<Node *>&() const>(&Node::getChildren))
-    // TODO: Only support function overloading with different number of parameters
     .function("setOnExitCallback", &Node::setOnExitCallback)
     .function("setActionManager", &Node::setActionManager, allow_raw_pointers())
     .function("isIgnoreAnchorPointForPosition", &Node::isIgnoreAnchorPointForPosition)
@@ -257,13 +295,11 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getDisplayedOpacity", &Node::getDisplayedOpacity)
     .function("getLocalZOrder", &Node::getLocalZOrder)
     .function("getScheduler", select_overload<const Scheduler*() const>(&Node::getScheduler), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("getPositionNormalized", &Node::getPositionNormalized)
     .function("getPosition", select_overload<void(float*, float*) const>(&Node::getPosition), allow_raw_pointers())
     .function("getPosition", select_overload<const Vec2&() const>(&Node::getPosition))
     .function("isRunning", &Node::isRunning)
     .function("getParent", select_overload<const Node*() const>(&Node::getParent), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("getWorldToNodeTransform3D", &Node::getWorldToNodeTransform)
     .function("getPositionY", &Node::getPositionY)
     .function("getPositionX", &Node::getPositionX)
@@ -319,8 +355,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setRotationQuat", &Node::setRotationQuat)
     .function("stopAction", &Node::stopAction, allow_raw_pointers())
     .function("getActionManager", select_overload<const ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-
     // TODO: incomplete bindings come from cocos2d_specifics.cpp
     .function("onEnter", optional_override([](Node& this_) {
         CCScriptEngine::getInstance()->setCalledFromScript(true);
@@ -410,7 +444,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setCameraOrderDirty", &Scene::setCameraOrderDirty)
     .function("render", select_overload<void(Renderer*, const Mat4*, const Mat4*, unsigned int)>(&Scene::render), allow_raw_pointers())
     .function("render", select_overload<void(Renderer*, const Mat4&, const Mat4*)>(&Scene::render), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("render", optional_override(
+        [](Scene& this_, cocos2d::Renderer* arg0, const cocos2d::Mat4& arg1){
+            return this_.render(arg0, arg1);
+        }), allow_raw_pointers())
     .function("stepPhysicsAndNavigation", &Scene::stepPhysicsAndNavigation)
     .function("onProjectionChanged", &Scene::onProjectionChanged, allow_raw_pointers())
     .function("initWithSize", &Scene::initWithSize)
@@ -442,8 +479,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setFrameZoomFactor", &GLView::setFrameZoomFactor)
     .function("getFrameZoomFactor", &GLView::getFrameZoomFactor)
     .function("getDesignResolutionSize", &GLView::getDesignResolutionSize)
-    .function("setIcon", select_overload<void(const std::vector<std::string>&) const>(&GLView::setIcon))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setIcon", optional_override(
+      [](GLView& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.setIcon(arg0.as<std::string>());
+      } else 
+      {
+        return this_.setIcon(arg0.as<const std::vector<std::string>&>());
+      }
+    }))
     .function("setDefaultCursor", &GLView::setDefaultCursor)
     .function("windowShouldClose", &GLView::windowShouldClose)
     .function("setDesignResolutionSize", &GLView::setDesignResolutionSize)
@@ -672,24 +717,65 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<GLProgramState>("cc.GLProgramState")
-    .function("setUniformCallback", select_overload<void(int, const std::function<void (GLProgram *, Uniform *)>&)>(&GLProgramState::setUniformCallback))
-    // TODO: Only support function overloading with different number of parameters
+    // TODO: how can this work?
+    .function("setUniformCallback", optional_override(
+      [](GLProgramState& this_, const val& arg0, const std::function<void (cocos2d::GLProgram *, cocos2d::Uniform *)>& arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformCallback(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformCallback(arg0.as<int>(), arg1);
+      }
+    }))
     .function("getVertexAttribsFlags", &GLProgramState::getVertexAttribsFlags)
     .function("applyAutoBinding", &GLProgramState::applyAutoBinding)
-    .function("setUniformVec2", select_overload<void(int, const Vec2&)>(&GLProgramState::setUniformVec2))
-    // TODO: Only support function overloading with different number of parameters
-    .function("setUniformVec3", select_overload<void(int, const Vec3&)>(&GLProgramState::setUniformVec3))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setUniformVec2", optional_override(
+      [](GLProgramState& this_, const val& arg0, const cocos2d::Vec2& arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformVec2(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformVec2(arg0.as<int>(), arg1);
+      }
+    }))
+    .function("setUniformVec3", optional_override(
+      [](GLProgramState& this_, const val& arg0, const cocos2d::Vec3& arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformVec3(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformVec3(arg0.as<int>(), arg1);
+      }
+    }))
     .function("setVertexAttribCallback", &GLProgramState::setVertexAttribCallback)
     .function("apply", &GLProgramState::apply)
     .function("getNodeBinding", &GLProgramState::getNodeBinding, allow_raw_pointers())
     .function("applyGLProgram", &GLProgramState::applyGLProgram)
     .function("setNodeBinding", &GLProgramState::setNodeBinding, allow_raw_pointers())
-    .function("setUniformInt", select_overload<void(int, int)>(&GLProgramState::setUniformInt))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setUniformInt", optional_override(
+      [](GLProgramState& this_, const val& arg0, int arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformInt(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformInt(arg0.as<int>(), arg1);
+      }
+    }))
     .function("setParameterAutoBinding", &GLProgramState::setParameterAutoBinding)
-    .function("setUniformVec2v", select_overload<void(int, ssize_t, const Vec2*)>(&GLProgramState::setUniformVec2v), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setUniformVec2v", optional_override(
+      [](GLProgramState& this_, const val& arg0, int arg1, const cocos2d::Vec2* arg2){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformVec2v(arg0.as<std::string>(), arg1, arg2);
+      } else 
+      {
+        return this_.setUniformVec2v(arg0.as<int>(), arg1, arg2);
+      }
+    }), allow_raw_pointers())
     .function("getUniformCount", &GLProgramState::getUniformCount)
     .function("applyAttributes", &GLProgramState::applyAttributes)
     .function("applyAttributes", optional_override(
@@ -698,18 +784,58 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }))
     .function("clone", &GLProgramState::clone, allow_raw_pointers())
     .function("setGLProgram", &GLProgramState::setGLProgram, allow_raw_pointers())
-    .function("setUniformFloatv", select_overload<void(int, ssize_t, const float*)>(&GLProgramState::setUniformFloatv), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setUniformFloatv", optional_override(
+      [](GLProgramState& this_, const val& arg0, int arg1, const float* arg2){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformFloatv(arg0.as<std::string>(), arg1, arg2);
+      } else 
+      {
+        return this_.setUniformFloatv(arg0.as<int>(), arg1, arg2);
+      }
+    }), allow_raw_pointers())
     .function("getGLProgram", &GLProgramState::getGLProgram, allow_raw_pointers())
-    .function("setUniformTexture", select_overload<void(int, Texture2D*)>(&GLProgramState::setUniformTexture), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setUniformTexture", optional_override(
+      [](GLProgramState& this_, const val& arg0, cocos2d::Texture2D* arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformTexture(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformTexture(arg0.as<int>(), arg1);
+      }
+    }), allow_raw_pointers())
     .function("applyUniforms", &GLProgramState::applyUniforms)
-    .function("setUniformFloat", select_overload<void(int, float)>(&GLProgramState::setUniformFloat))
-    // TODO: Only support function overloading with different number of parameters
-    .function("setUniformMat4", select_overload<void(int, const Mat4&)>(&GLProgramState::setUniformMat4))
-    // TODO: Only support function overloading with different number of parameters
-    .function("setUniformVec3v", select_overload<void(int, ssize_t, const Vec3*)>(&GLProgramState::setUniformVec3v), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setUniformFloat", optional_override(
+      [](GLProgramState& this_, const val& arg0, float arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformFloat(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformFloat(arg0.as<int>(), arg1);
+      }
+    }))
+    .function("setUniformMat4", optional_override(
+      [](GLProgramState& this_, const val& arg0, const cocos2d::Mat4& arg1){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformMat4(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformMat4(arg0.as<int>(), arg1);
+      }
+    }))
+    .function("setUniformVec3v", optional_override(
+      [](GLProgramState& this_, const val& arg0, int arg1, const cocos2d::Vec3* arg2){
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformVec3v(arg0.as<std::string>(), arg1, arg2);
+      } else 
+      {
+        return this_.setUniformVec3v(arg0.as<int>(), arg1, arg2);
+      }
+    }), allow_raw_pointers())
     .function("getVertexAttribCount", &GLProgramState::getVertexAttribCount)
     .class_function("create", &GLProgramState::create, allow_raw_pointers())
     .class_function("getOrCreateWithGLProgramName", select_overload<GLProgramState*(const std::string&, Texture2D*)>(&GLProgramState::getOrCreateWithGLProgramName), allow_raw_pointers())
@@ -763,7 +889,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<AnimationFrame>, allow_raw_pointers())
     .function("setSpriteFrame", &AnimationFrame::setSpriteFrame, allow_raw_pointers())
     .function("getUserInfo", select_overload<std::unordered_map<std::string, Value>&()>(&AnimationFrame::getUserInfo))
-    // TODO: Only support function overloading with different number of parameters
     .function("setDelayUnits", &AnimationFrame::setDelayUnits)
     .function("clone", &AnimationFrame::clone, allow_raw_pointers())
     .function("getSpriteFrame", &AnimationFrame::getSpriteFrame, allow_raw_pointers())
@@ -804,9 +929,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }))
     .function("getRestoreOriginalFrame", &Animation::getRestoreOriginalFrame)
     .function("addSpriteFrameWithTexture", &Animation::addSpriteFrameWithTexture, allow_raw_pointers())
-    .class_function("createWithAnimationFrames", select_overload<Animation*(const Vector<AnimationFrame *>&, float, unsigned int)>(&Animation::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("createWithAnimationFrames", select_overload<Animation*()>(&Animation::create), allow_raw_pointers())
+    .class_function("createWithAnimationFrames", select_overload<cocos2d::Animation*(const cocos2d::Vector<cocos2d::AnimationFrame *>&, float, unsigned int)>(&Animation::create), allow_raw_pointers())
+    .class_function("createWithAnimationFrames", optional_override(
+        [](const cocos2d::Vector<cocos2d::AnimationFrame *>& arg0, float arg1){
+            return Animation::create(arg0, arg1);
+        }), allow_raw_pointers())
+    .class_function("createWithAnimationFrames", select_overload<cocos2d::Animation*()>(&Animation::create), allow_raw_pointers())
     .class_function("createWithSpriteFrames", &Animation::createWithSpriteFrames, allow_raw_pointers())
     .class_function("createWithSpriteFrames", optional_override(
       [](const Vector<SpriteFrame *>& arg0){
@@ -879,9 +1007,17 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<RotateTo>, allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&RotateTo::initWithDuration))
     .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateTo::initWithDuration))
-    .class_function("create", select_overload<RotateTo*(float, float)>(&RotateTo::create), allow_raw_pointers())
-    .class_function("create", select_overload<RotateTo*(float, float, float)>(&RotateTo::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", select_overload<cocos2d::RotateTo*(float, float, float)>(&RotateTo::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.isNumber())
+      {
+        return RotateTo::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return RotateTo::create(arg0, arg1.as<float>());
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const RotateTo& _) -> std::string {return "RotateTo";}))    
     .allow_subclass<wrapper<RotateTo>>("cc.RotateTo._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -891,11 +1027,27 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<RotateBy, base<ActionInterval>>("cc.RotateBy")
     .constructor(&cc_bindings_constructor<RotateBy>, allow_raw_pointers())
     .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateBy::initWithDuration))
-    .function("initWithDuration", select_overload<bool(float, float)>(&RotateBy::initWithDuration))
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<RotateBy*(float, float, float)>(&RotateBy::create), allow_raw_pointers())
-    .class_function("create", select_overload<RotateBy*(float, float)>(&RotateBy::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithDuration", optional_override(
+      [](RotateBy& this_, float arg0, const val& arg1){
+      if (!arg1.isNumber())
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return this_.initWithDuration(arg0, arg1.as<float>());
+      }
+    }))
+    .class_function("create", select_overload<cocos2d::RotateBy*(float, float, float)>(&RotateBy::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.isNumber())
+      {
+        return RotateBy::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return RotateBy::create(arg0, arg1.as<float>());
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const RotateBy& _) -> std::string {return "RotateBy";}))    
     .allow_subclass<wrapper<RotateBy>>("cc.RotateBy._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -904,10 +1056,26 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MoveBy, base<ActionInterval>>("cc.MoveBy")
     .constructor(&cc_bindings_constructor<MoveBy>, allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&MoveBy::initWithDuration))
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<MoveBy*(float, const Vec3&)>(&MoveBy::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithDuration", optional_override(
+      [](MoveBy& this_, float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+    }))
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return MoveBy::create(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return MoveBy::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const MoveBy& _) -> std::string {return "MoveBy";}))    
     .allow_subclass<wrapper<MoveBy>>("cc.MoveBy._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -916,10 +1084,26 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MoveTo, base<MoveBy>>("cc.MoveTo")
     .constructor(&cc_bindings_constructor<MoveTo>, allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&MoveTo::initWithDuration))
-    // TODO: Only support function overloading with different number of parameters
-    .class_function("create", select_overload<MoveTo*(float, const Vec3&)>(&MoveTo::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithDuration", optional_override(
+      [](MoveTo& this_, float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+    }))
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return MoveTo::create(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return MoveTo::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const MoveTo& _) -> std::string {return "MoveTo";}))    
     .allow_subclass<wrapper<MoveTo>>("cc.MoveTo._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -1091,7 +1275,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Animate>, allow_raw_pointers())
     .function("initWithAnimation", &Animate::initWithAnimation, allow_raw_pointers())
     .function("getAnimation", select_overload<const Animation*() const>(&Animate::getAnimation), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("getCurrentFrameIndex", &Animate::getCurrentFrameIndex)
     .function("setAnimation", &Animate::setAnimation, allow_raw_pointers())
     .class_function("create", &Animate::create, allow_raw_pointers())
@@ -1104,7 +1287,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<TargetedAction, base<ActionInterval>>("cc.TargetedAction")
     .constructor(&cc_bindings_constructor<TargetedAction>, allow_raw_pointers())
     .function("getForcedTarget", select_overload<const Node*() const>(&TargetedAction::getForcedTarget), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("initWithTarget", &TargetedAction::initWithTarget, allow_raw_pointers())
     .function("setForcedTarget", &TargetedAction::setForcedTarget, allow_raw_pointers())
     .class_function("create", &TargetedAction::create, allow_raw_pointers())
@@ -1182,9 +1364,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.getLong();
       }))
     .function("getNamespace", select_overload<const char*() const>(&Properties::getNamespace), allow_raw_pointers())
-    .function("getNamespace", select_overload<Properties*(const char*, bool, bool) const>(&Properties::getNamespace), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .function("getNamespace", select_overload<cocos2d::Properties*(const char*, bool, bool) const>(&Properties::getNamespace), allow_raw_pointers())
+    .function("getNamespace", optional_override(
+        [](Properties& this_, const char* arg0){
+            return this_.getNamespace(arg0);
+        }), allow_raw_pointers())
+    .function("getNamespace", optional_override(
+        [](Properties& this_, const char* arg0, bool arg1){
+            return this_.getNamespace(arg0, arg1);
+        }), allow_raw_pointers())
     .function("getPath", &Properties::getPath, allow_raw_pointers())
     .function("getMat4", &Properties::getMat4, allow_raw_pointers())
     .function("exists", &Properties::exists, allow_raw_pointers())
@@ -1201,8 +1389,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](Properties& this_, const char* arg0){
         return this_.getBool(arg0);
       }), allow_raw_pointers())
-    .function("getColor", select_overload<bool(const char*, Vec4*) const>(&Properties::getColor), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("getColor", optional_override(
+      [](Properties& this_, const char* arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("w"))
+      {
+        return this_.getColor(arg0, arg1.as<cocos2d::Vec3*>(allow_raw_pointers()));
+      } else 
+      {
+        return this_.getColor(arg0, arg1.as<cocos2d::Vec4*>(allow_raw_pointers()));
+      }
+    }), allow_raw_pointers())
     .function("getType", &Properties::getType, allow_raw_pointers())
     .function("getType", optional_override(
         [](Properties& this_){
@@ -1224,8 +1420,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         return this_.getFloat();
       }))
     .function("getQuaternionFromAxisAngle", &Properties::getQuaternionFromAxisAngle, allow_raw_pointers())
-    .class_function("parseColor", select_overload<bool(const char*, Vec4*)>(&Properties::parseColor), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("parseColor", optional_override(
+      [](const char* arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("w"))
+      {
+        return Properties::parseColor(arg0, arg1.as<cocos2d::Vec3*>(allow_raw_pointers()));
+      } else 
+      {
+        return Properties::parseColor(arg0, arg1.as<cocos2d::Vec4*>(allow_raw_pointers()));
+      }
+      }), allow_raw_pointers())
     .class_function("parseVec3", &Properties::parseVec3, allow_raw_pointers())
     .class_function("parseAxisAngle", &Properties::parseAxisAngle, allow_raw_pointers())
     .class_function("parseVec2", &Properties::parseVec2, allow_raw_pointers())
@@ -1242,9 +1446,19 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("removeFile", select_overload<bool(const std::string&) const>(&FileUtils::removeFile))
     .function("isAbsolutePath", &FileUtils::isAbsolutePath)
     .function("renameFile", select_overload<void(const std::string&, const std::string&, const std::string&, std::function<void (bool)>) const>(&FileUtils::renameFile))
-    .function("renameFile", select_overload<bool(const std::string&, const std::string&, const std::string&) const>(&FileUtils::renameFile))
     .function("renameFile", select_overload<bool(const std::string&, const std::string&) const>(&FileUtils::renameFile))
-    // TODO: Only support function overloading with different number of parameters
+    .function("renameFile", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const std::string& arg1, const val& arg2){
+      if (!arg2.isString())
+      {
+        // TODO: I can't overload with different return type.
+        // check again js binding does not have auto std::function binding
+        return false;//this_.renameFile(arg0, arg1, arg2.as<std::function<void (bool)>>());
+      } else 
+      {
+        return this_.renameFile(arg0, arg1, arg2.as<std::string>());
+      }
+    }))
     .function("getDefaultResourceRootPath", &FileUtils::getDefaultResourceRootPath)
     .function("loadFilenameLookup", &FileUtils::loadFilenameLookupDictionaryFromFile)
     .function("isPopupNotify", &FileUtils::isPopupNotify)
@@ -1328,8 +1542,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("addEventListenerWithSceneGraphPriority", &EventDispatcher::addEventListenerWithSceneGraphPriority, allow_raw_pointers())
     .function("addEventListenerWithFixedPriority", &EventDispatcher::addEventListenerWithFixedPriority, allow_raw_pointers())
     .function("removeListeners", select_overload<void(Node*, bool)>(&EventDispatcher::removeEventListenersForTarget), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .function("removeListeners", select_overload<void(EventListener::Type)>(&EventDispatcher::removeEventListenersForType))
+    .function("removeListeners", optional_override(
+      [](EventDispatcher& this_, const val& arg0){
+      if (arg0.isNumber())
+      {
+        return this_.removeEventListenersForType(arg0.as<cocos2d::EventListener::Type>());
+      } else 
+      {
+        return this_.removeEventListenersForTarget(arg0.as<cocos2d::Node*>(allow_raw_pointers()));
+      }
+    }))
     .function("resumeTarget", &EventDispatcher::resumeEventListenersForTarget, allow_raw_pointers())
     .function("resumeTarget", optional_override(
         [](EventDispatcher& this_, Node* arg0){
@@ -2413,19 +2635,64 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setSystemFontName", &Label::setSystemFontName)
     .function("isWrapEnabled", &Label::isWrapEnabled)
     .function("getOutlineSize", &Label::getOutlineSize)
-    .function("setBMFontFilePath", select_overload<bool(const std::string&, const Rect&, bool, float)>(&Label::setBMFontFilePath))
-    // TODO: Only support function overloading with different number of parameters
-    .function("setBMFontFilePath", select_overload<bool(const std::string&, float)>(&Label::setBMFontFilePath))
-    // TODO: Only support function overloading with different number of parameters
-    .function("setBMFontFilePath", select_overload<bool(const std::string&, const std::string&, float)>(&Label::setBMFontFilePath))
-    // TODO: Only support function overloading with different number of parameters
-    .function("initWithTTF", select_overload<bool(const _ttfConfig&, const std::string&, TextHAlignment, int)>(&Label::initWithTTF))
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .function("setBMFontFilePath", select_overload<bool(const std::string&, const cocos2d::Rect&, bool, float)>(&Label::setBMFontFilePath))
+    .function("setBMFontFilePath", optional_override(
+        [](Label& this_, const std::string& arg0, const val& arg1, const val& arg2){
+          if (arg1.isString())
+          {
+            return this_.setBMFontFilePath(arg0, arg1.as<std::string>(), arg2.as<float>());
+          }
+          else
+          {
+            return this_.setBMFontFilePath(arg0, arg1.as<Rect>(), arg2.as<bool>());
+          }
+        }))
+    .function("setBMFontFilePath", optional_override(
+        [](Label& this_, const std::string& arg0, const val& arg1){
+          if (arg1.isNumber())
+          {
+            return this_.setBMFontFilePath(arg0, arg1.as<float>());
+          }
+          else
+          {
+            return this_.setBMFontFilePath(arg0, arg1.as<std::string>());
+          }
+        }))
+    .function("setBMFontFilePath", optional_override(
+        [](Label& this_, const std::string& arg0){
+          return this_.setBMFontFilePath(arg0);
+        }))
+    .function("initWithTTF", optional_override(
+        [](Label& this_, const TTFConfig& arg0, const std::string& arg1){
+          return this_.initWithTTF(arg0, arg1);
+        }))
+    .function("initWithTTF", optional_override(
+        [](Label& this_, const val& arg0, const std::string& arg1, const val& arg2){
+          if (arg0.isString())
+          {
+            return this_.initWithTTF(arg0.as<std::string>(), arg1, arg2.as<float>());
+          }
+          else
+          {
+            return this_.initWithTTF(arg0.as<TTFConfig>(), arg1, arg2.as<TextHAlignment>());
+          }
+        }))
+    .function("initWithTTF", optional_override(
+        [](Label& this_, const val& arg0, const std::string& arg1, const val& arg2, const val& arg3){
+          if (arg0.isString())
+          {
+            return this_.initWithTTF(arg0.as<std::string>(), arg1, arg2.as<float>(), arg3.as<Size>());
+          }
+          else
+          {
+            return this_.initWithTTF(arg0.as<TTFConfig>(), arg1, arg2.as<TextHAlignment>(), arg3.as<int>());
+          }
+        }))
+    .function("initWithTTF", optional_override(
+        [](Label& this_, const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, TextHAlignment arg4){
+          return this_.initWithTTF(arg0, arg1, arg2, arg3, arg4);
+        }))
     .function("initWithTTF", select_overload<bool(const std::string&, const std::string&, float, const Size&, TextHAlignment, TextVAlignment)>(&Label::initWithTTF))
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
     .function("setLineHeight", &Label::setLineHeight)
     .function("setSystemFontSize", &Label::setSystemFontSize)
     .function("setOverflow", &Label::setOverflow)
@@ -2442,8 +2709,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getShadowBlurRadius", &Label::getShadowBlurRadius)
     .function("getEffectColor", &Label::getEffectColor)
     .function("removeAllChildrenWithCleanup", &Label::removeAllChildrenWithCleanup)
-    .function("setCharMap", select_overload<bool(Texture2D*, int, int, int)>(&Label::setCharMap), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setCharMap", optional_override(
+      [](Label& this_, const val& arg0, int arg1, int arg2, int arg3){
+      if (arg0.isString())
+      {
+        return this_.setCharMap(arg0.as<std::string>(), arg1, arg2, arg3);
+      } else 
+      {
+        return this_.setCharMap(arg0.as<cocos2d::Texture2D*>(allow_raw_pointers()), arg1, arg2, arg3);
+      }
+    }))
     .function("setCharMap", select_overload<bool(const std::string&)>(&Label::setCharMap))
     .function("getDimensions", &Label::getDimensions)
     .function("setMaxLineWidth", &Label::setMaxLineWidth)
@@ -2480,11 +2755,25 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("boundingHeight", &Label::getHeight, &Label::setHeight)
     .class_function("createWithBMFont", select_overload<Label*(const std::string&, const std::string&, const TextHAlignment&, int, const Rect&, bool)>(&Label::createWithBMFont), allow_raw_pointers())
     .class_function("createWithBMFont", select_overload<Label*(const std::string&, const std::string&, const TextHAlignment&, int)>(&Label::createWithBMFont), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("createWithBMFont", optional_override(
+        [](const std::string& arg0, const std::string& arg1){
+            return Label::createWithBMFont(arg0, arg1);
+        }), allow_raw_pointers())
+    .class_function("createWithBMFont", optional_override(
+        [](const std::string& arg0, const std::string& arg1, const cocos2d::TextHAlignment& arg2){
+            return Label::createWithBMFont(arg0, arg1, arg2);
+        }), allow_raw_pointers())
     .class_function("createWithBMFont", select_overload<Label*(const std::string&, const std::string&, const TextHAlignment&, int, const std::string&)>(&Label::createWithBMFont), allow_raw_pointers())
-    .class_function("createWithCharMap", select_overload<Label*(Texture2D*, int, int, int)>(&Label::createWithCharMap), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("createWithCharMap", optional_override(
+      [](const val& arg0, int arg1, int arg2, int arg3){
+      if (arg0.isString())
+      {
+        return Label::createWithCharMap(arg0.as<std::string>(), arg1, arg2, arg3);
+      } else 
+      {
+        return Label::createWithCharMap(arg0.as<cocos2d::Texture2D*>(allow_raw_pointers()), arg1, arg2, arg3);
+      }
+      }), allow_raw_pointers())
     .class_function("createWithCharMap", select_overload<Label*(const std::string&)>(&Label::createWithCharMap), allow_raw_pointers())
     .class_function("createWithSystemFont", &Label::createWithSystemFont, allow_raw_pointers())
     .class_function("createWithSystemFont", optional_override(
@@ -2509,8 +2798,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<LabelAtlas>, allow_raw_pointers())
     .function("setString", &LabelAtlas::setString)
     .function("initWithString", select_overload<bool(const std::string&, const std::string&)>(&LabelAtlas::initWithString))
-    .function("initWithString", select_overload<bool(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::initWithString))
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithString", optional_override(
+      [](LabelAtlas& this_, const std::string& arg0, const val& arg1, int arg2, int arg3, int arg4){
+      if (!arg1.isString())
+      {
+        return this_.initWithString(arg0, arg1.as<cocos2d::Texture2D*>(allow_raw_pointers()), arg2, arg3, arg4);
+      } else 
+      {
+        return this_.initWithString(arg0, arg1.as<std::string>(), arg2, arg3, arg4);
+      }
+    }), allow_raw_pointers())
     .function("getString", &LabelAtlas::getString)
     .property("string", &LabelAtlas::getString, &LabelAtlas::setString)
     .class_function("_create", select_overload<LabelAtlas*(const std::string&, const std::string&, int, int, int)>(&LabelAtlas::create), allow_raw_pointers())
@@ -2546,7 +2843,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getFntFile", &LabelBMFont::getFntFile)
     .function("setFntFile", select_overload<void(const std::string&, const Rect&, bool)>(&LabelBMFont::setFntFile))
     .function("setFntFile", select_overload<void(const std::string&, const Vec2&)>(&LabelBMFont::setFntFile))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setFntFile", optional_override(
+        [](LabelBMFont& this_, const std::string& arg0){
+            return this_.setFntFile(arg0);
+        }))
     .function("setAlignment", &LabelBMFont::setAlignment)
     .function("setWidth", &LabelBMFont::setWidth)
     .property("string", &LabelBMFont::getString, &LabelBMFont::setString)
@@ -2573,9 +2873,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // .property("boundingHeight", &LabelBMFont::_getBoundingHeight, &LabelBMFont::setBoundingHeight)
     .class_function("create", select_overload<LabelBMFont*()>(&LabelBMFont::create), allow_raw_pointers())
     .class_function("create", select_overload<LabelBMFont*(const std::string&, const std::string&, float, TextHAlignment, const Vec2&)>(&LabelBMFont::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1){
+            return LabelBMFont::create(arg0, arg1);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, float arg2){
+            return LabelBMFont::create(arg0, arg1, arg2);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, float arg2, cocos2d::TextHAlignment arg3){
+            return LabelBMFont::create(arg0, arg1, arg2, arg3);
+        }), allow_raw_pointers())
     .property("_className",  optional_override([](const LabelBMFont& _) -> std::string {return "LabelBMFont";}))    
     .allow_subclass<wrapper<LabelBMFont>>("cc.LabelBMFont._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -2687,9 +2996,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // .property("shadowBlur", &LabelTTF::_getShadowBlur, &LabelTTF::_setShadowBlur)
     .class_function("create", select_overload<LabelTTF*()>(&LabelTTF::create), allow_raw_pointers())
     .class_function("create", select_overload<LabelTTF*(const std::string&, const std::string&, float, const Size&, TextHAlignment, TextVAlignment)>(&LabelTTF::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, float arg2){
+            return LabelTTF::create(arg0, arg1, arg2);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, float arg2, const cocos2d::Size& arg3){
+            return LabelTTF::create(arg0, arg1, arg2, arg3);
+        }), allow_raw_pointers())
+    .class_function("create", optional_override(
+        [](const std::string& arg0, const std::string& arg1, float arg2, const cocos2d::Size& arg3, cocos2d::TextHAlignment arg4){
+            return LabelTTF::create(arg0, arg1, arg2, arg3, arg4);
+        }), allow_raw_pointers())
     .class_function("createWithFontDefinition", &LabelTTF::createWithFontDefinition, allow_raw_pointers())
     .property("_className",  optional_override([](const LabelTTF& _) -> std::string {return "LabelTTF";}))    
     .allow_subclass<wrapper<LabelTTF>>("cc.LabelTTF._extend")
@@ -2777,12 +3095,28 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setExpand", &LayerRadialGradient::setExpand)
     .function("getEndOpacity", &LayerRadialGradient::getEndOpacity)
     .function("initWithColor", &LayerRadialGradient::initWithColor)
-    .function("setEndColor", select_overload<void(const Color4B&)>(&LayerRadialGradient::setEndColor))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setEndColor", optional_override(
+      [](LayerRadialGradient& this_, const val& arg0){
+      if (!arg0.hasOwnProperty("a"))
+      {
+        return this_.setEndColor(arg0.as<const cocos2d::Color3B&>());
+      } else 
+      {
+        return this_.setEndColor(arg0.as<const cocos2d::Color4B&>());
+      }
+    }))
     .function("getEndColor3B", &LayerRadialGradient::getEndColor3B)
     .function("setRadius", &LayerRadialGradient::setRadius)
-    .function("setStartColor", select_overload<void(const Color4B&)>(&LayerRadialGradient::setStartColor))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setStartColor", optional_override(
+      [](LayerRadialGradient& this_, const val& arg0){
+      if (!arg0.hasOwnProperty("a"))
+      {
+        return this_.setStartColor(arg0.as<const cocos2d::Color3B&>());
+      } else 
+      {
+        return this_.setStartColor(arg0.as<const cocos2d::Color4B&>());
+      }
+    }))
     .function("getExpand", &LayerRadialGradient::getExpand)
     .function("setBlendFunc", &LayerRadialGradient::setBlendFunc)
     .function("getRadius", &LayerRadialGradient::getRadius)
@@ -2954,12 +3288,28 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isStartingPositionInitialized", &MotionStreak::isStartingPositionInitialized)
     .function("isFastMode", &MotionStreak::isFastMode)
     .function("getStroke", &MotionStreak::getStroke)
-    .function("initWithFade", select_overload<bool(float, float, float, const Color3B&, Texture2D*)>(&MotionStreak::initWithFade), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("initWithFade", optional_override(
+      [](MotionStreak& this_, float arg0, float arg1, float arg2, const cocos2d::Color3B& arg3, const val& arg4){
+      if (arg4.isString())
+      {
+        return this_.initWithFade(arg0, arg1, arg2, arg3, arg4.as<std::string>());
+      } else 
+      {
+        return this_.initWithFade(arg0, arg1, arg2, arg3, arg4.as<cocos2d::Texture2D*>(allow_raw_pointers()));
+      }
+    }))
     .function("setFastMode", &MotionStreak::setFastMode)
     .function("setStroke", &MotionStreak::setStroke)
-    .class_function("create", select_overload<MotionStreak*(float, float, float, const Color3B&, Texture2D*)>(&MotionStreak::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+      [](float arg0, float arg1, float arg2, const cocos2d::Color3B& arg3, const val& arg4){
+      if (arg4.isString())
+      {
+        return MotionStreak::create(arg0, arg1, arg2, arg3, arg4.as<std::string>());
+      } else 
+      {
+        return MotionStreak::create(arg0, arg1, arg2, arg3, arg4.as<cocos2d::Texture2D*>(allow_raw_pointers()));
+      }
+      }), allow_raw_pointers())
     .property("_className",  optional_override([](const MotionStreak& _) -> std::string {return "MotionStreak";}))    
     .allow_subclass<wrapper<MotionStreak>>("cc.MotionStreak._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -2970,7 +3320,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<NodeGrid>, allow_raw_pointers())
     .function("setTarget", &NodeGrid::setTarget, allow_raw_pointers())
     .function("getGrid", select_overload<GridBase*()>(&NodeGrid::getGrid), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("getGridRect", &NodeGrid::getGridRect)
     .property("grid", optional_override([](const NodeGrid& this_)
       {
@@ -3201,9 +3550,17 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setDisplayFrame", &ParticleSystemQuad::setDisplayFrame, allow_raw_pointers())
     .function("setTextureWithRect", &ParticleSystemQuad::setTextureWithRect, allow_raw_pointers())
     .function("listenRendererRecreated", &ParticleSystemQuad::listenRendererRecreated, allow_raw_pointers())
-    .class_function("create", select_overload<ParticleSystemQuad*(const std::string&)>(&ParticleSystemQuad::create), allow_raw_pointers())
     .class_function("create", select_overload<ParticleSystemQuad*()>(&ParticleSystemQuad::create), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .class_function("create", optional_override(
+      [](const val& arg0){
+      if (!arg0.isString())
+      {
+        return ParticleSystemQuad::create(arg0.as<std::unordered_map<std::string, cocos2d::Value>&>());
+      } else 
+      {
+        return ParticleSystemQuad::create(arg0.as<std::string>());
+      }
+      }), allow_raw_pointers())
     .class_function("createWithTotalParticles", &ParticleSystemQuad::createWithTotalParticles, allow_raw_pointers())
     .property("_className",  optional_override([](const ParticleSystemQuad& _) -> std::string {return "ParticleSystemQuad";}))    
     ;
@@ -3387,10 +3744,26 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Sprite, base<Node>>("cc.Sprite")
     .constructor(&cc_bindings_constructor<Sprite>, allow_raw_pointers())
-    .function("setSpriteFrame", select_overload<void(SpriteFrame*)>(&Sprite::setSpriteFrame), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
-    .function("setTexture", select_overload<void(Texture2D*)>(&Sprite::setTexture), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
+    .function("setSpriteFrame", optional_override(
+      [](Sprite& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.setSpriteFrame(arg0.as<std::string>());
+      } else 
+      {
+        return this_.setSpriteFrame(arg0.as<cocos2d::SpriteFrame*>(allow_raw_pointers()));
+      }
+    }))
+    .function("setTexture", optional_override(
+      [](Sprite& this_, const val& arg0){
+      if (arg0.isString())
+      {
+        return this_.setTexture(arg0.as<std::string>());
+      } else 
+      {
+        return this_.setTexture(arg0.as<cocos2d::Texture2D*>(allow_raw_pointers()));
+      }
+    }))
     .function("getTexture", &Sprite::getTexture, allow_raw_pointers())
     .function("setFlippedY", &Sprite::setFlippedY)
     .function("setFlippedX", &Sprite::setFlippedX)
@@ -3948,9 +4321,17 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("reloadTexture", &SpriteFrameCache::reloadTexture)
     .function("addSpriteFramesWithFileContent", &SpriteFrameCache::addSpriteFramesWithFileContent, allow_raw_pointers())
     .function("addSpriteFrame", &SpriteFrameCache::addSpriteFrame, allow_raw_pointers())
-    .function("addSpriteFrames", select_overload<void(const std::string&, const std::string&)>(&SpriteFrameCache::addSpriteFramesWithFile))
     .function("addSpriteFrames", select_overload<void(const std::string&)>(&SpriteFrameCache::addSpriteFramesWithFile))
-    // TODO: Only support function overloading with different number of parameters
+    .function("addSpriteFrames", optional_override(
+      [](SpriteFrameCache& this_, const std::string& arg0, const val& arg1){
+      if (!arg1.isString())
+      {
+        return this_.addSpriteFramesWithFile(arg0, arg1.as<cocos2d::Texture2D*>(allow_raw_pointers()));
+      } else 
+      {
+        return this_.addSpriteFramesWithFile(arg0, arg1.as<std::string>());
+      }
+    }), allow_raw_pointers())
     .function("getSpriteFrame", &SpriteFrameCache::getSpriteFrameByName, allow_raw_pointers())
     .function("removeSpriteFramesFromFile", &SpriteFrameCache::removeSpriteFramesFromFile)
     .function("init", &SpriteFrameCache::init)
@@ -3978,8 +4359,16 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("appendString", &TextFieldTTF::appendString)
     .function("getPasswordTextStyle", &TextFieldTTF::getPasswordTextStyle)
     .function("setPasswordTextStyle", &TextFieldTTF::setPasswordTextStyle)
-    .function("setColorSpaceHolder", select_overload<void(const Color4B&)>(&TextFieldTTF::setColorSpaceHolder))
-    // TODO: Only support function overloading with different number of parameters
+    .function("setColorSpaceHolder", optional_override(
+      [](TextFieldTTF& this_, const val& arg0){
+      if (!arg0.hasOwnProperty("a"))
+      {
+        return this_.setColorSpaceHolder(arg0.as<const cocos2d::Color3B&>());
+      } else 
+      {
+        return this_.setColorSpaceHolder(arg0.as<const cocos2d::Color4B&>());
+      }
+    }))
     .function("detachWithIME", &TextFieldTTF::detachWithIME)
     .function("setPlaceHolder", &TextFieldTTF::setPlaceHolder)
     .function("setCursorFromPoint", &TextFieldTTF::setCursorFromPoint, allow_raw_pointers())
@@ -3999,7 +4388,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<ParallaxNode, base<Node>>("cc.ParallaxNode")
     .constructor(&cc_bindings_constructor<ParallaxNode>, allow_raw_pointers())
     .function("getParallaxArray", select_overload<const _ccArray*() const>(&ParallaxNode::getParallaxArray), allow_raw_pointers())
-    // TODO: Only support function overloading with different number of parameters
     .function("removeAllChildrenWithCleanup", &ParallaxNode::removeAllChildrenWithCleanup)
     .function("setParallaxArray", &ParallaxNode::setParallaxArray, allow_raw_pointers())
     .class_function("create", &ParallaxNode::create, allow_raw_pointers())
@@ -4076,10 +4464,8 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("getPositionOffset", &TMXObjectGroup::getPositionOffset)
     .function("getObject", &TMXObjectGroup::getObject)
     .function("getObjects", select_overload<std::vector<Value>&()>(&TMXObjectGroup::getObjects))
-    // TODO: Only support function overloading with different number of parameters
     .function("setGroupName", &TMXObjectGroup::setGroupName)
     .function("getProperties", select_overload<std::unordered_map<std::string, Value>&()>(&TMXObjectGroup::getProperties))
-    // TODO: Only support function overloading with different number of parameters
     .function("getGroupName", &TMXObjectGroup::getGroupName)
     .function("setProperties", &TMXObjectGroup::setProperties)
     .function("setObjects", &TMXObjectGroup::setObjects)
@@ -4116,11 +4502,9 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("setTMXFileName", &TMXMapInfo::setTMXFileName)
     .function("parseXMLString", &TMXMapInfo::parseXMLString)
     .function("getLayers", select_overload<Vector<TMXLayerInfo *>&()>(&TMXMapInfo::getLayers))
-    // TODO: Only support function overloading with different number of parameters
     .function("getStaggerAxis", &TMXMapInfo::getStaggerAxis)
     .function("setHexSideLength", &TMXMapInfo::setHexSideLength)
     .function("getTilesets", select_overload<Vector<TMXTilesetInfo *>&()>(&TMXMapInfo::getTilesets))
-    // TODO: Only support function overloading with different number of parameters
     .function("getParentGID", &TMXMapInfo::getParentGID)
     .function("setParentElement", &TMXMapInfo::setParentElement)
     .function("initWithXML", &TMXMapInfo::initWithXML)
@@ -4131,7 +4515,6 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("isStoringCharacters", &TMXMapInfo::isStoringCharacters)
     .function("getExternalTilesetFileName", &TMXMapInfo::getExternalTilesetFileName)
     .function("getObjectGroups", select_overload<Vector<TMXObjectGroup *>&()>(&TMXMapInfo::getObjectGroups))
-    // TODO: Only support function overloading with different number of parameters
     .function("getTMXFileName", &TMXMapInfo::getTMXFileName)
     .function("setStaggerIndex", &TMXMapInfo::setStaggerIndex)
     .function("setProperties", &TMXMapInfo::setProperties)
@@ -4144,7 +4527,6 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("getMapSize", &TMXMapInfo::getMapSize)
     .function("setTilesets", &TMXMapInfo::setTilesets)
     .function("getProperties", select_overload<std::unordered_map<std::string, Value>&()>(&TMXMapInfo::getProperties))
-    // TODO: Only support function overloading with different number of parameters
     .function("getStaggerIndex", &TMXMapInfo::getStaggerIndex)
     .function("setLayerAttribs", &TMXMapInfo::setLayerAttribs)
     .class_function("create", &TMXMapInfo::create, allow_raw_pointers())
@@ -4185,7 +4567,6 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("setTileSet", &TMXLayer::setTileSet, allow_raw_pointers())
     .function("getTileSet", &TMXLayer::getTileSet, allow_raw_pointers())
     .function("getProperties", select_overload<std::unordered_map<std::string, Value>&()>(&TMXLayer::getProperties))
-    // TODO: Only support function overloading with different number of parameters
     .function("getTileAt", &TMXLayer::getTileAt, allow_raw_pointers())
     .function("getTileAnimManager", &TMXLayer::getTileAnimManager, allow_raw_pointers())
     .property("tileset", &TMXLayer::getTileSet, &TMXLayer::setTileSet)
@@ -4246,7 +4627,6 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("setMapSize", &TMXTiledMap::setMapSize)
     .function("getObjectGroup", &TMXTiledMap::getObjectGroup, allow_raw_pointers())
     .function("getObjectGroups", select_overload<Vector<TMXObjectGroup *>&()>(&TMXTiledMap::getObjectGroups))
-    // TODO: Only support function overloading with different number of parameters
     .function("getResourceFile", &TMXTiledMap::getResourceFile)
     .function("initWithTMXFile", &TMXTiledMap::initWithTMXFile)
     .function("getTileSize", &TMXTiledMap::getTileSize)
