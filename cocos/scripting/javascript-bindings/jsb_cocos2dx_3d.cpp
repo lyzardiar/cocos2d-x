@@ -32,13 +32,6 @@ COCOS_BINDINGS(jsb_cocos2dx_3d) {
     .field("max", &AABB::_max)
     ;
 
-  value_object<MeshVertexAttrib>("_.MeshVertexAttrib")
-    .field("size", &MeshVertexAttrib::size)
-    .field("type", &MeshVertexAttrib::type)
-    .field("vertexAttrib", &MeshVertexAttrib::vertexAttrib)
-    .field("attribSizeBytes", &MeshVertexAttrib::attribSizeBytes)
-    ;
-
   class_<Animation3D>("jsb.Animation3D")
     .constructor(&cc_bindings_constructor<Animation3D>, allow_raw_pointers())
     .function("initWithFile", &Animation3D::initWithFile)
