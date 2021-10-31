@@ -38,7 +38,12 @@ COCOS_BINDINGS(jsb_cocos2dx_audioengine) {
     .class_function("pauseAll", &AudioEngine::pauseAll)
     .class_function("uncacheAll", &AudioEngine::uncacheAll)
     .class_function("setVolume", &AudioEngine::setVolume)
-    .class_function("preload", select_overload<void(const std::string&, const std::function<void (bool)>&)>(&AudioEngine::preload))
+    .class_function("preload", optional_override(
+      [](const std::string& arg0, const val& callback){
+        return AudioEngine::preload(arg0, [callback](bool larg0) -> void {
+          callback.call<void>("call", val::global("jsb")["AudioEngine"], val(larg0));
+        });
+      }))
     .class_function("preload", select_overload<void(const std::string&)>(&AudioEngine::preload))
     .class_function("setEnabled", &AudioEngine::setEnabled)
     .class_function("play2d", &AudioEngine::play2d, allow_raw_pointers())

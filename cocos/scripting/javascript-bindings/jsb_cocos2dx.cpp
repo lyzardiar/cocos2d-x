@@ -24,6 +24,8 @@ CC_BINDINGS_ALLOW_RAW_POINTERS(ActionManager)
 CC_BINDINGS_ALLOW_RAW_POINTERS(Scheduler)
 CC_BINDINGS_ALLOW_RAW_POINTERS(Ref)
 CC_BINDINGS_ALLOW_RAW_POINTERS(GLProgram)
+CC_BINDINGS_ALLOW_RAW_POINTERS(FileUtils)
+CC_BINDINGS_ALLOW_RAW_POINTERS(TextureCache)
 
 COCOS_BINDINGS(jsb_cocos2dx) {
 
@@ -717,15 +719,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<GLProgramState>("cc.GLProgramState")
-    // TODO: how can this work?
     .function("setUniformCallback", optional_override(
-      [](GLProgramState& this_, const val& arg0, const std::function<void (cocos2d::GLProgram *, cocos2d::Uniform *)>& arg1){
+      [](GLProgramState& this_, const val& arg0, const val& callback){
+      val thisv(cached_val(&this_));
+      auto lambda = [callback, thisv](cocos2d::GLProgram * larg0, cocos2d::Uniform * larg1) -> void {
+          callback.call<void>("call", thisv, val(larg0), val(larg1));
+      };
       if (!arg0.isNumber())
       {
-        return this_.setUniformCallback(arg0.as<std::string>(), arg1);
+        return this_.setUniformCallback(arg0.as<std::string>(), lambda);
       } else 
       {
-        return this_.setUniformCallback(arg0.as<int>(), arg1);
+        return this_.setUniformCallback(arg0.as<int>(), lambda);
       }
     }))
     .function("getVertexAttribsFlags", &GLProgramState::getVertexAttribsFlags)
@@ -1440,20 +1445,44 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<FileUtils>("cc.FileUtils")
     .function("fullPathForFilename", &FileUtils::fullPathForFilename)
-    .function("getStringFromFile", select_overload<void(const std::string&, std::function<void (std::string)>) const>(&FileUtils::getStringFromFile))
+    .function("getStringFromFile", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](std::string larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.getStringFromFile(arg0, lambda);
+    }))
     .function("getStringFromFile", select_overload<std::string(const std::string&) const>(&FileUtils::getStringFromFile))
-    .function("removeFile", select_overload<void(const std::string&, std::function<void (bool)>) const>(&FileUtils::removeFile))
+    .function("removeFile", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.removeFile(arg0, lambda);
+    }))
     .function("removeFile", select_overload<bool(const std::string&) const>(&FileUtils::removeFile))
     .function("isAbsolutePath", &FileUtils::isAbsolutePath)
-    .function("renameFile", select_overload<void(const std::string&, const std::string&, const std::string&, std::function<void (bool)>) const>(&FileUtils::renameFile))
+    .function("renameFile", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.renameFile(arg0, arg1, arg2, lambda);
+    }))
     .function("renameFile", select_overload<bool(const std::string&, const std::string&) const>(&FileUtils::renameFile))
     .function("renameFile", optional_override(
       [](FileUtils& this_, const std::string& arg0, const std::string& arg1, const val& arg2){
       if (!arg2.isString())
       {
-        // TODO: I can't overload with different return type.
-        // check again js binding does not have auto std::function binding
-        return false;//this_.renameFile(arg0, arg1, arg2.as<std::function<void (bool)>>());
+        val thisv(&this_);
+        auto lambda = [arg2, thisv](bool larg0) -> void {
+            arg2.call<void>("call", thisv, val(larg0));
+        };
+        this_.renameFile(arg0, arg1, lambda);
+        return false; // NOTE: embind can't overload with different return type
       } else 
       {
         return this_.renameFile(arg0, arg1, arg2.as<std::string>());
@@ -1469,13 +1498,34 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getNewFilename", &FileUtils::getNewFilename)
     .function("listFiles", &FileUtils::listFiles)
     .function("getValueMapFromFile", &FileUtils::getValueMapFromFile)
-    .function("getFileSize", select_overload<void(const std::string&, std::function<void (long)>) const>(&FileUtils::getFileSize))
+    .function("getFileSize", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](long larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.getFileSize(arg0, lambda);
+    }))
     .function("getFileSize", select_overload<long(const std::string&) const>(&FileUtils::getFileSize))
     .function("getValueMapFromData", &FileUtils::getValueMapFromData, allow_raw_pointers())
-    .function("removeDirectory", select_overload<void(const std::string&, std::function<void (bool)>) const>(&FileUtils::removeDirectory))
+    .function("removeDirectory", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.removeDirectory(arg0, lambda);
+    }))
     .function("removeDirectory", select_overload<bool(const std::string&) const>(&FileUtils::removeDirectory))
     .function("setSearchPaths", &FileUtils::setSearchPaths)
-    .function("writeStringToFile", select_overload<void(std::string, const std::string&, std::function<void (bool)>) const>(&FileUtils::writeStringToFile))
+    .function("writeStringToFile", optional_override(
+      [](FileUtils& this_, std::string arg0, const std::string& arg1, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.writeStringToFile(arg0, arg1, lambda);
+    }))
     .function("writeStringToFile", select_overload<bool(const std::string&, const std::string&) const>(&FileUtils::writeStringToFile))
     .function("setSearchResolutionsOrder", &FileUtils::setSearchResolutionsOrder)
     .function("addSearchResolutionsOrder", &FileUtils::addSearchResolutionsOrder)
@@ -1488,23 +1538,58 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         [](FileUtils& this_, const std::string& arg0){
         return this_.addSearchPath(arg0);
       }))
-    .function("writeValueVectorToFile", select_overload<void(std::vector<Value>, const std::string&, std::function<void (bool)>) const>(&FileUtils::writeValueVectorToFile))
+    .function("writeValueVectorToFile", optional_override(
+      [](FileUtils& this_, std::vector<Value> arg0, const std::string& arg1, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.writeValueVectorToFile(arg0, arg1, lambda);
+    }))
     .function("writeValueVectorToFile", select_overload<bool(const std::vector<Value>&, const std::string&) const>(&FileUtils::writeValueVectorToFile))
-    .function("isFileExist", select_overload<void(const std::string&, std::function<void (bool)>) const>(&FileUtils::isFileExist))
+    .function("isFileExist", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.isFileExist(arg0, lambda);
+    }))
     .function("isFileExist", select_overload<bool(const std::string&) const>(&FileUtils::isFileExist))
     .function("purgeCachedEntries", &FileUtils::purgeCachedEntries)
     .function("fullPathFromRelativeFile", &FileUtils::fullPathFromRelativeFile)
     .function("getSuitableFOpen", &FileUtils::getSuitableFOpen)
-    .function("writeValueMapToFile", select_overload<void(std::unordered_map<std::string, Value>, const std::string&, std::function<void (bool)>) const>(&FileUtils::writeValueMapToFile))
+    .function("writeValueMapToFile", optional_override(
+      [](FileUtils& this_, std::unordered_map<std::string, Value> arg0, const std::string& arg1, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.writeValueMapToFile(arg0, arg1, lambda);
+    }))
     .function("writeValueMapToFile", select_overload<bool(const std::unordered_map<std::string, Value>&, const std::string&) const>(&FileUtils::writeValueMapToFile))
     .function("getFileExtension", &FileUtils::getFileExtension)
     .function("setWritablePath", &FileUtils::setWritablePath)
     .function("setPopupNotify", &FileUtils::setPopupNotify)
-    .function("isDirectoryExist", select_overload<void(const std::string&, std::function<void (bool)>) const>(&FileUtils::isDirectoryExist))
+    .function("isDirectoryExist", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.isDirectoryExist(arg0, lambda);
+    }))
     .function("isDirectoryExist", select_overload<bool(const std::string&) const>(&FileUtils::isDirectoryExist))
     .function("setDefaultResourceRootPath", &FileUtils::setDefaultResourceRootPath)
     .function("getSearchResolutionsOrder", &FileUtils::getSearchResolutionsOrder)
-    .function("createDirectory", select_overload<void(const std::string&, std::function<void (bool)>) const>(&FileUtils::createDirectory))
+    .function("createDirectory", optional_override(
+      [](FileUtils& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](bool larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.createDirectory(arg0, lambda);
+    }))
     .function("createDirectory", select_overload<bool(const std::string&) const>(&FileUtils::createDirectory))
     .function("getWritablePath", &FileUtils::getWritablePath)
     .function("listFilesRecursively", &FileUtils::listFilesRecursively, allow_raw_pointers())
@@ -4200,8 +4285,22 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("unbindAllImageAsync", &TextureCache::unbindAllImageAsync)
     .function("removeTextureForKey", &TextureCache::removeTextureForKey)
     .function("removeAllTextures", &TextureCache::removeAllTextures)
-    .function("addImageAsync", select_overload<void(const std::string&, const std::function<void (Texture2D *)>&, const std::string&)>(&TextureCache::addImageAsync))
-    .function("addImageAsync", select_overload<void(const std::string&, const std::function<void (Texture2D *)>&)>(&TextureCache::addImageAsync))
+    .function("addImageAsync", optional_override(
+      [](TextureCache& this_, const std::string& arg0, const val& callback, const std::string& arg2) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](Texture2D * larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.addImageAsync(arg0, lambda, arg2);
+    }))
+    .function("addImageAsync", optional_override(
+      [](TextureCache& this_, const std::string& arg0, const val& callback) {
+      val thisv(&this_);
+      auto lambda = [callback, thisv](Texture2D * larg0) -> void {
+          callback.call<void>("call", thisv, val(larg0));
+      };
+      this_.addImageAsync(arg0, lambda);
+    }))
     .function("getDescription", &TextureCache::getDescription)
     .function("getCachedTextureInfo", &TextureCache::getCachedTextureInfo)
     .function("addImage", select_overload<Texture2D*(Image*, const std::string&)>(&TextureCache::addImage), allow_raw_pointers())
