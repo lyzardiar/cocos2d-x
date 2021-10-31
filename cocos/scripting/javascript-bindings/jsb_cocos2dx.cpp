@@ -1762,7 +1762,19 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
 
   class_<EventController, base<Event>>("cc.EventController")
-        // TODO: overloaded constructor
+    .constructor(optional_override(
+      [](EventController::ControllerEventType type, Controller* controller, const val& arg2)
+      {
+        if(arg2.isTrue() || arg2.isFalse())
+        {
+          return new EventController(type, controller, arg2.as<bool>());
+        }
+        else
+        {
+          return new EventController(type, controller, arg2.as<int>());
+        }
+      }
+    ), allow_raw_pointers())
     .function("getControllerEventType", &EventController::getControllerEventType)
     .function("setConnectStatus", &EventController::setConnectStatus)
     .function("isConnected", &EventController::isConnected)

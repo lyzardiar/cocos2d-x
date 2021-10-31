@@ -60,7 +60,24 @@ COCOS_BINDINGS(jsb_cocos2dx_builder) {
 
 
   class_<CCBReader>("cc._Reader")
-        // TODO: overloaded constructor
+    .constructor<>()
+    .constructor<NodeLoaderLibrary *, CCBMemberVariableAssigner *, CCBSelectorResolver *, NodeLoaderListener *>()
+    .constructor(optional_override([](NodeLoaderLibrary *pNodeLoaderLibrary, CCBMemberVariableAssigner *pCCBMemberVariableAssigner, CCBSelectorResolver *pCCBSelectorResolver) -> CCBReader*{
+      return new CCBReader(pNodeLoaderLibrary, pCCBMemberVariableAssigner, pCCBSelectorResolver);
+    }), allow_raw_pointers())
+    .constructor(optional_override([](NodeLoaderLibrary *pNodeLoaderLibrary, CCBMemberVariableAssigner *pCCBMemberVariableAssigner) -> CCBReader*{
+      return new CCBReader(pNodeLoaderLibrary, pCCBMemberVariableAssigner);
+    }), allow_raw_pointers())
+    .constructor(optional_override([](Ref * arg0) -> CCBReader*{
+      if(dynamic_cast<NodeLoaderLibrary*>(arg0))
+      {
+        return new CCBReader(dynamic_cast<NodeLoaderLibrary*>(arg0));
+      }
+      else
+      {
+        return new CCBReader(dynamic_cast<CCBReader*>(arg0));
+      }
+    }), allow_raw_pointers())
     .function("getAnimationManager", &CCBReader::getAnimationManager, allow_raw_pointers())
     .function("setAnimationManager", &CCBReader::setAnimationManager, allow_raw_pointers())
     .function("addOwnerOutletName", &CCBReader::addOwnerOutletName)

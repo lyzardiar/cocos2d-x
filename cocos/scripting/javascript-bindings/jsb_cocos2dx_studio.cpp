@@ -724,7 +724,8 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
 
 
   class_<ComRender, base<Component>>("ccs.ComRender")
-        // TODO: overloaded constructor
+    .constructor<>()
+    .constructor<cocos2d::Node *, const char *>()
     .function("setNode", &ComRender::setNode, allow_raw_pointers())
     .function("getNode", &ComRender::getNode, allow_raw_pointers())
     .class_function("create", select_overload<cocostudio::ComRender*(cocos2d::Node*, const char*)>(&ComRender::create), allow_raw_pointers())

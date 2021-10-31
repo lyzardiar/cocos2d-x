@@ -23,7 +23,8 @@ COCOS_BINDINGS(jsb_cocos2dx_network) {
     ;
 
   class_<Downloader>("jsb.Downloader")
-        // TODO: overloaded constructor
+    .constructor<>()
+    .constructor<const DownloaderHints& >()
     // TODO: Emscripten cannot automatically call destructor.
     .function("setOnTaskError", &Downloader::setOnTaskError)
     .function("setOnTaskProgress", &Downloader::setOnTaskProgress)

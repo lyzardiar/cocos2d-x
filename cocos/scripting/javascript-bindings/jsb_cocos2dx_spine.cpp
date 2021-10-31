@@ -14,6 +14,7 @@ CC_BINDINGS_ALLOW_RAW_POINTERS(spBone)
 CC_BINDINGS_ALLOW_RAW_POINTERS(spColor)
 CC_BINDINGS_ALLOW_RAW_POINTERS(spAttachment)
 CC_BINDINGS_ALLOW_RAW_POINTERS(spSlotData)
+CC_BINDINGS_ALLOW_RAW_POINTERS(spSkeletonData)
 
 COCOS_BINDINGS(jsb_cocos2dx_spine) {
   // NOTE: we don't cache since we use getter here. Property only got boxed in js object when you read it.
@@ -191,7 +192,36 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     ;
 
   class_<SkeletonRenderer, base<Node>>("sp.Skeleton")
-        // TODO: overloaded constructor
+    .constructor<>()
+    .constructor(optional_override(
+    [](const val& arg0, const val& arg1){
+      if (!arg0.isString())
+      {
+        return new SkeletonRenderer(arg0.as<spSkeletonData*>(), arg1.as<bool>());
+      }
+      else if (arg1.isString())
+      {
+        return new SkeletonRenderer(arg0.as<std::string>(), arg1.as<std::string>());
+      }
+      else 
+      {
+        return new SkeletonRenderer(arg0.as<std::string>(), arg1.as<spAtlas*>(allow_raw_pointers()));
+      }
+    }), allow_raw_pointers())
+    .constructor(optional_override(
+    [](spSkeletonData* skeletonData){
+      return new SkeletonRenderer(skeletonData);
+    }), allow_raw_pointers())
+    .constructor(optional_override(
+      [](const std::string& arg0, const val& arg1, float arg2){
+      if (arg1.isString())
+      {
+        return new SkeletonRenderer(arg0, arg1.as<std::string>(), arg2);
+      } else 
+      {
+        return new SkeletonRenderer(arg0, arg1.as<spAtlas*>(allow_raw_pointers()), arg2);
+      }
+      }), allow_raw_pointers())
     .function("setTimeScale", &SkeletonRenderer::setTimeScale)
     .function("getDebugSlotsEnabled", &SkeletonRenderer::getDebugSlotsEnabled)
     .function("setAttachment", select_overload<bool(const std::string&, const std::string&)>(&SkeletonRenderer::setAttachment), allow_raw_pointers())
@@ -205,12 +235,12 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     .function("initWithJsonFile", optional_override(
         [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1){
           if (!arg1.isString())
-		  {
-			return this_.initWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
-		  } else 
-		  {
-			return this_.initWithJsonFile(arg0, arg1.as<std::string>());
-		  }
+      {
+      return this_.initWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+      } else 
+      {
+      return this_.initWithJsonFile(arg0, arg1.as<std::string>());
+      }
         }))
     .function("initWithJsonFile", optional_override(
       [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1, float arg2){
@@ -226,12 +256,12 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     .function("initWithBinaryFile", optional_override(
         [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1){
           if (!arg1.isString())
-		  {
-			return this_.initWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
-		  } else 
-		  {
-			return this_.initWithBinaryFile(arg0, arg1.as<std::string>());
-		  }
+      {
+      return this_.initWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+      } else 
+      {
+      return this_.initWithBinaryFile(arg0, arg1.as<std::string>());
+      }
         }))
     .function("initWithBinaryFile", optional_override(
       [](SkeletonRenderer& this_, const std::string& arg0, const val& arg1, float arg2){
@@ -277,13 +307,13 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     // end of manual
     .class_function("create", optional_override(
         [](const std::string& arg0, const val& arg1){
-		  if (arg1.isString())
-		  {
-			return SkeletonRenderer::createWithFile(arg0, arg1.as<std::string>());
-		  } else 
-		  {
-			return SkeletonRenderer::createWithFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
-		  }
+      if (arg1.isString())
+      {
+      return SkeletonRenderer::createWithFile(arg0, arg1.as<std::string>());
+      } else 
+      {
+      return SkeletonRenderer::createWithFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+      }
         }), allow_raw_pointers())
     .class_function("create", select_overload<spine::SkeletonRenderer*()>(&SkeletonRenderer::create), allow_raw_pointers())
     .class_function("create", optional_override(
@@ -339,13 +369,13 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
     // end of manual
     .class_function("createWithBinaryFile", optional_override(
         [](const std::string& arg0, const val& arg1){
-		  if (!arg1.isString())
-		  {
-			return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
-		  } else 
-		  {
-			return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<std::string>());
-		  }
+      if (!arg1.isString())
+      {
+      return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+      } else 
+      {
+      return SkeletonAnimation::createWithBinaryFile(arg0, arg1.as<std::string>());
+      }
         }), allow_raw_pointers())
     .class_function("createWithBinaryFile", optional_override(
       [](const std::string& arg0, const val& arg1, float arg2){
@@ -359,13 +389,13 @@ COCOS_BINDINGS(jsb_cocos2dx_spine) {
       }), allow_raw_pointers())
     .class_function("createWithJsonFile", optional_override(
         [](const std::string& arg0, const val& arg1){
-		  if (!arg1.isString())
-		  {
-			return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
-		  } else 
-		  {
-			return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<std::string>());
-		  }
+      if (!arg1.isString())
+      {
+      return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<spAtlas*>(allow_raw_pointers()));
+      } else 
+      {
+      return SkeletonAnimation::createWithJsonFile(arg0, arg1.as<std::string>());
+      }
         }), allow_raw_pointers())
     .class_function("createWithJsonFile", optional_override(
       [](const std::string& arg0, const val& arg1, float arg2){
