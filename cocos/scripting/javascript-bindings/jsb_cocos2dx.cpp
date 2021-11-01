@@ -4463,14 +4463,21 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<SAXParser>("cc.PlistParser")
     .function("init", &SAXParser::init, allow_raw_pointers())
-    // TODO: look at __JSPlistDelegator
-    // .function("parse", &SAXParser::parse, allow_raw_pointers())
+    // from cocos2d_specifics
+    .function("parse", optional_override(
+      [](const std::string& arg0){
+        __JSPlistDelegator* delegator = __JSPlistDelegator::getInstance();
+        std::string parsedStr = delegator->parseText(arg0);
+        std::replace(parsedStr.begin(), parsedStr.end(), '\n', ' ');
+        return val::global("JSON").call<val>("parse", val(parsedStr));
+      }))
     .class_function("getInstance", optional_override(
       [](){
-        static auto instance = new (std::nothrow)SAXParser();
-        return instance;
+        __JSPlistDelegator* delegator = __JSPlistDelegator::getInstance();
+        SAXParser* parser = delegator->getParser();
+        return parser;
       }), allow_raw_pointers())
-    // end of TODO
+    // end of cocos2d_specifics
     .property("_className",  optional_override([](const SAXParser& _) -> std::string {return "SAXParser";}))    
     ;
 
@@ -5276,6 +5283,128 @@ COCOS_BINDINGS(jsb_cocos2dx_transition) {
     .allow_subclass<wrapper<TransitionProgressOutIn>>("cc.TransitionProgressOutIn._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
+}
+
+COCOS_BINDINGS(cocos2d_specifics) {
+  class_<PolygonInfo>("jsb.PolygonInfo")
+    .constructor(&cc_bindings_constructor<PolygonInfo>, allow_raw_pointers())
+    .function("getArea", &PolygonInfo::getArea)
+    .function("getTrianglesCount", &PolygonInfo::getTrianglesCount)
+    .function("getTriaglesCount", &PolygonInfo::getTrianglesCount)
+    .function("getVertCount", &PolygonInfo::getVertCount)
+    .property("rect",  &PolygonInfo::getRect,  &PolygonInfo::setRect)
+    .property("filename",  &PolygonInfo::getFilename,  &PolygonInfo::setFilename)
+    ;
+
+  class_<AutoPolygon>("jsb.AutoPolygon")
+    .constructor(&cc_bindings_constructor<AutoPolygon, const std::string&>, allow_raw_pointers())
+    .class_function("generatePolygon", &AutoPolygon::generatePolygon)
+    .class_function("generatePolygon", optional_override(
+      [](const std::string& filename, const Rect& rect, float epsilon)
+      {
+        return AutoPolygon::generatePolygon(filename, rect, epsilon);
+      }
+    ))
+    .class_function("generatePolygon", optional_override(
+      [](const std::string& filename, const Rect& rect)
+      {
+        return AutoPolygon::generatePolygon(filename, rect);
+      }
+    ))
+    .class_function("generatePolygon", optional_override(
+      [](const std::string& filename)
+      {
+        return AutoPolygon::generatePolygon(filename);
+      }
+    ))
+    ;
+}
+
+
+cocos2d::SAXParser* __JSPlistDelegator::getParser() {
+    return &_parser;
+}
+
+std::string __JSPlistDelegator::parse(const std::string& path) {
+    _result.clear();
+
+    SAXParser parser;
+    if (false != parser.init("UTF-8") )
+    {
+        parser.setDelegator(this);
+        parser.parse(FileUtils::getInstance()->fullPathForFilename(path));
+    }
+
+    return _result;
+}
+
+__JSPlistDelegator::~__JSPlistDelegator(){
+    CCLOGINFO("deallocing __JSSAXDelegator: %p", this);
+}
+
+std::string __JSPlistDelegator::parseText(const std::string& text){
+     _result.clear();
+
+    SAXParser parser;
+    if (false != parser.init("UTF-8") )
+    {
+        parser.setDelegator(this);
+        parser.parse(text.c_str(), text.size());
+    }
+
+    return _result;
+}
+
+void __JSPlistDelegator::startElement(void *ctx, const char *name, const char **atts) {
+    _isStoringCharacters = true;
+    _currentValue.clear();
+
+    std::string elementName = (char*)name;
+
+    int end = (int)_result.size() - 1;
+    if(end >= 0 && _result[end] != '{' && _result[end] != '[' && _result[end] != ':') {
+        _result += ",";
+    }
+
+    if (elementName == "dict") {
+        _result += "{";
+    }
+    else if (elementName == "array") {
+        _result += "[";
+    }
+}
+
+void __JSPlistDelegator::endElement(void *ctx, const char *name) {
+    _isStoringCharacters = false;
+    std::string elementName = (char*)name;
+
+    if (elementName == "dict") {
+        _result += "}";
+    }
+    else if (elementName == "array") {
+        _result += "]";
+    }
+    else if (elementName == "key") {
+        _result += "\"" + _currentValue + "\":";
+    }
+    else if (elementName == "string") {
+        _result += "\"" + _currentValue + "\"";
+    }
+    else if (elementName == "false" || elementName == "true") {
+        _result += elementName;
+    }
+    else if (elementName == "real" || elementName == "integer") {
+        _result += _currentValue;
+    }
+}
+
+void __JSPlistDelegator::textHandler(void* /*ctx*/, const char *ch, size_t len) {
+    std::string text((char*)ch, 0, len);
+
+    if (_isStoringCharacters)
+    {
+        _currentValue += text;
+    }
 }
 
 CC_BINDINGS_BYPASS_DESTRUCTOR(GLProgramState);
