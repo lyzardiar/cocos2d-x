@@ -121,7 +121,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 #if(CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
-    auto engine = cocos2d::bindings::CCScriptEngine::getInstance();
+    auto engine = cocos2d::bindings::ScriptEngine::getInstance();
     ScriptEngineManager::getInstance()->setScriptEngine(engine);
 
     EM_ASM({

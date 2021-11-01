@@ -28,31 +28,33 @@
 #define __CC_SCRIPT_ENGINE_H__
 
 #include "base/CCScriptSupport.h"
+#include "base/CCEventMouse.h"
+#include "ui/UIWidget.h"
 #include "CCScriptBindings.h"
 
 NS_CC_BINDINGS_BEGIN
 
-class CC_DLL CCScriptEngine : public ScriptEngineProtocol
+class CC_DLL ScriptEngine : public ScriptEngineProtocol
 {
 protected:
     /** 
-    * Constructor of CCScriptEngine.
+    * Constructor of ScriptEngine.
     *
     * @lua NA
     * @js NA
     */
-    CCScriptEngine();
+    ScriptEngine();
     
     /**
-    * Destructor of CCScriptEngine.
+    * Destructor of ScriptEngine.
     *
     * @lua NA
     * @js NA
     */
-    virtual ~CCScriptEngine() {}
+    virtual ~ScriptEngine() {}
     
 public:
-    static CCScriptEngine* getInstance();
+    static ScriptEngine* getInstance();
 
     /**
      * Gets the script type, for ScriptingCore
@@ -127,8 +129,15 @@ public:
 
     virtual void setCalledFromScript(bool callFromScript) override { _callFromScript = callFromScript; };
     virtual bool isCalledFromScript() override { return _callFromScript; };
-private:
+
     int handleNodeEvent(void* data);
+    bool handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event, bool& jsvalRet);
+    bool handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event);
+    bool handleTouchesEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    bool handleMouseEvent(void* nativeObj, cocos2d::EventMouse::MouseEventType eventType, cocos2d::Event* event);
+    bool handleKeyboardEvent(void* nativeObj, cocos2d::EventKeyboard::KeyCode keyCode, bool isPressed, cocos2d::Event* event);
+    bool handleFocusEvent(void* nativeObj, cocos2d::ui::Widget* widgetLoseFocus, cocos2d::ui::Widget* widgetGetFocus);
+private:
     bool _callFromScript;
 };
 

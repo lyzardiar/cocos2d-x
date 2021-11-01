@@ -26,6 +26,7 @@ CC_BINDINGS_ALLOW_RAW_POINTERS(Ref)
 CC_BINDINGS_ALLOW_RAW_POINTERS(GLProgram)
 CC_BINDINGS_ALLOW_RAW_POINTERS(FileUtils)
 CC_BINDINGS_ALLOW_RAW_POINTERS(TextureCache)
+CC_BINDINGS_ALLOW_RAW_POINTERS(EventDispatcher)
 
 COCOS_BINDINGS(jsb_cocos2dx) {
 
@@ -359,11 +360,11 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getActionManager", select_overload<const ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
     // TODO: incomplete bindings come from cocos2d_specifics.cpp
     .function("onEnter", optional_override([](Node& this_) {
-        CCScriptEngine::getInstance()->setCalledFromScript(true);
+        ScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnter();
     }))
     .function("onEnterTransitionDidFinish", optional_override([](Node& this_) {
-        CCScriptEngine::getInstance()->setCalledFromScript(true);
+        ScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnterTransitionDidFinish();
     }))
     .property("x", &Node::getPositionX, &Node::setPositionX)
@@ -1653,6 +1654,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("removeCustomListeners", &EventDispatcher::removeCustomEventListeners)
     .function("removeListener", &EventDispatcher::removeEventListener, allow_raw_pointers())
     .function("isEnabled", &EventDispatcher::isEnabled)
+    // from manual
+    .function("addCustomEventListener", optional_override(
+      [](EventDispatcher& this_, const string& arg0, const val& callback)
+      {
+        val thisv(&this_);
+        auto lambda = [callback, thisv](cocos2d::EventCustom* event) -> void {
+            callback.call<void>("call", thisv, val(event));
+        };
+        return this_.addCustomEventListener(arg0, lambda);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventDispatcher& _) -> std::string {return "EventDispatcher";}))    
     ;
 
@@ -1666,12 +1679,36 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventListenerAcceleration, base<EventListener>>("cc.EventListenerAcceleration")
     .constructor(&cc_bindings_constructor<EventListenerAcceleration>, allow_raw_pointers())
     .function("init", &EventListenerAcceleration::init)
+    // from manual
+    .class_function("create", optional_override(
+      [](const val& callback)
+      {
+        val thisv(val::global("cc")["EventListenerAcceleration"]);
+        auto lambda = [callback, thisv](Acceleration* acc, Event* event) -> void {
+            callback.call<void>("call", thisv, val(acc), val(event));
+        };
+        return EventListenerAcceleration::create(lambda);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerAcceleration& _) -> std::string {return "EventListenerAcceleration";}))    
     ;
 
 
   class_<EventListenerCustom, base<EventListener>>("cc.EventListenerCustom")
     .constructor(&cc_bindings_constructor<EventListenerCustom>, allow_raw_pointers())
+    // from manual
+    .class_function("create", optional_override(
+      [](const std::string& arg0, const val& callback)
+      {
+        val thisv(val::global("cc")["EventListenerCustom"]);
+        auto lambda = [callback, thisv](EventCustom* event) -> void {
+            callback.call<void>("call", thisv, val(event));
+        };
+        return EventListenerCustom::create(arg0, lambda);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerCustom& _) -> std::string {return "EventListenerCustom";}))    
     ;
 
@@ -1679,6 +1716,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventListenerFocus, base<EventListener>>("cc.EventListenerFocus")
     .constructor(&cc_bindings_constructor<EventListenerFocus>, allow_raw_pointers())
     .function("init", &EventListenerFocus::init)
+    // from manual
+    .class_function("create", optional_override(
+      []()
+      {
+        auto ret = EventListenerFocus::create();
+        ret->onFocusChanged = [ret](ui::Widget* widgetLoseFocus, ui::Widget* widgetGetFocus){
+            ScriptEngine::getInstance()->handleFocusEvent(ret, widgetLoseFocus, widgetGetFocus);
+        };
+        return ret;
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerFocus& _) -> std::string {return "EventListenerFocus";}))    
     ;
 
@@ -1686,6 +1735,24 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventListenerKeyboard, base<EventListener>>("cc.EventListenerKeyboard")
     .constructor(&cc_bindings_constructor<EventListenerKeyboard>, allow_raw_pointers())
     .function("init", &EventListenerKeyboard::init)
+    // from manual
+    .class_function("create", optional_override(
+      []()
+      {
+        auto ret = EventListenerKeyboard::create();
+
+        ret->onKeyPressed = [ret](EventKeyboard::KeyCode keyCode, Event* event) {
+            ScriptEngine::getInstance()->handleKeyboardEvent(ret, keyCode, true, event);
+        };
+
+        ret->onKeyReleased = [ret](EventKeyboard::KeyCode keyCode, Event* event) {
+            ScriptEngine::getInstance()->handleKeyboardEvent(ret, keyCode, false, event);
+        };
+
+        return ret;
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerKeyboard& _) -> std::string {return "EventListenerKeyboard";}))    
     ;
 
@@ -1714,28 +1781,30 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventListenerMouse, base<EventListener>>("cc.EventListenerMouse")
     .constructor(&cc_bindings_constructor<EventListenerMouse>, allow_raw_pointers())
     .function("init", &EventListenerMouse::init)
+    // from manual
     .class_function("create", optional_override(
     [](){
-      auto ret = val::global("cc")["EventListenerMouse"].new_();
-      auto listener = ret.as<EventListenerMouse*>(allow_raw_pointers());
-      listener->onMouseDown = [ret](Event* event) {
-        ret["onMouseDown"](val(event));
+      auto ret = EventListenerMouse::create();
+
+      ret->onMouseDown = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_DOWN, event);
       };
 
-      listener->onMouseUp = [ret](Event* event) {
-        ret["onMouseUp"](val(event));
+      ret->onMouseUp = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_UP, event);
       };
 
-      listener->onMouseMove = [ret](Event* event) {
-        ret["onMouseMove"](val(event));
+      ret->onMouseMove = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_MOVE, event);
       };
 
-      listener->onMouseScroll = [ret](Event* event) {
-        ret["onMouseScroll"](val(event));
+      ret->onMouseScroll = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_SCROLL, event);
       };
 
       return ret;
     }), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerMouse& _) -> std::string {return "EventListenerMouse";}))    
     ;
 
@@ -1750,6 +1819,34 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isSwallowTouches", &EventListenerTouchOneByOne::isSwallowTouches)
     .function("setSwallowTouches", &EventListenerTouchOneByOne::setSwallowTouches)
     .function("init", &EventListenerTouchOneByOne::init)
+    // from manual
+    .class_function("create", optional_override(
+      []()
+      {
+        auto ret = EventListenerTouchOneByOne::create();
+
+        ret->onTouchBegan = [ret](Touch* touch, Event* event) -> bool {
+          bool lret;
+          ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::BEGAN, touch, event, lret);
+          return lret;
+        };
+
+        ret->onTouchMoved = [ret](Touch* touch, Event* event) {
+            ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::MOVED, touch, event);
+        };
+
+        ret->onTouchEnded = [ret](Touch* touch, Event* event) {
+            ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::ENDED, touch, event);
+        };
+
+        ret->onTouchCancelled = [ret](Touch* touch, Event* event) {
+            ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::CANCELLED, touch, event);
+        };
+
+        return ret;
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerTouchOneByOne& _) -> std::string {return "EventListenerTouchOneByOne";}))    
     ;
 
@@ -1757,6 +1854,32 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventListenerTouchAllAtOnce, base<EventListener>>("cc.EventListenerTouchAllAtOnce")
     .constructor(&cc_bindings_constructor<EventListenerTouchAllAtOnce>, allow_raw_pointers())
     .function("init", &EventListenerTouchAllAtOnce::init)
+    // from manual
+    .class_function("create", optional_override(
+      []()
+      {
+        auto ret = EventListenerTouchAllAtOnce::create();
+
+        ret->onTouchesBegan = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::BEGAN, touches, event);
+        };
+
+        ret->onTouchesMoved = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::MOVED, touches, event);
+        };
+
+        ret->onTouchesEnded = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::ENDED, touches, event);
+        };
+
+        ret->onTouchesCancelled = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::CANCELLED, touches, event);
+        };
+
+        return ret;
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const EventListenerTouchAllAtOnce& _) -> std::string {return "EventListenerTouchAllAtOnce";}))    
     ;
 

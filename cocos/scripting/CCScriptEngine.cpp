@@ -30,37 +30,107 @@
 
 NS_CC_BINDINGS_BEGIN
 
-CCScriptEngine::CCScriptEngine()
+static std::string getTouchesFuncName(EventTouch::EventCode eventCode)
+{
+    std::string funcName;
+    switch(eventCode)
+    {
+        case EventTouch::EventCode::BEGAN:
+            funcName = "onTouchesBegan";
+            break;
+        case EventTouch::EventCode::ENDED:
+            funcName = "onTouchesEnded";
+            break;
+        case EventTouch::EventCode::MOVED:
+            funcName = "onTouchesMoved";
+            break;
+        case EventTouch::EventCode::CANCELLED:
+            funcName = "onTouchesCancelled";
+            break;
+        default:
+            CCASSERT(false, "Invalid event code!");
+            break;
+    }
+    return funcName;
+}
+
+static std::string getTouchFuncName(EventTouch::EventCode eventCode)
+{
+    std::string funcName;
+    switch(eventCode) {
+        case EventTouch::EventCode::BEGAN:
+            funcName = "onTouchBegan";
+            break;
+        case EventTouch::EventCode::ENDED:
+            funcName = "onTouchEnded";
+            break;
+        case EventTouch::EventCode::MOVED:
+            funcName = "onTouchMoved";
+            break;
+        case EventTouch::EventCode::CANCELLED:
+            funcName = "onTouchCancelled";
+            break;
+        default:
+            CCASSERT(false, "Invalid event code!");
+    }
+
+    return funcName;
+}
+
+static std::string getMouseFuncName(EventMouse::MouseEventType eventType)
+{
+    std::string funcName;
+    switch(eventType) {
+        case EventMouse::MouseEventType::MOUSE_DOWN:
+            funcName = "onMouseDown";
+            break;
+        case EventMouse::MouseEventType::MOUSE_UP:
+            funcName = "onMouseUp";
+            break;
+        case EventMouse::MouseEventType::MOUSE_MOVE:
+            funcName = "onMouseMove";
+            break;
+        case EventMouse::MouseEventType::MOUSE_SCROLL:
+            funcName = "onMouseScroll";
+            break;
+        default:
+            CCASSERT(false, "Invalid event code!");
+    }
+
+    return funcName;
+}
+
+ScriptEngine::ScriptEngine()
 :_callFromScript(false)
 {
 }
     
-CCScriptEngine* CCScriptEngine::getInstance()
+ScriptEngine* ScriptEngine::getInstance()
 {
-    static CCScriptEngine* instance = nullptr;
+    static ScriptEngine* instance = nullptr;
     if (instance == nullptr)
     {
-        instance = new (std::nothrow) CCScriptEngine();
+        instance = new (std::nothrow) ScriptEngine();
     }
     return instance;
 }
 
-int CCScriptEngine::executeString(const char* codes)
+int ScriptEngine::executeString(const char* codes)
 {
     return 0;
 }
 
-int CCScriptEngine::executeScriptFile(const char* filename)
+int ScriptEngine::executeScriptFile(const char* filename)
 {
     return 0;
 }
 
-int CCScriptEngine::executeGlobalFunction(const char* functionName)
+int ScriptEngine::executeGlobalFunction(const char* functionName)
 {
     return 0;
 }
 
-int CCScriptEngine::sendEvent(ScriptEvent* evt)
+int ScriptEngine::sendEvent(ScriptEvent* evt)
 {
     if (NULL == evt)
         return 0;
@@ -82,8 +152,16 @@ int CCScriptEngine::sendEvent(ScriptEvent* evt)
         case kMenuClickedEvent:
             break;
         case kTouchEvent:
+            {
+                TouchScriptData* data = (TouchScriptData*)evt->data;
+                return handleTouchEvent(data->nativeObject, data->actionType, data->touch, data->event);
+            }
             break;
         case kTouchesEvent:
+            {
+                TouchesScriptData* data = (TouchesScriptData*)evt->data;
+                return handleTouchesEvent(data->nativeObject, data->actionType, data->touches, data->event);
+            }
             break;
         case kComponentEvent:
             break;
@@ -96,7 +174,7 @@ int CCScriptEngine::sendEvent(ScriptEvent* evt)
 }
 
 
-int CCScriptEngine::handleNodeEvent(void* data)
+int ScriptEngine::handleNodeEvent(void* data)
 {
     if (NULL == data)
         return 0;
@@ -138,17 +216,99 @@ int CCScriptEngine::handleNodeEvent(void* data)
     }
 }
 
-bool CCScriptEngine::handleAssert(const char *msg)
+bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event, bool& ret)
+{
+    std::string funcName = getTouchFuncName(eventCode);
+    
+    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+
+    if (handler.isUndefined())
+        return false;
+
+    ret = handler.call<bool>(funcName.c_str(), val(touch), val(event));
+    return true;
+}
+
+bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event)
+{
+    std::string funcName = getTouchFuncName(eventCode);
+    
+    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+
+    if (handler.isUndefined())
+        return false;
+
+    handler.call<void>(funcName.c_str(), val(touch), val(event));
+    return true;
+}
+
+bool ScriptEngine::handleTouchesEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event)
+{
+    std::string funcName = getTouchesFuncName(eventCode);
+    
+    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+
+    if (handler.isUndefined())
+        return false;
+
+    handler.call<void>(funcName.c_str(), val(touches), val(event));
+    return true;
+}
+
+bool ScriptEngine::handleMouseEvent(void* nativeObj, cocos2d::EventMouse::MouseEventType eventType, cocos2d::Event* event)
+{
+    std::string funcName = getMouseFuncName(eventType);
+    
+    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+
+    if (handler.isUndefined())
+        return false;
+
+    handler.call<void>(funcName.c_str(), val(event));
+    return true;
+}
+
+bool ScriptEngine::handleKeyboardEvent(void* nativeObj, cocos2d::EventKeyboard::KeyCode keyCode, bool isPressed, cocos2d::Event* event)
+{
+    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+
+    if (handler.isUndefined())
+        return false;
+
+    if (isPressed)
+    {
+        handler.call<void>("_onKeyPressed", val(keyCode), val(event));
+    }
+    else
+    {
+        handler.call<void>("_onKeyReleased", val(keyCode), val(event));
+    }
+    return true;
+}
+
+
+bool ScriptEngine::handleFocusEvent(void* nativeObj, cocos2d::ui::Widget* widgetLoseFocus, cocos2d::ui::Widget* widgetGetFocus)
+{
+    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+
+    if (handler.isUndefined())
+        return false;
+
+    handler.call<void>("onFocusChanged", val(widgetLoseFocus), val(widgetGetFocus));
+    return true;
+}
+
+bool ScriptEngine::handleAssert(const char *msg)
 {
     return false;
 }
 
-bool CCScriptEngine::parseConfig(ConfigType type, const std::string& str)
+bool ScriptEngine::parseConfig(ConfigType type, const std::string& str)
 {
     return false;
 }
 
-void CCScriptEngine::removeScriptObjectByObject(Ref* pObj)
+void ScriptEngine::removeScriptObjectByObject(Ref* pObj)
 {
     emscripten::val::global("Module")["cocosRefs"].delete_((int)pObj);
 }
