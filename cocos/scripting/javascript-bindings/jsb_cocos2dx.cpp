@@ -357,6 +357,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isCascadeColorEnabled", &Node::isCascadeColorEnabled)
     .function("setRotationQuat", &Node::setRotationQuat)
     .function("stopAction", &Node::stopAction, allow_raw_pointers())
+    // attr implementation from jsb_property_api.js 
+    .function("attr", optional_override([](const val& thisv, const val& attr) {
+        val::global("Object").call<void>("assign", thisv, attr);
+    }))
     .function("getActionManager", select_overload<const ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
     // TODO: incomplete bindings come from cocos2d_specifics.cpp
     .function("onEnter", optional_override([](Node& this_) {
