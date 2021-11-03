@@ -30,6 +30,19 @@ CC_BINDINGS_ALLOW_RAW_POINTERS(EventDispatcher)
 
 COCOS_BINDINGS(jsb_cocos2dx) {
 
+  value_object<TTFConfig>("_.TTFConfig")
+    .field("fontSize", &TTFConfig::fontSize)
+    .field("outlineSize", &TTFConfig::outlineSize)
+    .field("glyphs", &TTFConfig::glyphs)
+    .field("distanceFieldEnable", &TTFConfig::distanceFieldEnabled)
+    .field("customGlyphs", 
+      optional_override([](const TTFConfig& this_) -> std::string {return this_.customGlyphs;}), 
+      optional_override([](TTFConfig& this_, const val& arg0) {CCLOG("TTFConfig.customGlyphs is read-only");}))
+    .field("fontFilePath", 
+      optional_override([](const TTFConfig& this_) -> std::string {return this_.fontFilePath;}), 
+      optional_override([](TTFConfig& this_, const val& arg0) {CCLOG("TTFConfig.fontFilePath is read-only");}))
+    ;
+    
   class_<Ref>("cc.Ref");
   
   class_<Texture2D>("cc.Texture2D")
@@ -3012,6 +3025,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       [](const std::string& arg0, const std::string& arg1, float arg2, const Size& arg3, TextHAlignment arg4){
         return Label::createWithSystemFont(arg0, arg1, arg2, arg3, arg4);
       }), allow_raw_pointers())
+    // from cocos_specific
+    .class_function("createWithTTF", select_overload<Label*(const TTFConfig&, const std::string&, TextHAlignment, int)>(&Label::createWithTTF), allow_raw_pointers())
+    .class_function("createWithTTF", optional_override(
+      [](const TTFConfig& arg0, const std::string& arg1, TextHAlignment arg2){
+        return Label::createWithTTF(arg0, arg1, arg2);
+      }), allow_raw_pointers())
+    .class_function("createWithTTF", optional_override(
+      [](const TTFConfig& arg0, const std::string& arg1){
+        return Label::createWithTTF(arg0, arg1);
+      }), allow_raw_pointers())
+    .function("setTTFConfig", &Label::setTTFConfig)
+    // end of cocos_specific
     .property("_className",  optional_override([](const Label& _) -> std::string {return "Label";}))    
     .allow_subclass<wrapper<Label>>("cc.Label._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -3545,6 +3570,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setTarget", &NodeGrid::setTarget, allow_raw_pointers())
     .function("getGrid", select_overload<GridBase*()>(&NodeGrid::getGrid), allow_raw_pointers())
     .function("getGridRect", &NodeGrid::getGridRect)
+    // from cocos_specific
+    .function("setGrid", &NodeGrid::setGrid, allow_raw_pointers())
+    // end of cocos_specific
     .property("grid", optional_override([](const NodeGrid& this_)
       {
         return const_cast<GridBase*>(this_.getGrid());
