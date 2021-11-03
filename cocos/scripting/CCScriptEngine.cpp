@@ -25,8 +25,13 @@
  ****************************************************************************/
 
 #include "CCScriptEngine.h"
+#include "base/CCRef.h"
 #include "2d/CCNode.h"
-#include <emscripten.h>
+
+
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocos2d::Ref);
+CC_BINDINGS_ALLOW_RAW_POINTERS(cocos2d::Node);
+
 
 NS_CC_BINDINGS_BEGIN
 
@@ -183,7 +188,7 @@ int ScriptEngine::handleNodeEvent(void* data)
     if (NULL == basicScriptData->nativeObject || NULL == basicScriptData->value)
         return 0;
     
-    val handler = emscripten::val::global("Module")["cocosRefs"][(int)basicScriptData->nativeObject];
+    val handler(static_cast<Node*>(basicScriptData->nativeObject));
     
     if (handler.isUndefined())
         return 0;
@@ -220,7 +225,7 @@ bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventC
 {
     std::string funcName = getTouchFuncName(eventCode);
     
-    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+    val handler(static_cast<Ref*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
@@ -233,7 +238,7 @@ bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventC
 {
     std::string funcName = getTouchFuncName(eventCode);
     
-    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+    val handler(static_cast<Ref*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
@@ -246,7 +251,7 @@ bool ScriptEngine::handleTouchesEvent(void* nativeObj, cocos2d::EventTouch::Even
 {
     std::string funcName = getTouchesFuncName(eventCode);
     
-    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+    val handler(static_cast<Ref*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
@@ -259,7 +264,7 @@ bool ScriptEngine::handleMouseEvent(void* nativeObj, cocos2d::EventMouse::MouseE
 {
     std::string funcName = getMouseFuncName(eventType);
     
-    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+    val handler(static_cast<Ref*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
@@ -270,7 +275,7 @@ bool ScriptEngine::handleMouseEvent(void* nativeObj, cocos2d::EventMouse::MouseE
 
 bool ScriptEngine::handleKeyboardEvent(void* nativeObj, cocos2d::EventKeyboard::KeyCode keyCode, bool isPressed, cocos2d::Event* event)
 {
-    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+    val handler(static_cast<Ref*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
@@ -289,7 +294,7 @@ bool ScriptEngine::handleKeyboardEvent(void* nativeObj, cocos2d::EventKeyboard::
 
 bool ScriptEngine::handleFocusEvent(void* nativeObj, cocos2d::ui::Widget* widgetLoseFocus, cocos2d::ui::Widget* widgetGetFocus)
 {
-    const val& handler = emscripten::val::global("Module")["cocosRefs"][(int)nativeObj];
+    val handler(static_cast<Ref*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
@@ -310,7 +315,6 @@ bool ScriptEngine::parseConfig(ConfigType type, const std::string& str)
 
 void ScriptEngine::removeScriptObjectByObject(Ref* pObj)
 {
-    emscripten::val::global("Module")["cocosRefs"].delete_((int)pObj);
 }
 
 NS_CC_BINDINGS_END

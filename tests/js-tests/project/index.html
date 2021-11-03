@@ -255,7 +255,6 @@
             }
           }
         },
-        cocosRefs: {}, // Cached native Ref->jsobject map
         cocosInitialized: async function(mainSrc) {
           // Workaround to load script on HTML5/WebAssembly
           var loadScript = window.__loadScript = function(url) {
@@ -298,8 +297,6 @@
                 let subClazz = clazz.extend(key, {})
                 let ctor = function() {
                   subClazz.apply(this); // Create native object
-                  // TODO: Ref only? we cann't tell this is Ref?
-                  Module.cocosRefs[this.$$.ptr] = this;
                   // TODO: missing autorelease
                   ctor.prototype._ctor && ctor.prototype._ctor.apply(this, arguments)
                 }
