@@ -184,9 +184,12 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("isHighlighted", &Control::isHighlighted)
     // from manaul
     .function("addTargetWithActionForControlEvents", optional_override(
-      [](Control& this_, const val& target, const val& action, Control::EventType controlEvents)
+      [](const val& thisv, const val& target, const val& action, Control::EventType controlEvents)
       {
         SelectorWrapper* wrapper = SelectorWrapper::create(action, target);
+        wrapper->_1 = thisv;
+
+        Control& this_ = thisv.as<Control&>();
         this_.addTargetWithActionForControlEvents(wrapper, cccontrol_selector(SelectorWrapper::cccontrol_callback), controlEvents);
       }
     ))
@@ -686,11 +689,11 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .constructor(&cc_bindings_constructor<EventListenerAssetsManagerEx>, allow_raw_pointers())
     // from manual 
     .function("init", optional_override(
-      [](EventListenerAssetsManagerEx& this_, AssetsManagerEx *arg0, const val& callback)
+      [](const val& thisv, AssetsManagerEx *arg0, const val& callback)
       {
-        val thisv(cached_val(&this_));
+        EventListenerAssetsManagerEx& this_ = thisv.as<EventListenerAssetsManagerEx&>();
         return this_.init(arg0, [callback, thisv](EventAssetsManagerEx* larg0) {
-          callback.call<void>("call", thisv, cached_val(larg0));
+          callback.call<void>("call", thisv, val(larg0));
         });
       }
     ), allow_raw_pointers())
@@ -699,7 +702,7 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
       {
         val thisv(val::global("cc")["EventListenerAssetsManager"]);
         return EventListenerAssetsManagerEx::create(arg0, [callback, thisv](EventAssetsManagerEx* larg0) {
-          callback.call<void>("call", thisv, cached_val(larg0));
+          callback.call<void>("call", thisv, val(larg0));
         });
       }
     ), allow_raw_pointers())

@@ -725,8 +725,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<GLProgramState>("cc.GLProgramState")
     .function("setUniformCallback", optional_override(
-      [](GLProgramState& this_, const val& arg0, const val& callback){
-      val thisv(cached_val(&this_));
+      [](const val& thisv, const val& arg0, const val& callback){
+      GLProgramState& this_ = thisv.as<GLProgramState&>();
       auto lambda = [callback, thisv](cocos2d::GLProgram * larg0, cocos2d::Uniform * larg1) -> void {
           callback.call<void>("call", thisv, val(larg0), val(larg1));
       };

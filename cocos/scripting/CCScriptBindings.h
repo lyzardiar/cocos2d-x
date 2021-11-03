@@ -57,11 +57,6 @@ namespace cocos2d {
 
     using val = emscripten::val;
 
-    inline val cached_val(Ref * ref) {
-        auto v = emscripten::val::global("Module")["cocosRefs"][(int)ref];
-        return v.isUndefined() ? val(ref) : v;
-    }
-
     template<typename BaseClass>
       using base = emscripten::base<BaseClass>;
 
@@ -117,18 +112,15 @@ namespace cocos2d {
         val v_;
     };
 
+    // Accommodate old-school function callbacks, use std::function instead
     class SelectorWrapper: public Ref
     {
     public:
         SelectorWrapper(const val& callback, const val& thisv):
         callback_(callback),
-        thisv_(thisv)
-        {
-        }
-
-        SelectorWrapper(const val& callback):
-        callback_(callback),
-        thisv_(val::undefined())
+        thisv_(thisv),
+        _1(val::undefined()),
+        _2(val::undefined())
         {
         }
 
@@ -141,7 +133,7 @@ namespace cocos2d {
 
         static SelectorWrapper* create(const val& callback)
         {
-            SelectorWrapper* wrapper = new (std::nothrow)SelectorWrapper(callback);
+            SelectorWrapper* wrapper = new (std::nothrow)SelectorWrapper(callback, val::undefined());
             wrapper->autorelease();
             return wrapper;
         }
@@ -151,18 +143,18 @@ namespace cocos2d {
         */
         void callFuncND_callback(Node* arg0, void* arg1)
         {
-            callback_.call<void>("call", thisv_, cached_val(arg0), ((ValHolder*)arg1)->getVal());
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1, _2.isUndefined() ? ((ValHolder*)arg1)->getVal() : _2);
             delete (ValHolder*)arg1;
         }
 
         void callFuncN_callback(Node* arg0)
         {
-            callback_.call<void>("call", thisv_, cached_val(arg0));
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
         }
 
         void callFuncO_callback(Ref* arg0)
         {
-            callback_.call<void>("call", thisv_, cached_val(arg0));
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
         }
 
         void callFunc_callback()
@@ -172,19 +164,21 @@ namespace cocos2d {
 
         void menuHandler_callback(Ref* arg0)
         {
-            callback_.call<void>("call", thisv_, cached_val(arg0));
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
         }
 
         void schedule_callback(float arg0)
         {
-            callback_.call<void>("call", thisv_, val(arg0));
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
         }
 
         void cccontrol_callback(Ref* arg0, extension::Control::EventType arg1)
         {
-            callback_.call<void>("call", thisv_, cached_val(arg0), val(arg1));
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1, _2.isUndefined() ? val(arg1) : _2);
         }
 
+        val _1;
+        val _2;
     private:
         val callback_;
         val thisv_;

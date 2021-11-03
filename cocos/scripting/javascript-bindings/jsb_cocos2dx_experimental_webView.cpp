@@ -39,36 +39,36 @@ COCOS_BINDINGS(jsb_cocos2dx_experimental_webView) {
     .function("setJavascriptInterfaceScheme", &WebView::setJavascriptInterfaceScheme)
     .function("getOnDidFinishLoading", &WebView::getOnDidFinishLoading)
     // from manual
-    .function("setOnShouldStartLoading", optional_override([](WebView& this_, const val& func) 
+    .function("setOnShouldStartLoading", optional_override([](const val& thisv, const val& func) 
     {
-      const std::val& thisv = cached_val(&this_);
+      WebView& this_ = thisv.as<WebView&>();
       this_.setOnShouldStartLoading([thisv, func](WebView *sender, const std::string &url) -> void
       {
-        func.call<void>("call", thisv, cached_val(sender), val(url));
+        func.call<void>("call", thisv, thisv, val(url));
       });
     }))
-    .function("setOnDidFinishLoading", optional_override([](WebView& this_, const val& func) 
+    .function("setOnDidFinishLoading", optional_override([](const val& thisv, const val& func) 
     {
-      const std::val& thisv = cached_val(&this_);
+      WebView& this_ = thisv.as<WebView&>();
       this_.setOnDidFinishLoading([thisv, func](WebView *sender, const std::string &url) -> void
       {
-        func.call<void>("call", thisv, cached_val(sender), val(url));
+        func.call<void>("call", thisv, thisv, val(url));
       });
     }))
-    .function("setOnDidFailLoading", optional_override([](WebView& this_, const val& func) 
+    .function("setOnDidFailLoading", optional_override([](const val& thisv, const val& func) 
     {
-      const std::val& thisv = cached_val(&this_);
+      WebView& this_ = thisv.as<WebView&>();
       this_.setOnDidFailLoading([thisv, func](WebView *sender, const std::string &url) -> void
       {
-        func.call<void>("call", thisv, cached_val(sender), val(url));
+        func.call<void>("call", thisv, thisv, val(url));
       });
     }))
-    .function("setOnJSCallback", optional_override([](WebView& this_, const val& func) 
+    .function("setOnJSCallback", optional_override([](const val& thisv, const val& func) 
     {
-      const std::val& thisv = cached_val(&this_);
+      WebView& this_ = thisv.as<WebView&>();
       this_.setOnJSCallback([thisv, func](WebView *sender, const std::string &url) -> void
       {
-        func.call<void>("call", thisv, cached_val(sender), val(url));
+        func.call<void>("call", thisv, thisv, val(url));
       });
     }))
     // end of manual
