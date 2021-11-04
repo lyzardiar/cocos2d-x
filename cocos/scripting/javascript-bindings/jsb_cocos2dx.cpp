@@ -375,7 +375,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         val::global("Object").call<void>("assign", thisv, attr);
     }))
     .function("getActionManager", select_overload<const ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
-    // TODO: incomplete bindings come from cocos2d_specifics.cpp
+    // from cocos2d_specifics
+    .function("retain", &Node::retain)
+    .function("release", &Node::release)
     .function("onEnter", optional_override([](Node& this_) {
         ScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnter();
@@ -383,6 +385,18 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("onEnterTransitionDidFinish", optional_override([](Node& this_) {
         ScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnterTransitionDidFinish();
+    }))
+    .function("onExit", optional_override([](Node& this_) {
+        ScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.onExit();
+    }))
+    .function("onExitTransitionDidStart", optional_override([](Node& this_) {
+        ScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.onExitTransitionDidStart();
+    }))
+    .function("cleanup", optional_override([](Node& this_) {
+        ScriptEngine::getInstance()->setCalledFromScript(true);
+        this_.cleanup();
     }))
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)
