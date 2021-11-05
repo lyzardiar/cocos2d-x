@@ -107,34 +107,19 @@ namespace cocos2d {
       return obj;
     }
 
-    typedef cocos2d::Vector<cocos2d::Ref*> Array;
-    typedef cocos2d::Map<std::string, cocos2d::Ref*> Dictionary;
-
-    class DictionaryRef : public cocos2d::Ref
+    unsigned int cc_bindings_uniqueID(val& v) 
     {
-    public:
-        Dictionary data;
-
-        static DictionaryRef* create()
+        static unsigned int u = 0;
+        if (v["_uid"].isUndefined())
         {
-            DictionaryRef* obj = new (std::nothrow)DictionaryRef();
-            obj->autorelease();
-            return obj;
+            v.set("_uid", ++u);
+            return u;
         }
-    };
-
-    class ArrayRef : public cocos2d::Ref
-    {
-    public:
-        Array data;
-
-        static ArrayRef* create()
+        else
         {
-            ArrayRef* obj = new (std::nothrow)ArrayRef();
-            obj->autorelease();
-            return obj;
+            return v["_uid"].as<unsigned int>();
         }
-    };
+    }
 
     class ValHolder 
     {
@@ -218,15 +203,6 @@ namespace cocos2d {
         void cccontrol_callback(Ref* arg0, extension::Control::EventType arg1)
         {
             callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1, _2.isUndefined() ? val(arg1) : _2);
-        }
-
-        void associate(Ref* target, const std::string& key)
-        {
-            if (!target->getAssociatedObject(key))
-            {
-                target->setAssociatedObject(key, ArrayRef::create());
-            }
-            target->getAssociatedObject<ArrayRef*>(key)->data.pushBack(this);
         }
 
         val _1;

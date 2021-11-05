@@ -284,6 +284,11 @@ public:
         }, target, priority, paused);
     }
 
+    inline void scheduleUpdate(const ccSchedulerFunc& callback, void *target, int priority, bool paused)
+    {
+        this->schedulePerFrame(callback, target, priority, paused);
+    }
+
 #if CC_ENABLE_SCRIPT_BINDING
     // Schedule for script bindings.
     /** The scheduled script callback will be called every 'interval' seconds.

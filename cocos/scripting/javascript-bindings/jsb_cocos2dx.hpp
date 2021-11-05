@@ -5,10 +5,6 @@
 
 namespace cocos2d {
   namespace bindings {
-
-    const char ASSOCIATED_OBJECT_KEY_SCHEDULE[] = "schedule";
-    const char ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE[] = "scheduleUpdate";
-
     class __JSPlistDelegator: public cocos2d::SAXDelegator
     {
     public:
