@@ -186,22 +186,13 @@ COCOS_BINDINGS(jsb_cocos2dx_extension) {
     .function("addTargetWithActionForControlEvents", optional_override(
       [](const val& thisv, const val& target, const val& action, Control::EventType controlEvents)
       {
-        SelectorWrapper* wrapper = SelectorWrapper::create(action, target);
-        wrapper->_1 = thisv;
-
-        Control& this_ = thisv.as<Control&>();
-        this_.addTargetWithActionForControlEvents(wrapper, cccontrol_selector(SelectorWrapper::cccontrol_callback), controlEvents);
+        CCLOG("Control::addTargetWithActionForControlEvents not implemented, it uses old school raw function pointer but ccbind prefer std::function");
       }
     ))
-    // Without changing Control, removeTargetWithActionForControlEvents require binding code to self-cache selectors somewhere else.
-    // Which makes a double cache (Control already cached selectors)
-    // Makes me think it's not a good idea.
-    // TODO: I'd say it might be better to do it with std::function, something like Node::schedule(function, string).
-    // Though I understand we don't use c++ 11 when this API came to cocos2d-x.
     .function("removeTargetWithActionForControlEvents", optional_override(
       [](Control& this_, const val& target, const val& action, Control::EventType controlEvents)
       {
-        CCLOG("Control.removeTargetWithActionForControlEvents not implemented");
+        CCLOG("Control.removeTargetWithActionForControlEvents not implemented, it uses old school raw function pointer but ccbind prefer std::function");
       }
     ))
     // end if manaul

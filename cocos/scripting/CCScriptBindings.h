@@ -107,9 +107,9 @@ namespace cocos2d {
       return obj;
     }
 
-    unsigned int cc_bindings_uniqueID(val& v) 
+    inline unsigned int cc_bindings_uniqueID(val& v) 
     {
-        static unsigned int u = 0;
+        static unsigned int u = 0; //No worry, this won't be inlined
         if (v["_uid"].isUndefined())
         {
             v.set("_uid", ++u);
@@ -128,88 +128,6 @@ namespace cocos2d {
         val getVal() const { return v_; }
     private:
         val v_;
-    };
-
-    // Accommodate old-school function callbacks, use std::function instead
-    class SelectorWrapper: public Ref
-    {
-    public:
-        SelectorWrapper(const val& callback, const val& thisv):
-        callback_(callback),
-        thisv_(thisv),
-        _1(val::undefined()),
-        _2(val::undefined())
-        {
-        }
-
-        static SelectorWrapper* create(const val& callback, const val& thisv)
-        {
-            SelectorWrapper* wrapper = new (std::nothrow)SelectorWrapper(callback, thisv);
-            wrapper->autorelease();
-            return wrapper;
-        }
-
-        static SelectorWrapper* create(const val& callback)
-        {
-            SelectorWrapper* wrapper = new (std::nothrow)SelectorWrapper(callback, val::undefined());
-            wrapper->autorelease();
-            return wrapper;
-        }
-        
-        const val& get_callback() const
-        {
-            return callback_;
-        }
-
-        /**
-        NOTE: this callback take arg1 as ValHolder* and delete it. 
-        */
-        void callFuncND_callback(Node* arg0, void* arg1)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1, _2.isUndefined() ? ((ValHolder*)arg1)->getVal() : _2);
-            delete (ValHolder*)arg1;
-        }
-
-        void callFuncN_callback(Node* arg0)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
-        }
-
-        void callFuncO_callback(Ref* arg0)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
-        }
-
-        void callFunc_callback()
-        {
-            callback_.call<void>("call", thisv_);
-        }
-
-        void menuHandler_callback(Ref* arg0)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
-        }
-
-        void schedule_callback(float arg0)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
-        }
-
-        void update(float arg0)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
-        }
-
-        void cccontrol_callback(Ref* arg0, extension::Control::EventType arg1)
-        {
-            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1, _2.isUndefined() ? val(arg1) : _2);
-        }
-
-        val _1;
-        val _2;
-    private:
-        val callback_;
-        val thisv_;
     };
   }
 }

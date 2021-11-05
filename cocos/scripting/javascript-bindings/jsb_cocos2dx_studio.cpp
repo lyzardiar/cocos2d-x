@@ -544,13 +544,11 @@ COCOS_BINDINGS(jsb_cocos2dx_studio) {
     // from manual
     .function("addArmatureFileInfoAsync", optional_override([](ArmatureDataManager& this_, const std::string& arg0, const val& callback, const val& thisv)
     {
-      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
-      this_.addArmatureFileInfoAsync(arg0, wrapper, schedule_selector(SelectorWrapper::schedule_callback));
+      CCLOG("ArmatureDataManager::addArmatureFileInfoAsync not implemented, it uses old school raw function pointer but ccbind prefer std::function");
     }))
     .function("addArmatureFileInfoAsync", optional_override([](ArmatureDataManager& this_, const std::string& arg0, const std::string& arg1, const std::string& arg2, const val& callback, const val& thisv)
     {
-      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
-      this_.addArmatureFileInfoAsync(arg0, arg1, arg2, wrapper, schedule_selector(SelectorWrapper::schedule_callback));
+      CCLOG("ArmatureDataManager::addArmatureFileInfoAsync not implemented, it uses old school raw function pointer but ccbind prefer std::function");
     }))
     // end of manual
     .class_function("destroyInstance", &ArmatureDataManager::destroyInstance)
