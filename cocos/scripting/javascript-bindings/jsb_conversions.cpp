@@ -87,6 +87,56 @@ COCOS_BINDINGS(jsb_conversions) {
     .field("tx", &AffineTransform::tx)
     .field("ty", &AffineTransform::ty)
     ;
+  value_array<Mat4>("_.Mat4")
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[0];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[0] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[1];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[1] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[2];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[2] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[3];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[3] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[4];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[4] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[5];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[5] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[6];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[6] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[7];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[7] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[8];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[8] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[9];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[9] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[10];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[10] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[11];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[11] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[12];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[12] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[13];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[13] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[14];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[14] = arg0;}))
+    .element(
+      optional_override([](const Mat4& this_) -> float {return this_.m[15];}), 
+      optional_override([](Mat4& this_, float arg0) {this_.m[15] = arg0;}))
+    ;
   value_object<Vec3>("_.Vec3")
     .field("x", &Vec3::x)
     .field("y", &Vec3::y)

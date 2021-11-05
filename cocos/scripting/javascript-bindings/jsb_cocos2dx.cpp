@@ -148,6 +148,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
   class_<EventTouch, base<Event>>("cc.EventTouch")
     .constructor(&cc_bindings_constructor<EventTouch>, allow_raw_pointers())
     .function("getEventCode", &EventTouch::getEventCode)
+    // from cocos2d_specifics
+    .function("getTouches", &EventTouch::getTouches)
+    .function("setTouches", &EventTouch::setTouches)
+    // end of cocos2d_specifics
     .function("setEventCode", &EventTouch::setEventCode)
     .property("_className",  optional_override([](const EventTouch& _) -> std::string {return "EventTouch";}))
     .allow_subclass<wrapper<EventTouch>>("cc.EventTouch._extend")    
@@ -398,6 +402,198 @@ COCOS_BINDINGS(jsb_cocos2dx) {
         ScriptEngine::getInstance()->setCalledFromScript(true);
         this_.cleanup();
     }))
+    .function("schedule", optional_override([](const val& thisv, const val& callback, float interval, unsigned int repeat, float delay) {
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.getScheduler()->schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, repeat, delay, !this_.isRunning());
+    }))
+    .function("schedule", optional_override([](const val& thisv, const val& callback, float interval, unsigned int repeat) {
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.getScheduler()->schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, repeat, 0, !this_.isRunning());
+    }))
+    .function("schedule", optional_override([](const val& thisv, const val& callback, float interval) {
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.getScheduler()->schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, !this_.isRunning());
+    }))
+    .function("schedule", optional_override([](const val& thisv, const val& callback) {
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.getScheduler()->schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, 0, !this_.isRunning());
+    }))
+    .function("scheduleOnce", optional_override([](const val& thisv, const val& callback, float interval) {
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.getScheduler()->schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, 0, 0, 0, !this_.isRunning());
+    }))
+    .function("scheduleOnce", optional_override([](const val& thisv, const val& callback, float delay) {
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.getScheduler()->schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, 0, 0, delay, !this_.isRunning());
+    }))
+    .function("scheduleUpdateWithPriority", optional_override([](const val& thisv, int priority) {
+      if (!thisv.hasOwnProperty("update")) return;
+
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(thisv["update"], thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE); // cache wrapper
+
+      this_.getScheduler()->scheduleUpdate(wrapper, priority, !this_.isRunning());
+    }))
+    .function("scheduleUpdate", optional_override([](const val& thisv) {
+      if (!thisv.hasOwnProperty("update")) return;
+
+      Node& this_ = thisv.as<Node&>();
+      SelectorWrapper* wrapper = SelectorWrapper::create(thisv["update"], thisv);
+      wrapper->associate(&this_, ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE); // cache wrapper
+
+      this_.getScheduler()->scheduleUpdate(wrapper, 0, !this_.isRunning());
+    }))
+    .function("unscheduleUpdate", optional_override([](Node& this_) {
+      this_.unscheduleUpdate(); // unschedule update on this
+
+      // unschedule update on wrappers
+      Scheduler* scheduler = this_.getScheduler();
+      ArrayRef* updates = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (updates)
+      {
+        for(Ref* update: updates->data)
+        {
+          scheduler->unscheduleUpdate(update);
+        }
+      }
+      this_.setAssociatedObject(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE, nullptr);
+    }))
+    .function("unschedule", optional_override([](Node& this_, const val& callback) {
+      Scheduler* scheduler = this_.getScheduler();
+      ArrayRef* wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for (auto it = wrappers->data.begin(); it != wrappers->data.end(); ) {
+          SelectorWrapper* wrapper = (SelectorWrapper*)*it;
+          if (wrapper->get_callback().equals(callback))
+          {
+            scheduler->unschedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper);
+            it = wrappers->data.erase(it);
+          }
+          else
+          {
+            it++;
+          }
+        }
+      }
+    }))
+    .function("unscheduleAllCallbacks", optional_override([](Node& this_) {
+      this_.unscheduleAllCallbacks(); // unschedule everything on this
+
+      // unschedule wrappers
+      Scheduler* scheduler = this_.getScheduler();
+      ArrayRef* wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          scheduler->unscheduleAllForTarget(wrapper);
+        }
+      }
+
+      wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          scheduler->unscheduleAllForTarget(wrapper);
+        }
+      }
+      
+      this_.setAssociatedObject(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE, nullptr);
+      this_.setAssociatedObject(ASSOCIATED_OBJECT_KEY_SCHEDULE, nullptr);
+    }))
+    .function("setPosition", select_overload<void(const Vec2 &)>(&Node::setPosition))
+    .function("setPosition", select_overload<void(float, float)>(&Node::setPosition))
+    .function("setContentSize", &Node::setContentSize)
+    .function("setContentSize", optional_override([](Node& this_, float w, float h)
+    {
+      this_.setContentSize(Size(w, h));
+    }))
+    .function("setAnchorPoint", &Node::setAnchorPoint)
+    .function("setAnchorPoint", optional_override([](Node& this_, float x, float y)
+    {
+      this_.setAnchorPoint(Vec2(x, y));
+    }))
+    .function("setColor", &Node::setColor)
+    .function("pause", optional_override([](Node& this_) {
+      this_.pause(); // pause everything on this
+
+      // pause wrappers
+      Scheduler* scheduler = this_.getScheduler();
+      ArrayRef* wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          scheduler->pauseTarget(wrapper);
+        }
+      }
+
+      wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          scheduler->pauseTarget(wrapper);
+        }
+      }
+    }))
+    .function("resume", optional_override([](Node& this_) {
+      this_.resume(); // resume everything on this
+
+      // resume wrappers
+      Scheduler* scheduler = this_.getScheduler();
+      ArrayRef* wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          scheduler->resumeTarget(wrapper);
+        }
+      }
+
+      wrappers = this_.getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          scheduler->resumeTarget(wrapper);
+        }
+      }
+    }))
+    .function("convertToWorldSpace", &Node::convertToWorldSpace)
+    .function("convertToWorldSpaceAR", &Node::convertToWorldSpaceAR)
+    .function("convertToWorldSpace", optional_override([](Node& this_) {
+      return this_.convertToWorldSpace(Vec2::ZERO);
+    }))
+    .function("convertToWorldSpaceAR", optional_override([](Node& this_) {
+      return this_.convertToWorldSpaceAR(Vec2::ZERO);
+    }))
+    .function("setAdditionalTransform", optional_override([](Node& this_, const val& additionalTransform) {
+      if (!additionalTransform.isArray())
+      {
+        this_.setAdditionalTransform(additionalTransform.as<AffineTransform>());
+      }
+      else
+      {
+        this_.setAdditionalTransform(additionalTransform.as<Mat4>());
+      }
+    }))
+    // end of cocos_specific
     .property("x", &Node::getPositionX, &Node::setPositionX)
     .property("y", &Node::getPositionY, &Node::setPositionY)
     .property("width", 
@@ -637,6 +833,227 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("removeAllFunctionsToBePerformedInCocosThread", &Scheduler::removeAllFunctionsToBePerformedInCocosThread)
     .function("unscheduleAll", &Scheduler::unscheduleAll)
     .function("getTimeScale", &Scheduler::getTimeScale)
+    // cocos_specifics
+    .function("resumeTarget", optional_override(
+    [](Scheduler& this_, Ref* arg0)
+    {
+      ArrayRef* wrappers = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          this_.resumeTarget(wrapper);
+        }
+      }
+
+      wrappers = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          this_.resumeTarget(wrapper);
+        }
+      }
+    }))
+    .function("pauseTarget", optional_override(
+    [](Scheduler& this_, Ref* arg0)
+    {
+      ArrayRef* wrappers = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          this_.pauseTarget(wrapper);
+        }
+      }
+
+      wrappers = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          this_.pauseTarget(wrapper);
+        }
+      }
+    }))
+    .function("scheduleUpdateForTarget", optional_override(
+    [](Scheduler& this_, const val& arg0, int arg1, bool arg2)
+    {
+      if (!arg0.hasOwnProperty("update")) return;
+
+      SelectorWrapper* wrapper = SelectorWrapper::create(arg0["update"], arg0);
+      wrapper->associate(arg0.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE); // cache wrapper
+
+      this_.scheduleUpdateForTarget(wrapper, arg1, arg2);
+    }))
+    .function("scheduleUpdateForTarget", optional_override(
+    [](Scheduler& this_, const val& arg0, int arg1)
+    {
+      if (!arg0.hasOwnProperty("update")) return;
+
+      SelectorWrapper* wrapper = SelectorWrapper::create(arg0["update"], arg0);
+      wrapper->associate(arg0.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE); // cache wrapper
+
+      this_.scheduleUpdateForTarget(wrapper, arg1, false);
+    }))
+    .function("scheduleUpdateForTarget", optional_override(
+    [](Scheduler& this_, const val& arg0)
+    {
+      if (!arg0.hasOwnProperty("update")) return;
+
+      SelectorWrapper* wrapper = SelectorWrapper::create(arg0["update"], arg0);
+      wrapper->associate(arg0.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE); // cache wrapper
+
+      this_.scheduleUpdateForTarget(wrapper, 0, false);
+    }))
+    .function("unscheduleUpdateForTarget", optional_override(
+    [](Scheduler& this_, Ref* arg0)
+    {
+      ArrayRef* updates = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (updates)
+      {
+        for(Ref* update: updates->data)
+        {
+          this_.unscheduleUpdate(update);
+        }
+      }
+      arg0->setAssociatedObject(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE, nullptr);
+    }))
+    .function("schedule", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat, float delay, bool paused, const std::string& key)
+    {
+      auto lambda = [callback, target](float dt){callback.call<void>("call", target, val(dt));};
+      this_.schedule(lambda, target.as<Ref*>(), interval, repeat, delay, paused, key);
+    }))
+    .function("schedule", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat, float delay, bool paused)
+    {
+      auto lambda = [callback, target](float dt){callback.call<void>("call", target, val(dt));};
+      this_.schedule(lambda, target.as<Ref*>(), interval, repeat, delay, paused, "");
+    }))
+    .function("schedule", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat, float delay)
+    {
+      auto lambda = [callback, target](float dt){callback.call<void>("call", target, val(dt));};
+      this_.schedule(lambda, target.as<Ref*>(), interval, repeat, delay, false, "");
+    }))
+    .function("schedule", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat)
+    {
+      auto lambda = [callback, target](float dt){callback.call<void>("call", target, val(dt));};
+      this_.schedule(lambda, target.as<Ref*>(), interval, repeat, 0, false, "");
+    }))
+    .function("schedule", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval)
+    {
+      auto lambda = [callback, target](float dt){callback.call<void>("call", target, val(dt));};
+      this_.schedule(lambda, target.as<Ref*>(), interval, 0, 0, false, "");
+    }))
+    .function("schedule", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target)
+    {
+      auto lambda = [callback, target](float dt){callback.call<void>("call", target, val(dt));};
+      this_.schedule(lambda, target.as<Ref*>(), 0, 0, 0, false, "");
+    }))
+
+    .function("scheduleCallbackForTarget", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat, float delay, bool paused)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, target);
+      wrapper->associate(target.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, repeat, delay, paused);
+    }))
+    .function("scheduleCallbackForTarget", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat, float delay)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, target);
+      wrapper->associate(target.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, repeat, delay, false);
+    }))
+    .function("scheduleCallbackForTarget", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval, unsigned int repeat)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, target);
+      wrapper->associate(target.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, repeat, 0, false);
+    }))
+    .function("scheduleCallbackForTarget", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target, float interval)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, target);
+      wrapper->associate(target.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, interval, 0, 0, false);
+    }))
+    .function("scheduleCallbackForTarget", optional_override(
+    [](Scheduler& this_, const val& callback, const val& target)
+    {
+      SelectorWrapper* wrapper = SelectorWrapper::create(callback, target);
+      wrapper->associate(target.as<Ref*>(), ASSOCIATED_OBJECT_KEY_SCHEDULE); // cache wrapper
+      this_.schedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper, 0, 0, 0, false);
+    }))
+    .function("unscheduleCallbackForTarget", optional_override(
+    [](Scheduler& this_, const val& arg0, const val& arg1)
+    {
+      if(arg0.isString())
+      {
+        this_.unschedule(arg0.as<std::string>(), arg1.as<Ref*>());
+      }
+      else
+      {
+        ArrayRef* wrappers = arg0.as<Ref*>()->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+        if (wrappers)
+        {
+          for (auto it = wrappers->data.begin(); it != wrappers->data.end(); ) {
+            SelectorWrapper* wrapper = (SelectorWrapper*)*it;
+            if (wrapper->get_callback().equals(arg1))
+            {
+              this_.unschedule(schedule_selector(SelectorWrapper::schedule_callback), wrapper);
+              it = wrappers->data.erase(it);
+            }
+            else
+            {
+              it++;
+            }
+          }
+        }
+      }
+    }))
+    .function("unscheduleAllForTarget", optional_override(
+    [](Scheduler& this_, Ref* arg0)
+    {
+      this_.unscheduleAllForTarget(arg0); // unschedule everything on arg0
+
+      // unschedule wrappers
+      ArrayRef* wrappers = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          this_.unscheduleAllForTarget(wrapper);
+        }
+      }
+
+      wrappers = arg0->getAssociatedObject<ArrayRef*>(ASSOCIATED_OBJECT_KEY_SCHEDULE);
+      if (wrappers)
+      {
+        for(Ref* wrapper: wrappers->data)
+        {
+          this_.unscheduleAllForTarget(wrapper);
+        }
+      }
+      
+      arg0->setAssociatedObject(ASSOCIATED_OBJECT_KEY_SCHEDULE_UPDATE, nullptr);
+      arg0->setAssociatedObject(ASSOCIATED_OBJECT_KEY_SCHEDULE, nullptr);
+    }))
+    .function("unscheduleAllCallbacks", &Scheduler::unscheduleAll)// TODO:
+    .function("unscheduleAllCallbacksWithMinPriority", &Scheduler::unscheduleAllWithMinPriority)// TODO:
+    .function("isTargetPaused", optional_override(
+    [](Scheduler& this_, Ref* arg0)
+    {
+      return this_.isTargetPaused(arg0);// TODO:
+    }))
+    
+    // end
     .property("_className",  optional_override([](const Scheduler& _) -> std::string {return "Scheduler";}))    
     ;
 
@@ -874,6 +1291,22 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }
     }), allow_raw_pointers())
     .function("getVertexAttribCount", &GLProgramState::getVertexAttribCount)
+    // cocos2d_specifics
+    .function("setVertexAttribPointer", optional_override(
+      [](GLProgramState& this_, const std::string& arg0, GLint arg1, GLenum arg2, GLboolean arg3, GLsizei arg4, long arg5) {
+      this_.setVertexAttribPointer(arg0, arg1, arg2, arg3, arg4, (GLvoid*)arg5);
+    }))
+    .function("setUniformVec4", optional_override(
+      [](GLProgramState& this_, const val& arg0, const Vec4& arg1) {
+      if (!arg0.isNumber())
+      {
+        return this_.setUniformVec4(arg0.as<std::string>(), arg1);
+      } else 
+      {
+        return this_.setUniformVec4(arg0.as<int>(), arg1);
+      }
+    }))
+    // end
     .class_function("create", &GLProgramState::create, allow_raw_pointers())
     .class_function("getOrCreateWithGLProgramName", select_overload<GLProgramState*(const std::string&, Texture2D*)>(&GLProgramState::getOrCreateWithGLProgramName), allow_raw_pointers())
     .class_function("getOrCreateWithGLProgramName", select_overload<GLProgramState*(const std::string&)>(&GLProgramState::getOrCreateWithGLProgramName), allow_raw_pointers())
@@ -4383,6 +4816,50 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setUniformLocationWith4i", &GLProgram::setUniformLocationWith4i)
     .function("setUniformLocationI32", &GLProgram::setUniformLocationWith1i)
     .function("setUniformLocationWith2i", &GLProgram::setUniformLocationWith2i)
+    // from cocos2d_specifics
+    .function("setUniformLocationF32", optional_override(
+      [](GLProgram& this_, GLint location, GLfloat f1)
+      {
+        this_.setUniformLocationWith1f(location, f1);
+      }
+      ))
+    .function("setUniformLocationF32", optional_override(
+      [](GLProgram& this_, GLint location, GLfloat f1, GLfloat f2)
+      {
+        this_.setUniformLocationWith2f(location, f1, f2);
+      }
+      ))
+    .function("setUniformLocationF32", optional_override(
+      [](GLProgram& this_, GLint location, GLfloat f1, GLfloat f2, GLfloat f3)
+      {
+        this_.setUniformLocationWith3f(location, f1, f2, f3);
+      }
+      ))
+    .function("setUniformLocationF32", optional_override(
+      [](GLProgram& this_, GLint location, GLfloat f1, GLfloat f2, GLfloat f3, GLfloat f4)
+      {
+        this_.setUniformLocationWith4f(location, f1, f2, f3, f4);
+      }
+      ))
+    .function("getProgram", &GLProgram::getProgram)
+    .function("setUniformLocationWithMatrixfvUnion", optional_override(
+      [](GLProgram& this_, GLint arg0, std::vector<float> arg1, unsigned int arg2, int fvType)
+      {
+        switch(fvType)
+        {
+            case 2:
+                this_.setUniformLocationWithMatrix2fv(arg0, (GLfloat *)&arg1[0], arg2);
+                break;
+            case 3:
+                this_.setUniformLocationWithMatrix3fv(arg0, (GLfloat *)&arg1[0], arg2);
+                break;
+            case 4:
+                this_.setUniformLocationWithMatrix4fv(arg0, (GLfloat *)&arg1[0], arg2);
+                break;
+        }
+      }
+      ))
+    // end
     .class_function("createWithByteArrays", select_overload<GLProgram*(const char*, const char*, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const char*, const char*)>(&GLProgram::createWithByteArrays), allow_raw_pointers())
     .class_function("createWithByteArrays", select_overload<GLProgram*(const char*, const char*, const std::string&, const std::string&)>(&GLProgram::createWithByteArrays), allow_raw_pointers())

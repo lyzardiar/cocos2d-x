@@ -29,6 +29,7 @@
 
 #include "base/ccConfig.h"
 #include "base/CCVector.h"
+#include "base/CCMap.h"
 #include "2d/CCNode.h"
 #include "extensions/GUI/CCControlExtension/CCControl.h"
 #include <functional>
@@ -44,6 +45,9 @@ namespace cocos2d {
     
     template<typename ClassType>
       using value_object = emscripten::value_object<ClassType>;
+      
+    template<typename ClassType>
+      using value_array = emscripten::value_array<ClassType>;
 
     template<typename LambdaType>
     inline emscripten::internal::LambdaSignature<LambdaType>* optional_override(const LambdaType& fp) {
@@ -103,6 +107,35 @@ namespace cocos2d {
       return obj;
     }
 
+    typedef cocos2d::Vector<cocos2d::Ref*> Array;
+    typedef cocos2d::Map<std::string, cocos2d::Ref*> Dictionary;
+
+    class DictionaryRef : public cocos2d::Ref
+    {
+    public:
+        Dictionary data;
+
+        static DictionaryRef* create()
+        {
+            DictionaryRef* obj = new (std::nothrow)DictionaryRef();
+            obj->autorelease();
+            return obj;
+        }
+    };
+
+    class ArrayRef : public cocos2d::Ref
+    {
+    public:
+        Array data;
+
+        static ArrayRef* create()
+        {
+            ArrayRef* obj = new (std::nothrow)ArrayRef();
+            obj->autorelease();
+            return obj;
+        }
+    };
+
     class ValHolder 
     {
     public:
@@ -138,6 +171,11 @@ namespace cocos2d {
             return wrapper;
         }
         
+        const val& get_callback() const
+        {
+            return callback_;
+        }
+
         /**
         NOTE: this callback take arg1 as ValHolder* and delete it. 
         */
@@ -172,9 +210,23 @@ namespace cocos2d {
             callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
         }
 
+        void update(float arg0)
+        {
+            callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1);
+        }
+
         void cccontrol_callback(Ref* arg0, extension::Control::EventType arg1)
         {
             callback_.call<void>("call", thisv_, _1.isUndefined() ? val(arg0) : _1, _2.isUndefined() ? val(arg1) : _2);
+        }
+
+        void associate(Ref* target, const std::string& key)
+        {
+            if (!target->getAssociatedObject(key))
+            {
+                target->setAssociatedObject(key, ArrayRef::create());
+            }
+            target->getAssociatedObject<ArrayRef*>(key)->data.pushBack(this);
         }
 
         val _1;
