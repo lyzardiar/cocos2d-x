@@ -582,6 +582,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("onProjectionChanged", &Scene::onProjectionChanged, allow_raw_pointers())
     .function("initWithSize", &Scene::initWithSize)
     .function("getDefaultCamera", &Scene::getDefaultCamera, allow_raw_pointers())
+    // from cocos_specifics
+    .function("init", &Scene::init)
+    // end
     .class_function("createWithSize", &Scene::createWithSize, allow_raw_pointers())
     .class_function("create", &Scene::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Scene& _) -> std::string {return "Scene";}))    
@@ -1409,6 +1412,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Sequence>, allow_raw_pointers())
     .function("init", &Sequence::init)
     .function("initWithTwoActions", &Sequence::initWithTwoActions, allow_raw_pointers())
+    // cocos_specifics
+    .class_function("create", optional_override(
+      [](const Vector<FiniteTimeAction*>& arrayOfActions)
+      {
+        return Sequence::create(arrayOfActions);
+      }), allow_raw_pointers())
+    // TODO: overloading create takes variadic arguments not supported by embind
+    // NOTE: you can get around this by adding brackets e.g: [action1, action2, ...] to the funcion call which works in both spidermonkey and embind
+    // end
     .property("_className",  optional_override([](const Sequence& _) -> std::string {return "Sequence";}))    
     .allow_subclass<wrapper<Sequence>>("cc.Sequence._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -1443,6 +1455,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<Spawn>, allow_raw_pointers())
     .function("init", &Spawn::init)
     .function("initWithTwoActions", &Spawn::initWithTwoActions, allow_raw_pointers())
+    // cocos_specifics
+    .class_function("create", optional_override(
+      [](const Vector<FiniteTimeAction*>& arrayOfActions)
+      {
+        return Spawn::create(arrayOfActions);
+      }), allow_raw_pointers())
+    // TODO: overloading create takes variadic arguments not supported by embind
+    // NOTE: you can get around this by adding brackets e.g: [action1, action2, ...] to the funcion call which works in both spidermonkey and embind
+    // end
     .property("_className",  optional_override([](const Spawn& _) -> std::string {return "Spawn";}))    
     .allow_subclass<wrapper<Spawn>>("cc.Spawn._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -2924,6 +2945,47 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .constructor(&cc_bindings_constructor<CallFunc>, allow_raw_pointers())
     .function("execute", &CallFunc::execute)
     .property("_className",  optional_override([](const CallFunc& _) -> std::string {return "CallFunc";}))    
+    // cocos specifics
+    .class_function("create", optional_override(
+      [](const val& callback){
+        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
+        return CallFuncN::create([callback, ret](Node* sender)
+        {
+          if (sender == nullptr)
+          {
+            sender = ret->getTarget();
+          }
+
+          callback(val(sender));
+        });
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](const val& callback, const val& thisv){
+        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
+        return CallFuncN::create([callback, thisv, ret](Node* sender)
+        {
+          if (sender == nullptr)
+          {
+            sender = ret->getTarget();
+          }
+
+          callback.call<void>("call", thisv, val(sender));
+        });
+      }), allow_raw_pointers())
+      .class_function("create", optional_override(
+      [](const val& callback, const val& thisv, const val& extraData){
+        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
+        return CallFuncN::create([callback, thisv, extraData, ret](Node* sender)
+        {
+          if (sender == nullptr)
+          {
+            sender = ret->getTarget();
+          }
+
+          callback.call<void>("call", thisv, val(sender), extraData);
+        });
+      }), allow_raw_pointers())
+    // end
     .allow_subclass<wrapper<CallFunc>>("cc._CallFunc._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
@@ -2931,6 +2993,29 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<CallFuncN, base<CallFunc>>("cc.CallFunc")
     .constructor(&cc_bindings_constructor<CallFuncN>, allow_raw_pointers())
+    // cocos specifics
+    .function("initWithFunction", optional_override(
+      [](CallFuncN& this_, const val& callback){
+        return this_.initWithFunction([callback](Node* sender)
+        {
+          callback(val(sender));
+        });
+      }))
+    .function("initWithFunction", optional_override(
+      [](CallFuncN& this_, const val& callback, const val& thisv){
+        return this_.initWithFunction([callback, thisv](Node* sender)
+        {
+          callback.call<void>("call", thisv, val(sender));
+        });
+      }))
+    .function("initWithFunction", optional_override(
+      [](CallFuncN& this_, const val& callback, const val& thisv, const val& extraData){
+        return this_.initWithFunction([callback, thisv, extraData](Node* sender)
+        {
+          callback.call<void>("call", thisv, val(sender), extraData);
+        });
+      }))
+    // end
     .property("_className",  optional_override([](const CallFuncN& _) -> std::string {return "CallFuncN";}))    
     .allow_subclass<wrapper<CallFuncN>>("cc.CallFunc._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4029,6 +4114,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("addSubItem", &MenuItemToggle::addSubItem, allow_raw_pointers())
     .function("getSelectedItem", &MenuItemToggle::getSelectedItem, allow_raw_pointers())
     .function("setSelectedIndex", &MenuItemToggle::setSelectedIndex)
+    // from cocos_specifics
+    // TODO: _create uses variadic arguments not supported by embind
+    // NOTE: _create is marked deprecated so I think it's all good to leave it as it is
+    // end
     .property("_className",  optional_override([](const MenuItemToggle& _) -> std::string {return "MenuItemToggle";}))    
     .allow_subclass<wrapper<MenuItemToggle>>("cc.MenuItemToggle._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -4047,6 +4136,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // from cocos_specifics
     // TODO: 
     // alignItemsInColumns, alignItemsInRows and _create uses variadic arguments not supported by embind
+    // NOTE: _create is marked deprecated so I think it's all good to leave it as it is
     // end
     .property("enabled", &Menu::isEnabled, &Menu::setEnabled)
     .property("_className",  optional_override([](const Menu& _) -> std::string {return "Menu";}))    
@@ -4737,6 +4827,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setFrameBufferObject", &Camera::setFrameBufferObject, allow_raw_pointers())
     .function("isViewProjectionUpdated", &Camera::isViewProjectionUpdated)
     .function("initPerspective", &Camera::initPerspective)
+    // from cocos_specifics
+    .function("unproject", select_overload<Vec3(const Vec3&) const>(&Camera::unproject))
+    .function("unproject", optional_override(
+        [](const Camera& this_, const Size& arg0, const Vec3& arg1){
+          Vec3 ret;
+          this_.unproject(arg0, &arg1, &ret);
+          return ret;
+      }))
+    // end
     .class_function("createOrthographic", &Camera::createOrthographic, allow_raw_pointers())
     .class_function("getVisitingCamera", &Camera::getVisitingCamera, allow_raw_pointers())
     .class_function("create", &Camera::create, allow_raw_pointers())
