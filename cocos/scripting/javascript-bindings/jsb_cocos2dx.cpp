@@ -6,6 +6,8 @@
 #include "2d/CCProtectedNode.h"
 #include "base/CCAsyncTaskPool.h"
 #include "scripting/component/CCComponentJS.h"
+#include "scripting/component/CCComponentJS.h"
+#include "base/ccMacros.h"
 
 using namespace std;
 using namespace std::placeholders;
@@ -1234,6 +1236,168 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("_speed", optional_override(
       [](ActionInterval& this_, float speed){
         return Speed::create(&this_, speed);
+      }), allow_raw_pointers())
+    .function("easing", optional_override(
+      [](ActionInterval& this_, const val& param) -> ActionEase*{
+        int32_t tag = param["tag"].as<int32_t>();
+        if (tag == EASE_IN)
+        {
+            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeIn require one float parameter");
+            return EaseIn::create(&this_, param["param"].as<float>());
+        }
+        else if (tag == EASE_OUT)
+        {
+            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeOut require one float parameter");
+            return EaseOut::create(&this_, param["param"].as<float>());
+        }
+        else if (tag == EASE_INOUT)
+        {
+            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeInOut require one float parameter");
+            return EaseInOut::create(&this_, param["param"].as<float>());
+        }
+        else if (tag == EASE_EXPONENTIAL_IN)
+        {
+            return EaseExponentialIn::create(&this_);
+        }
+        else if (tag == EASE_EXPONENTIAL_OUT)
+        {
+            return EaseExponentialOut::create(&this_);
+        }
+        else if (tag == EASE_EXPONENTIAL_INOUT)
+        {
+            return EaseExponentialInOut::create(&this_);
+        }
+        else if (tag == EASE_SINE_IN)
+        {
+            return EaseSineIn::create(&this_);
+        }
+        else if (tag == EASE_SINE_OUT)
+        {
+            return EaseSineOut::create(&this_);
+        }
+        else if (tag == EASE_SINE_INOUT)
+        {
+            return EaseSineInOut::create(&this_);
+        }
+        else if (tag == EASE_ELASTIC_IN)
+        {
+            float parameter = 0.3;
+            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
+            return EaseElasticIn::create(&this_, parameter);
+        }
+        else if (tag == EASE_ELASTIC_OUT)
+        {
+            float parameter = 0.3;
+            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
+            return EaseElasticOut::create(&this_, parameter);
+        }
+        else if (tag == EASE_ELASTIC_INOUT)
+        {
+            float parameter = 0.3;
+            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
+            return EaseElasticInOut::create(&this_, parameter);
+        }
+        else if (tag == EASE_BOUNCE_IN)
+        {
+            return EaseBounceIn::create(&this_);
+        }
+        else if (tag == EASE_BOUNCE_OUT)
+        {
+            return EaseBounceOut::create(&this_);
+        }
+        else if (tag == EASE_BOUNCE_INOUT)
+        {
+            return EaseBounceInOut::create(&this_);
+        }
+        else if (tag == EASE_BACK_IN)
+        {
+            return EaseBackIn::create(&this_);
+        }
+        else if (tag == EASE_BACK_OUT)
+        {
+            return EaseBackOut::create(&this_);
+        }
+        else if (tag == EASE_BACK_INOUT)
+        {
+            return EaseBackInOut::create(&this_);
+        }
+        else if (tag == EASE_QUADRATIC_IN)
+        {
+            return EaseQuadraticActionIn::create(&this_);
+        }
+        else if (tag == EASE_QUADRATIC_OUT)
+        {
+            return EaseQuadraticActionOut::create(&this_);
+        }
+        else if (tag == EASE_QUADRATIC_INOUT)
+        {
+            return EaseQuadraticActionInOut::create(&this_);
+        }
+        else if (tag == EASE_QUARTIC_IN)
+        {
+            return EaseQuarticActionIn::create(&this_);
+        }
+        else if (tag == EASE_QUARTIC_OUT)
+        {
+            return EaseQuarticActionOut::create(&this_);
+        }
+        else if (tag == EASE_QUARTIC_INOUT)
+        {
+            return EaseQuarticActionInOut::create(&this_);
+        }
+        else if (tag == EASE_QUINTIC_IN)
+        {
+            return EaseQuinticActionIn::create(&this_);
+        }
+        else if (tag == EASE_QUINTIC_OUT)
+        {
+            return EaseQuinticActionOut::create(&this_);
+        }
+        else if (tag == EASE_QUINTIC_INOUT)
+        {
+            return EaseQuinticActionInOut::create(&this_);
+        }
+        else if (tag == EASE_CIRCLE_IN)
+        {
+            return EaseCircleActionIn::create(&this_);
+        }
+        else if (tag == EASE_CIRCLE_OUT)
+        {
+            return EaseCircleActionOut::create(&this_);
+        }
+        else if (tag == EASE_CIRCLE_INOUT)
+        {
+            return EaseCircleActionInOut::create(&this_);
+        }
+        else if (tag == EASE_CUBIC_IN)
+        {
+            return EaseCubicActionIn::create(&this_);
+        }
+        else if (tag == EASE_CUBIC_OUT)
+        {
+            return EaseCubicActionOut::create(&this_);
+        }
+        else if (tag == EASE_CUBIC_INOUT)
+        {
+            return EaseCubicActionInOut::create(&this_);
+        }
+        else if (tag == EASE_BEZIER_ACTION)
+        {
+            
+            CCASSERT(param.hasOwnProperty("param") &&
+            param.hasOwnProperty("param2") &&
+            param.hasOwnProperty("param3") &&
+            param.hasOwnProperty("param4"), "easing with cc.easeBezierAction require 4 float parameter");
+
+            EaseBezierAction* action = EaseBezierAction::create(&this_);
+            action->setBezierParamer(param["param"].as<float>(), param["param2"].as<float>(), param["param3"].as<float>(), param["param4"].as<float>());
+            return action;
+        }
+        else
+        {
+            CCASSERT(false, "easing with unkown easing object");
+            return nullptr;
+        }
       }), allow_raw_pointers())
     // end
     .property("_className",  optional_override([](const ActionInterval& _) -> std::string {return "ActionInterval";}))
@@ -3882,7 +4046,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("alignItemsVerticallyWithPadding", &Menu::alignItemsVerticallyWithPadding)
     // from cocos_specifics
     // TODO: 
-    // alignItemsInColumns and alignItemsInRows uses variadic arguments not supported by embind
+    // alignItemsInColumns, alignItemsInRows and _create uses variadic arguments not supported by embind
     // end
     .property("enabled", &Menu::isEnabled, &Menu::setEnabled)
     .property("_className",  optional_override([](const Menu& _) -> std::string {return "Menu";}))    
@@ -4486,6 +4650,46 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setClearDepth", &RenderTexture::setClearDepth)
     .function("initWithWidthAndHeight", select_overload<bool(int, int, Texture2D::PixelFormat, unsigned int)>(&RenderTexture::initWithWidthAndHeight))
     .function("initWithWidthAndHeight", select_overload<bool(int, int, Texture2D::PixelFormat)>(&RenderTexture::initWithWidthAndHeight))
+    // from cocos_specifics
+    .function("saveToFile", optional_override(
+        [](RenderTexture& this_, const std::string& arg0){
+        this_.saveToFile(arg0);
+      }))
+    .function("saveToFile", optional_override(
+        [](RenderTexture& this_, const std::string& arg0, const val& arg1){
+          if (arg1.isTrue() || arg1.isFalse())
+          {
+            this_.saveToFile(arg0, arg1.as<bool>());
+          }
+          else
+          {
+            this_.saveToFile(arg0, arg1.as<int32_t>());
+          }
+      }))
+    .function("saveToFile", optional_override(
+        [](const val& thisv, const std::string& arg0, const val& arg1, const val& arg2){
+          RenderTexture& this_ = thisv.as<RenderTexture&>();
+          if (!arg2.isTrue() && !arg2.isFalse())
+          {
+            this_.saveToFile(arg0, arg1.as<bool>(), [arg2, thisv](RenderTexture* _, const std::string& filename)
+            {
+              arg2.call<void>("call", thisv, thisv, val(filename));
+            });
+          }
+          else
+          {
+            this_.saveToFile(arg0, arg1.as<Image::Format>(), arg2.as<bool>());
+          }
+      }))
+    .function("saveToFile", optional_override(
+        [](const val& thisv, const std::string& arg0, Image::Format arg1, bool arg2, const val& arg3){
+          RenderTexture& this_ = thisv.as<RenderTexture&>();
+          this_.saveToFile(arg0, arg1, arg2, [arg3, thisv](RenderTexture* _, const std::string& filename)
+          {
+            arg3.call<void>("call", thisv, thisv, val(filename));
+          });
+      }))
+    // end
     .class_function("create", select_overload<RenderTexture*(int, int, Texture2D::PixelFormat)>(&RenderTexture::create), allow_raw_pointers())
     .class_function("create", select_overload<RenderTexture*(int, int, Texture2D::PixelFormat, unsigned int)>(&RenderTexture::create), allow_raw_pointers())
     .class_function("create", select_overload<RenderTexture*(int, int)>(&RenderTexture::create), allow_raw_pointers())

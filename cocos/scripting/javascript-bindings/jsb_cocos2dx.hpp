@@ -34,7 +34,45 @@ namespace cocos2d {
         bool _isStoringCharacters;
         std::string _currentValue;
     };
+    
+    
+    enum ACTION_TAG {
+        EASE_IN = 0,
+        EASE_OUT,
+        EASE_INOUT,
+        EASE_EXPONENTIAL_IN,
+        EASE_EXPONENTIAL_OUT,
+        EASE_EXPONENTIAL_INOUT,
+        EASE_SINE_IN,
+        EASE_SINE_OUT,
+        EASE_SINE_INOUT,
+        EASE_ELASTIC_IN,
+        EASE_ELASTIC_OUT,
+        EASE_ELASTIC_INOUT,
+        EASE_BOUNCE_IN,
+        EASE_BOUNCE_OUT,
+        EASE_BOUNCE_INOUT,
+        EASE_BACK_IN,
+        EASE_BACK_OUT,
+        EASE_BACK_INOUT,
 
+        EASE_BEZIER_ACTION,
+        EASE_QUADRATIC_IN,
+        EASE_QUADRATIC_OUT,
+        EASE_QUADRATIC_INOUT,
+        EASE_QUARTIC_IN,
+        EASE_QUARTIC_OUT,
+        EASE_QUARTIC_INOUT,
+        EASE_QUINTIC_IN,
+        EASE_QUINTIC_OUT,
+        EASE_QUINTIC_INOUT,
+        EASE_CIRCLE_IN,
+        EASE_CIRCLE_OUT,
+        EASE_CIRCLE_INOUT,
+        EASE_CUBIC_IN,
+        EASE_CUBIC_OUT,
+        EASE_CUBIC_INOUT
+    };
   }
 }
 #endif // end of __JSB_COCOS2DX_HPP__
