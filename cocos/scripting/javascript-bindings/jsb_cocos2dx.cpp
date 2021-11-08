@@ -43,9 +43,12 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       optional_override([](TTFConfig& this_, const val& arg0) {CCLOG("TTFConfig.fontFilePath is read-only");}))
     ;
     
-  class_<Ref>("cc.Ref");
+  class_<Ref>("cc.Ref")
+    .function("retain", &Node::retain)
+    .function("release", &Node::release)
+    ;
   
-  class_<Texture2D>("cc.Texture2D")
+  class_<Texture2D, base<Ref>>("cc.Texture2D")
     .constructor(&cc_bindings_constructor<Texture2D>, allow_raw_pointers())
     .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
     .function("getMaxT", &Texture2D::getMaxT)
@@ -104,6 +107,14 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("drawAtPoint", &Texture2D::drawAtPoint)
     .function("hasMipmaps", &Texture2D::hasMipmaps)
     .function("setMaxS", &Texture2D::setMaxS)
+    // from cocos_specifics
+    .function("setTexParameters", optional_override(
+        [](Texture2D& this_, GLuint arg0, GLuint arg1, GLuint arg2, GLuint arg3)
+        {
+          Texture2D::TexParams param = { arg0, arg1, arg2, arg3 };
+          this_.setTexParameters(param);
+        }), allow_raw_pointers())
+    // end
     .property("name", &Texture2D::getName)
     .property("pixelFormat", &Texture2D::getPixelFormat)
     .property("pixelsWidth", &Texture2D::getPixelsWide)
@@ -116,7 +127,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<Touch>("cc.Touch")
+  class_<Touch, base<Ref>>("cc.Touch")
     .constructor(&cc_bindings_constructor<Touch>, allow_raw_pointers())
     .function("getPreviousLocationInView", &Touch::getPreviousLocationInView)
     .function("getLocation", &Touch::getLocation)
@@ -193,7 +204,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<Node>("cc.Node")
+  class_<Node, base<Ref>>("cc.Node")
     .constructor(&cc_bindings_constructor<Node>, allow_raw_pointers())
     .function("addChild", select_overload<void(Node*, int)>(&Node::addChild), allow_raw_pointers())
     .function("addChild", select_overload<void(Node*)>(&Node::addChild), allow_raw_pointers())
@@ -380,8 +391,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     }))
     .function("getActionManager", select_overload<const ActionManager*() const>(&Node::getActionManager), allow_raw_pointers())
     // from cocos2d_specifics
-    .function("retain", &Node::retain)
-    .function("release", &Node::release)
     .function("onEnter", optional_override([](Node& this_) {
         ScriptEngine::getInstance()->setCalledFromScript(true);
         this_.onEnter();
@@ -712,7 +721,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<Scheduler>("cc.Scheduler")
+  class_<Scheduler, base<Ref>>("cc.Scheduler")
     .constructor(&cc_bindings_constructor<Scheduler>, allow_raw_pointers())
     .function("setTimeScale", &Scheduler::setTimeScale)
     .function("unscheduleAllWithMinPriority", &Scheduler::unscheduleAllWithMinPriority)
@@ -853,7 +862,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("_className",  optional_override([](const AsyncTaskPool& _) -> std::string {return "AsyncTaskPool";}))    
     ;
 
-  class_<Action>("cc.Action")
+  class_<Action, base<Ref>>("cc.Action")
     .function("startWithTarget", &Action::startWithTarget, allow_raw_pointers())
     .function("setOriginalTarget", &Action::setOriginalTarget, allow_raw_pointers())
     .function("clone", &Action::clone, allow_raw_pointers())
@@ -1105,7 +1114,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<SpriteFrame>("cc.SpriteFrame")
+  class_<SpriteFrame, base<Ref>>("cc.SpriteFrame")
     .constructor(&cc_bindings_constructor<SpriteFrame>, allow_raw_pointers())
     .function("setAnchorPoint", &SpriteFrame::setAnchorPoint)
     .function("setTexture", &SpriteFrame::setTexture, allow_raw_pointers())
@@ -1161,7 +1170,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<Animation>("cc.Animation")
+  class_<Animation, base<Ref>>("cc.Animation")
     .constructor(&cc_bindings_constructor<Animation>, allow_raw_pointers())
     .function("getLoops", &Animation::getLoops)
     .function("addSpriteFrame", &Animation::addSpriteFrame, allow_raw_pointers())
@@ -1213,6 +1222,20 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("initWithDuration", &ActionInterval::initWithDuration)
     .function("setAmplitudeRate", &ActionInterval::setAmplitudeRate)
     .function("getElapsed", &ActionInterval::getElapsed)
+    // from cocos_specifics
+    .function("repeat", optional_override(
+      [](ActionInterval& this_, unsigned int times){
+        return Repeat::create(&this_, times);
+      }), allow_raw_pointers())
+    .function("repeatForever", optional_override(
+      [](ActionInterval& this_){
+        return RepeatForever::create(&this_);
+      }), allow_raw_pointers())
+    .function("_speed", optional_override(
+      [](ActionInterval& this_, float speed){
+        return Speed::create(&this_, speed);
+      }), allow_raw_pointers())
+    // end
     .property("_className",  optional_override([](const ActionInterval& _) -> std::string {return "ActionInterval";}))
     .allow_subclass<wrapper<ActionInterval>>("cc.ActionInterval._extend")    
     ;
@@ -1409,8 +1432,17 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
+  value_array<ccBezierConfig>("_.ccBezierConfig")
+    .element(&ccBezierConfig::controlPoint_1)
+    .element(&ccBezierConfig::controlPoint_2)
+    .element(&ccBezierConfig::endPosition)
+    ;
+
   class_<BezierBy, base<ActionInterval>>("cc.BezierBy")
     .constructor(&cc_bindings_constructor<BezierBy>, allow_raw_pointers())
+    // from cocos2d_specifics
+    .class_function("create", &BezierBy::create, allow_raw_pointers())
+    // end
     .property("_className",  optional_override([](const BezierBy& _) -> std::string {return "BezierBy";}))    
     .allow_subclass<wrapper<BezierBy>>("cc.BezierBy._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -1419,6 +1451,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<BezierTo, base<BezierBy>>("cc.BezierTo")
     .constructor(&cc_bindings_constructor<BezierTo>, allow_raw_pointers())
+    // from cocos2d_specifics
+    .class_function("create", &BezierTo::create, allow_raw_pointers())
+    // end
     .property("_className",  optional_override([](const BezierTo& _) -> std::string {return "BezierTo";}))    
     .allow_subclass<wrapper<BezierTo>>("cc.BezierTo._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
@@ -1847,6 +1882,26 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("createDirectory", select_overload<bool(const std::string&) const>(&FileUtils::createDirectory))
     .function("getWritablePath", &FileUtils::getWritablePath)
     .function("listFilesRecursively", &FileUtils::listFilesRecursively, allow_raw_pointers())
+    // from cocos_specifics
+    .function("setSearchResolutionsOrder", &FileUtils::setSearchResolutionsOrder)
+    .function("setSearchPaths", &FileUtils::setSearchPaths)
+    .function("getSearchPaths", &FileUtils::getSearchPaths)
+    .function("getSearchResolutionsOrder", &FileUtils::getSearchResolutionsOrder)
+    .function("createDictionaryWithContentsOfFile", &FileUtils::getValueMapFromFile)
+    .function("getDataFromFile", optional_override(
+      [](FileUtils& this_, const std::string& arg0) 
+      {
+        Data data = this_.getDataFromFile(arg0);
+        if (!data.isNull())
+        { 
+          return val(emscripten::typed_memory_view(data.getSize(), data.getBytes())).call<val>("slice");
+        }else
+        {
+          return val::undefined();
+        }
+      }))
+    .function("writeDataFromFile", select_overload<bool(const std::string&, const std::string&) const>(&FileUtils::writeStringToFile))
+    // end
     .class_function("setDelegate", &FileUtils::setDelegate, allow_raw_pointers())
     .class_function("getInstance", &FileUtils::getInstance, allow_raw_pointers())
     .property("_className",  optional_override([](const FileUtils& _) -> std::string {return "FileUtils";}))    
@@ -1865,7 +1920,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("_className",  optional_override([](const EventCustom& _) -> std::string {return "EventCustom";}))    
     ;
 
-  class_<EventListener>("cc.EventListener")
+  class_<EventListener, base<Ref>>("cc.EventListener")
     .function("setEnabled", &EventListener::setEnabled)
     .function("isEnabled", &EventListener::isEnabled)
     .function("clone", &EventListener::clone, allow_raw_pointers())
@@ -2189,6 +2244,24 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<CardinalSplineTo, base<ActionInterval>>("cc.CardinalSplineTo")
     .constructor(&cc_bindings_constructor<CardinalSplineTo>, allow_raw_pointers())
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points, float tension)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CardinalSplineTo::create(duration, pointArray, tension);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](CardinalSplineTo& this_, float duration, const std::vector<Vec2>& points, float tension)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return this_.initWithDuration(duration, pointArray, tension);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .function("getPoints", &CardinalSplineTo::getPoints, allow_raw_pointers())
     .function("updatePosition", &CardinalSplineTo::updatePosition)
     .property("_className",  optional_override([](const CardinalSplineTo& _) -> std::string {return "CardinalSplineTo";}))
@@ -2198,16 +2271,62 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<CardinalSplineBy, base<CardinalSplineTo>>("cc.CardinalSplineBy")
     .constructor(&cc_bindings_constructor<CardinalSplineBy>, allow_raw_pointers())
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points, float tension)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CardinalSplineBy::create(duration, pointArray, tension);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const CardinalSplineBy& _) -> std::string {return "CardinalSplineBy";}))
     .allow_subclass<wrapper<CardinalSplineBy>>("cc.CardinalSplineBy._extend")    
     ;
 
   class_<CatmullRomTo, base<CardinalSplineTo>>("cc.CatmullRomTo")
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CatmullRomTo::create(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](CatmullRomTo& this_, float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        this_.initWithDuration(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const CatmullRomTo& _) -> std::string {return "CatmullRomTo";}))
     .allow_subclass<wrapper<CatmullRomTo>>("cc.CatmullRomTo._extend")    
     ;
 
   class_<CatmullRomBy, base<CardinalSplineBy>>("cc.CatmullRomBy")
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CatmullRomBy::create(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](CatmullRomBy& this_, float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        this_.initWithDuration(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    // end of manual
     .property("_className",  optional_override([](const CatmullRomBy& _) -> std::string {return "CatmullRomBy";}))
     .allow_subclass<wrapper<CatmullRomBy>>("cc.CatmullRomBy._extend")    
     ;
@@ -2800,7 +2919,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<ActionManager>("cc.ActionManager")
+  class_<ActionManager, base<Ref>>("cc.ActionManager")
     .constructor(&cc_bindings_constructor<ActionManager>, allow_raw_pointers())
     .function("getActionByTag", &ActionManager::getActionByTag, allow_raw_pointers())
     .function("removeActionByTag", &ActionManager::removeActionByTag, allow_raw_pointers())
@@ -3502,6 +3621,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<Layer, base<Node>>("cc.Layer")
     .constructor(&cc_bindings_constructor<Layer>, allow_raw_pointers())
+    // from cocos_specifics
+    .function("init", &Layer::init)
+    // end
     .class_function("create", &Layer::create, allow_raw_pointers())
     .property("_className",  optional_override([](const Layer& _) -> std::string {return "Layer";}))    
     .allow_subclass<wrapper<Layer>>("cc.Layer._extend")
@@ -3634,9 +3756,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isEnabled", &MenuItem::isEnabled)
     .function("selected", &MenuItem::selected)
     .function("isSelected", &MenuItem::isSelected)
-    .function("setCallback", optional_override([](MenuItem& this_, const val& callback) {
-      return this_.setCallback([callback](Ref* ref) -> void {
-        callback(val(ref));
+    .function("setCallback", optional_override([](const val& thisv, const val& callback) {
+      MenuItem& this_ = thisv.as<MenuItem&>();
+      return this_.setCallback([callback, thisv](Ref* ref) -> void {
+        callback(thisv);
       });
     }))
     .function("unselected", &MenuItem::unselected)
@@ -3650,9 +3773,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<MenuItemLabel, base<MenuItem>>("cc.MenuItemLabel")
     .constructor(&cc_bindings_constructor<MenuItemLabel>, allow_raw_pointers())
-    .function("initWithLabel", optional_override([](MenuItemLabel& this_, Node* label, const val& callback) {
-      return this_.initWithLabel(label, [callback](Ref* ref) -> void {
-        callback(val(ref));
+    .function("initWithLabel", optional_override([](const val& thisv, Node* label, const val& callback) {
+      MenuItemLabel& this_ = thisv.as<MenuItemLabel&>();
+      return this_.initWithLabel(label, [callback, thisv](Ref* ref) -> void {
+        callback(thisv);
       });
     }), allow_raw_pointers())
     .function("setLabel", &MenuItemLabel::setLabel, allow_raw_pointers())
@@ -3683,9 +3807,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("fontSize", &MenuItemFont::getFontSizeObj, &MenuItemFont::setFontSizeObj)
     .property("fontName", &MenuItemFont::getFontNameObj, &MenuItemFont::setFontNameObj)
     .property("_className",  optional_override([](const MenuItemFont& _) -> std::string {return "MenuItemFont";}))
-    .function("initWithString", optional_override([](MenuItemFont& this_, std::string value, const val& callback) {
-      return this_.initWithString(value, [callback](Ref* ref) -> void {
-        callback(val(ref));
+    .function("initWithString", optional_override([](const val& thisv, std::string value, const val& callback) {
+      MenuItemFont& this_ = thisv.as<MenuItemFont&>();
+      return this_.initWithString(value, [callback, thisv](Ref* ref) -> void {
+        callback(thisv);
       });
     }))
     .allow_subclass<wrapper<MenuItemFont>>("cc.MenuItemFont._extend")
@@ -3700,9 +3825,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setNormalImage", &MenuItemSprite::setNormalImage, allow_raw_pointers())
     .function("setDisabledImage", &MenuItemSprite::setDisabledImage, allow_raw_pointers())
     // Don't understand why it is missing in auto-binding
-    .function("initWithNormalSprite", optional_override([](MenuItemSprite& this_, Node* normalSprite, Node* selectedSprite, Node* disabledSprite, const val& callback) {
-      return this_.initWithNormalSprite(normalSprite, selectedSprite, disabledSprite, [callback](Ref* ref) -> void {
-        callback(val(ref));
+    .function("initWithNormalSprite", optional_override([](const val& thisv, Node* normalSprite, Node* selectedSprite, Node* disabledSprite, const val& callback) {
+      MenuItemSprite& this_ = thisv.as<MenuItemSprite&>();
+      return this_.initWithNormalSprite(normalSprite, selectedSprite, disabledSprite, [callback, thisv](Ref* ref) -> void {
+        callback(thisv);
       });
     }), allow_raw_pointers())
     .function("setSelectedImage", &MenuItemSprite::setSelectedImage, allow_raw_pointers())
@@ -3754,6 +3880,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("alignItemsHorizontally", &Menu::alignItemsHorizontally)
     .function("alignItemsHorizontallyWithPadding", &Menu::alignItemsHorizontallyWithPadding)
     .function("alignItemsVerticallyWithPadding", &Menu::alignItemsVerticallyWithPadding)
+    // from cocos_specifics
+    // TODO: 
+    // alignItemsInColumns and alignItemsInRows uses variadic arguments not supported by embind
+    // end
     .property("enabled", &Menu::isEnabled, &Menu::setEnabled)
     .property("_className",  optional_override([](const Menu& _) -> std::string {return "Menu";}))    
     .allow_subclass<wrapper<Menu>>("cc.Menu._extend")
@@ -4294,6 +4424,14 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("isFlippedX", &Sprite::isFlippedX)
     .function("isFlippedY", &Sprite::isFlippedY)
     .function("setVertexRect", &Sprite::setVertexRect)
+    // from cocos_specifics
+    .function("initWithPolygon", &Sprite::initWithPolygon, allow_raw_pointers())
+    .function("setPolygonInfo", &Sprite::setPolygonInfo)
+    .function("textureLoaded", optional_override(
+      [](const Sprite& this_){
+      return this_.getTexture() != nullptr;
+    }))
+    // end
     .property("dirty", &Sprite::isDirty, &Sprite::setDirty)
     .property("flippedX", &Sprite::isFlippedX, &Sprite::setFlippedX)
     .property("flippedY", &Sprite::isFlippedY, &Sprite::setFlippedY)
@@ -4575,7 +4713,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<GLProgram>("cc.GLProgram")
+  class_<GLProgram, base<Ref>>("cc.GLProgram")
     .constructor(&cc_bindings_constructor<GLProgram>, allow_raw_pointers())
     .function("getFragmentShaderLog", &GLProgram::getFragmentShaderLog)
     .function("getUniformFlags", &GLProgram::getUniformFlags)
@@ -4849,6 +4987,9 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("rebuildIndexInOrder", &SpriteBatchNode::rebuildIndexInOrder, allow_raw_pointers())
     .function("getTextureAtlas", &SpriteBatchNode::getTextureAtlas, allow_raw_pointers())
     .function("highestAtlasIndexInChild", &SpriteBatchNode::highestAtlasIndexInChild, allow_raw_pointers())
+    // from cocos_specifics
+    .function("getDescendants", &SpriteBatchNode::getDescendants)
+    // end
     .property("textureAtlas", optional_override([](const SpriteBatchNode& this_)
       {
         return const_cast<SpriteBatchNode&>(this_).getTextureAtlas();
@@ -5122,6 +5263,21 @@ COCOS_BINDINGS(jsb_cocos2dx_tmx) {
     .function("getProperties", select_overload<std::unordered_map<std::string, Value>&()>(&TMXLayer::getProperties))
     .function("getTileAt", &TMXLayer::getTileAt, allow_raw_pointers())
     .function("getTileAnimManager", &TMXLayer::getTileAnimManager, allow_raw_pointers())
+    // from cocos_specifics
+    .function("getTileFlagsAt", optional_override([](TMXLayer& this_, const Vec2& tileCoordinate)
+      {
+        TMXTileFlags flags;
+        this_.getTileGIDAt(tileCoordinate, &flags);
+        return flags;
+      }))
+    .function("getTiles", optional_override([](TMXLayer& this_)
+      {
+        auto tiles = this_.getTiles();
+        Size size = this_.getLayerSize();
+        int count = size.width * size.height;
+        return val(emscripten::typed_memory_view(count, tiles));
+      }))
+    // end
     .property("tileset", &TMXLayer::getTileSet, &TMXLayer::setTileSet)
     .property("layerOrientation", &TMXLayer::getLayerOrientation, &TMXLayer::setLayerOrientation)
     .property("properties", optional_override([](const TMXLayer& this_)
