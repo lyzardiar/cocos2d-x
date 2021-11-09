@@ -1,5 +1,5 @@
-#include "scripting/CCScriptBindings.h"
-#include "scripting/javascript-bindings/jsb_conversions.h"
+#include "scripting/emscripten-bindings/CCScriptBindings.h"
+#include "scripting/emscripten-bindings/manual/jsb_conversions.h"
 #include "3d/CCBundle3DData.h"
 #include "3d/CCOBB.h"
 #include "3d/CCRay.h"

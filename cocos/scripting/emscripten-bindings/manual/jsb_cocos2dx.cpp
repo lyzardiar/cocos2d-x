@@ -1,12 +1,12 @@
-#include "scripting/CCScriptBindings.h"
-#include "scripting/CCScriptEngine.h"
-#include "scripting/javascript-bindings/jsb_cocos2dx.hpp"
+#include "scripting/emscripten-bindings/CCScriptBindings.h"
+#include "scripting/emscripten-bindings/CCScriptEngine.h"
+#include "scripting/emscripten-bindings/manual/jsb_cocos2dx.hpp"
 #include "cocos2d.h"
 #include "audio/include/SimpleAudioEngine.h"
 #include "2d/CCProtectedNode.h"
 #include "base/CCAsyncTaskPool.h"
-#include "scripting/component/CCComponentJS.h"
-#include "scripting/component/CCComponentJS.h"
+#include "scripting/emscripten-bindings/component/CCComponentJS.h"
+#include "scripting/emscripten-bindings/component/CCComponentJS.h"
 #include "base/ccMacros.h"
 
 using namespace std;

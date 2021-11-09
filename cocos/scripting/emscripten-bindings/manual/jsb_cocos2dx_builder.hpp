@@ -1,7 +1,7 @@
 #ifndef __JSB_COCOS2DX_BUILDER_HPP__
 #define __JSB_COCOS2DX_BUILDER_HPP__
 
-#include "scripting/CCScriptBindings.h"
+#include "scripting/emscripten-bindings/CCScriptBindings.h"
 #include "editor-support/cocosbuilder/CocosBuilder.h"
 
 class CCBScriptCallbackProxy:  public cocos2d::Layer

@@ -1,4 +1,4 @@
-In order to build cocos2d-x cpp & lua project into HTML5/wasm, make sure you have installed emsdk(https://emscripten.org/docs/getting_started/downloads.html) and cmake.
+In order to build cocos2d-x project into HTML5/wasm, make sure you have installed emsdk(https://emscripten.org/docs/getting_started/downloads.html) and cmake.
 
 On Linux and Mac:
 
@@ -40,6 +40,10 @@ Thread support is enabled by default, the build need to be served with addtional
 
 It can be disabled by removing "-s USE_PTHREADS" from CmakeLists.txt, in the case most thread-related functions like addImageAsync will not work.
 Thread support uses Javascript SharedArrayBuffer, check https://caniuse.com/sharedarraybuffer for browser compatibility.
+
+Building js project to wasm is in the experimental stage, it is missing chipmunk and OpenGL bindings in it.
+
+WARNING: eventually we will ditch cocos2d-js, that says the underlying implementation of js projects on HTML5 will be replaced by cocos2d-x/wsam. New bindings will be compatable with the js old bindings but you will always expecting overhead for such a breaking change. But it's way too cumbersome to maintain 2 code base and this is the only way we can move on.
 
 TODO: 
 1. Files under WritablePath will be lost between game sessions

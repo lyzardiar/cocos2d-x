@@ -1,5 +1,5 @@
-#include "scripting/CCScriptBindings.h"
-#include "scripting/javascript-bindings/jsb_cocos2dx_experimental_video.hpp"
+#include "scripting/emscripten-bindings/CCScriptBindings.h"
+#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_experimental_video.hpp"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
 #include "ui/UIVideoPlayer.h"
 

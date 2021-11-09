@@ -23,7 +23,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "scripting/component/CCComponentJS.h"
+#include "scripting/emscripten-bindings/component/CCComponentJS.h"
 #include "base/CCScriptSupport.h"
 
 NS_CC_BEGIN

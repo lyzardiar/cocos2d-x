@@ -156,7 +156,7 @@ endif()
 ## JS bindings lib
 if(BUILD_JS_LIBS)
     if(EMSCRIPTEN)
-        add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting ${ENGINE_BINARY_PATH}/cocos/js-bindings)
+        add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/emscripten-bindings ${ENGINE_BINARY_PATH}/cocos/emscripten-bindings)
     else()
         add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/js-bindings ${ENGINE_BINARY_PATH}/cocos/js-bindings)
     endif()

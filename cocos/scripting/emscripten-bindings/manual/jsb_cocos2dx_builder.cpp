@@ -1,4 +1,4 @@
-#include "scripting/javascript-bindings/jsb_cocos2dx_builder.hpp"
+#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_builder.hpp"
 
 using namespace std;
 using namespace std::placeholders;

@@ -1,9 +1,9 @@
-The naming/structure here is a bit confusing, here are some explanations:
+Here are some plans:
 
-1. We use embind to bind js and c++ on emscripten: https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
-2. Eventually we will use this style for both js and Lua
-3. javascript-bindings contains js bindings currently in use on emscripten. It is, or will be compatible with js-bindings
-4. js-bindings are actually spidermonkey bindings currently in use on native platform. We will ditch it once we can use embind style and javascript-bindings with spidermonkey.
-5. lua-bindings will be rewritten in embind style once we get new style work with lua. It will remain compatible with orginal lua API. (Which is different from the js API)
+1. We are using embind to bind js and c++ on emscripten: https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
+2. Eventually we will use embind for both spidermonkey and Lua, and also cpp for serialization and editor support.
+3. emscripten-bindings contains js bindings which are currently used in emscripten. It is, as much as possible, compatible with spidermonkey bindings.
+4. We will ditch spidermonkey js-bindings once we can use embind with spidermonkey. (THIS WILL NOT HAPPEN VERY SOON)
+5. lua-bindings will be rewritten in embind once we get embind work with lua. It will remain compatible with orginal lua API.(THIS WILL NOT HAPPEN VERY SOON)
 
-The benefit of this new structure is that we can write binding code fairly easily if you look in the javascript-bindings. Lua bindings and js bindings can share same binding code. (They will not as they have different API, but new features might). We don't need bindings-generator anymore at that point of time as well as the tolua and tojs folders under tools.
+The benefit of this approach is that we can write binding code fairly easily if you look in the emscripten-bindings. Lua bindings and js bindings can share same binding code. (They are not as they have different exposed API, but new features might). We don't need bindings-generator anymore at that point of time as well as the tolua and tojs folders under tools.
