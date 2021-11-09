@@ -569,7 +569,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
 
-  class_<Scene, base<Node>>("cc.Scene")
+  auto sceneClazz = class_<Scene, base<Node>>("cc.Scene")
     .constructor(&cc_bindings_constructor<Scene>, allow_raw_pointers())
     .function("setCameraOrderDirty", &Scene::setCameraOrderDirty)
     .function("render", select_overload<void(Renderer*, const Mat4*, const Mat4*, unsigned int)>(&Scene::render), allow_raw_pointers())
@@ -591,7 +591,20 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .allow_subclass<wrapper<Scene>>("cc.Scene._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
-
+#if CC_ENABLE_BULLET_INTEGRATION && CC_USE_3D_PHYSICS
+    sceneClazz
+    .function("setPhysics3DDebugCamera", &Scene::setPhysics3DDebugCamera, allow_raw_pointers())
+    .function("initWithPhysics", &Scene::initWithPhysics)
+    .function("getPhysics3DWorld", &Scene::getPhysics3DWorld, allow_raw_pointers())
+    ;
+#endif  //CC_ENABLE_BULLET_INTEGRATION && CC_USE_3D_PHYSICS
+#if CC_USE_NAVMESH
+    sceneClazz
+    .function("getNavMesh", &Scene::getNavMesh, allow_raw_pointers())
+    .function("setNavMeshDebugCamera", &Scene::setNavMeshDebugCamera, allow_raw_pointers())
+    .function("setNavMesh", &Scene::setNavMesh, allow_raw_pointers())
+    ;
+#endif //CC_USE_NAVMESH
   class_<GLView>("cc.GLView")
     .function("setFrameSize", &GLView::setFrameSize)
     .function("getViewPortRect", &GLView::getViewPortRect)
@@ -2270,7 +2283,14 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("_className",  optional_override([](const EventMouse& _) -> std::string {return "EventMouse";}))    
     ;
 
-
+  // from cocos_specifics
+  // TODO: this constructor is special
+  class_<EventKeyboard, base<Event>>("cc.EventKeyboard")
+    .constructor(&cc_bindings_constructor<EventKeyboard, EventKeyboard::KeyCode, bool>, allow_raw_pointers())
+    .property("_className",  optional_override([](const EventKeyboard& _) -> std::string {return "EventKeyboard";}))    
+    ;
+  // end
+  
   class_<EventListenerMouse, base<EventListener>>("cc.EventListenerMouse")
     .constructor(&cc_bindings_constructor<EventListenerMouse>, allow_raw_pointers())
     .function("init", &EventListenerMouse::init)
@@ -3386,6 +3406,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getStencil", &ClippingNode::getStencil, allow_raw_pointers())
     .function("setAlphaThreshold", &ClippingNode::setAlphaThreshold)
     .function("isInverted", &ClippingNode::isInverted)
+    // from cocos_specifics
+    .function("init", select_overload<bool()>(&ClippingNode::init))
+    .function("init", select_overload<bool(Node*)>(&ClippingNode::init), allow_raw_pointers())
+    // end
     .property("alphaThreshold", &ClippingNode::getAlphaThreshold, &ClippingNode::setAlphaThreshold)
     .property("inverted", &ClippingNode::isInverted, &ClippingNode::setInverted)
     .property("stencil", &ClippingNode::getStencil, &ClippingNode::setStencil)
@@ -4835,6 +4859,11 @@ COCOS_BINDINGS(jsb_cocos2dx) {
           this_.unproject(arg0, &arg1, &ret);
           return ret;
       }))
+    .function("isVisibleInFrustum", optional_override(
+        [](const Camera& this_, const val& param){
+          cocos2d::AABB aabb(param["min"].as<Vec3>(), param["max"].as<Vec3>());
+          return this_.isVisibleInFrustum(&aabb);
+      }))
     // end
     .class_function("createOrthographic", &Camera::createOrthographic, allow_raw_pointers())
     .class_function("getVisitingCamera", &Camera::getVisitingCamera, allow_raw_pointers())
@@ -5447,9 +5476,267 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     ;
 
   class_<ComponentJS, base<Component>>("cc.ComponentJS")
+    // cocos_specifics
+    // NOTE: not sure if this will work
+    .constructor(&ComponentJS::create, allow_raw_pointers())
+    .function("getScriptObject", optional_override(
+    [](const val& thisv)
+    {
+      return thisv;
+    }))
+    .class_function("create", optional_override(
+    [](const string& arg0)
+    {
+      return ComponentJS::create(arg0);
+    }), allow_raw_pointers())
+    // end
     .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
     ;
 }
+
+// from cocos_specifics
+
+namespace cocos2d {
+  namespace bindings {
+    static EventListenerTouchOneByOne* _touchListenerOneByOne = nullptr;
+    static EventListenerTouchAllAtOnce* _touchListenerAllAtOnce = nullptr;
+  }
+}
+
+COCOS_BINDINGS(jsb_cocos2dx_functions)
+{
+  bindings::function("cc.glEnableVertexAttribs", optional_override(
+    [](uint32_t arg0)
+    {
+      return GL::enableVertexAttribs(arg0);
+    }));
+  bindings::function("cc.pAdd", optional_override(
+    [](const Point& p1, const Point& p2) -> Point
+    {
+      return p1 + p2;
+    }));
+  bindings::function("cc.pDistanceSQ", optional_override(
+    [](const Point& p1, const Point& p2)
+    {
+      return p1.getDistanceSq(p2);
+    }));
+  bindings::function("cc.pDistance", optional_override(
+    [](const Point& p1, const Point& p2)
+    {
+      return p1.getDistance(p2);
+    }));
+  bindings::function("cc.pSub", optional_override(
+    [](const Point& p1, const Point& p2) -> Point
+    {
+      return p1 - p2;
+    }));
+  bindings::function("cc.pNeg", optional_override(
+    [](const Point& p1) -> Point
+    {
+      return -p1;
+    }));
+  bindings::function("cc.pMult", optional_override(
+    [](const Point& p1, float arg1) -> Point
+    {
+      return p1 * arg1;
+    }));
+  bindings::function("cc.pMidpoint", optional_override(
+    [](const Point& p1, const Point& p2) -> Point
+    {
+      return p1.getMidpoint(p2);
+    }));
+  bindings::function("cc.pDot", optional_override(
+    [](const Point& p1, const Point& p2)
+    {
+      return p1.dot(p2);
+    }));
+  bindings::function("cc.pCross", optional_override(
+    [](const Point& p1, const Point& p2)
+    {
+      return p1.cross(p2);
+    }));
+  bindings::function("cc.pPerp", optional_override(
+    [](const Point& p1)
+    {
+      return p1.getPerp();
+    }));
+  bindings::function("cc.pRPerp", optional_override(
+    [](const Point& p1)
+    {
+      return p1.getRPerp();
+    }));
+  bindings::function("cc.pProject", optional_override(
+    [](const Point& p1, const Point& p2) -> Point
+    {
+      return p1.project(p2);
+    }));
+  bindings::function("cc.pRotate", optional_override(
+    [](const Point& p1, const Point& p2) -> Point
+    {
+      return p1.rotate(p2);
+    }));
+  bindings::function("cc.pNormalize", optional_override(
+    [](const Point& p1)
+    {
+      Point ret(p1);
+      ret.normalize();
+      return ret;
+    }));
+  bindings::function("cc.pClamp", optional_override(
+    [](const Point& p1, const Point& p2, const Point& p3)
+    {
+      return p1.getClampPoint(p2, p3);
+    }));
+  bindings::function("cc.pLengthSQ", optional_override(
+    [](const Point& p1)
+    {
+      return p1.getLengthSq();
+    }));
+  bindings::function("cc.pLength", optional_override(
+    [](const Point& p1)
+    {
+      return p1.getLength();
+    }));
+  bindings::function("cc.registerTargetedDelegate", optional_override(
+    [](int priority, bool swallowsTouches, Ref* this_)
+    {
+      auto dispatcher = Director::getInstance()->getEventDispatcher();
+      dispatcher->removeEventListener(_touchListenerOneByOne);
+
+      _touchListenerOneByOne = EventListenerTouchOneByOne::create();
+      _touchListenerOneByOne->setSwallowTouches(swallowsTouches);
+
+      _touchListenerOneByOne->onTouchBegan = [this_](Touch* touch, Event* event) -> bool
+      {
+        bool ret;
+        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::BEGAN, touch, event, ret);
+        return ret;
+      };
+      _touchListenerOneByOne->onTouchMoved = [this_](Touch* touch, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::MOVED, touch, event);
+      };
+      _touchListenerOneByOne->onTouchEnded = [this_](Touch* touch, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::ENDED, touch, event);
+      };
+      _touchListenerOneByOne->onTouchCancelled = [this_](Touch* touch, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::CANCELLED, touch, event);
+      };
+
+      dispatcher->addEventListenerWithFixedPriority(_touchListenerOneByOne, priority);
+    }));
+  bindings::function("cc.registerStandardDelegate", optional_override(
+    [](Ref* this_, int priority)
+    {
+      auto dispatcher = Director::getInstance()->getEventDispatcher();
+      dispatcher->removeEventListener(_touchListenerAllAtOnce);
+
+      _touchListenerAllAtOnce = EventListenerTouchAllAtOnce::create();
+      _touchListenerAllAtOnce->onTouchesBegan = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::BEGAN, _1, _2);
+      _touchListenerAllAtOnce->onTouchesMoved = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::MOVED, _1, _2);
+      _touchListenerAllAtOnce->onTouchesEnded = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::ENDED, _1, _2);
+      _touchListenerAllAtOnce->onTouchesCancelled = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::CANCELLED, _1, _2);
+
+      dispatcher->addEventListenerWithFixedPriority(_touchListenerAllAtOnce, priority);
+    }));
+  bindings::function("cc.registerStandardDelegate", optional_override(
+    [](Ref* this_)
+    {
+      auto dispatcher = Director::getInstance()->getEventDispatcher();
+      dispatcher->removeEventListener(_touchListenerAllAtOnce);
+
+      _touchListenerAllAtOnce = EventListenerTouchAllAtOnce::create();
+      _touchListenerAllAtOnce->onTouchesBegan = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::BEGAN, _1, _2);
+      _touchListenerAllAtOnce->onTouchesMoved = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::MOVED, _1, _2);
+      _touchListenerAllAtOnce->onTouchesEnded = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::ENDED, _1, _2);
+      _touchListenerAllAtOnce->onTouchesCancelled = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::CANCELLED, _1, _2);
+
+      dispatcher->addEventListenerWithFixedPriority(_touchListenerAllAtOnce, 1);
+    }));
+  bindings::function("cc.unregisterTouchDelegate", optional_override(
+    [](Ref* this_)
+    {
+      auto dispatcher = Director::getInstance()->getEventDispatcher();
+      dispatcher->removeEventListener(_touchListenerAllAtOnce);
+      dispatcher->removeEventListener(_touchListenerOneByOne);
+    }));
+  bindings::function("math.obbGetCorners", optional_override(
+    [](const OBB& this_)
+    {
+      Vec3 verts[8];
+      this_.getCorners(verts);
+      return std::vector<Vec3>(verts, verts + 8);
+    }));
+  bindings::function("math.obbIntersectsObb", optional_override(
+    [](const OBB& obb1, const OBB& obb2)
+    {
+      return obb1.intersects(obb2);
+    }));
+  bindings::function("math.rayIntersectsObb", optional_override(
+    [](const Ray& ray, const OBB& obb)
+    {
+      return ray.intersects(obb);
+    }));
+  bindings::function("math.mat4CreateTranslation", optional_override(
+    [](const Vec3& arg0)
+    {
+      cocos2d::Mat4 ret;
+      cocos2d::Mat4::createTranslation(arg0, &ret);
+      return ret;
+    }));
+  bindings::function("math.mat4CreateRotation", optional_override(
+    [](const Quaternion& arg0)
+    {
+      cocos2d::Mat4 ret;
+      cocos2d::Mat4::createRotation(arg0, &ret);
+      return ret;
+    }));
+  bindings::function("math.mat4Multiply", optional_override(
+    [](const Mat4& arg0, const Mat4& arg1) -> Mat4
+    {
+      return arg0 * arg1;
+    }));
+  bindings::function("math.mat4MultiplyVec3", optional_override(
+    [](const Mat4& arg0, const Vec3& arg1) -> Vec3
+    {
+      return arg0 * arg1;
+    }));
+  bindings::function("math.mat4GetInversed", optional_override(
+    [](const Mat4& arg0) -> Mat4
+    {
+      return arg0.getInversed();
+    }));
+  bindings::function("math.mat4TransformVector", optional_override(
+    [](const Mat4& arg0, const Vec4& arg1)
+    {
+      cocos2d::Vec4 ret;
+      arg0.transformVector(arg1, &ret);
+      return ret;
+    }));
+  bindings::function("math.mat4TransformVector", optional_override(
+    [](const Mat4& arg0, float arg1, float arg2, float arg3, float arg4)
+    {
+      cocos2d::Vec3 ret;
+      arg0.transformVector(arg1, arg2, arg3, arg4, &ret);
+      return ret;
+    }));
+  bindings::function("math.mat4TransformPoint", optional_override(
+    [](const Mat4& arg0, const Vec3& arg1)
+    {
+      cocos2d::Vec3 ret;
+      arg0.transformPoint(arg1, &ret);
+      return ret;
+    }));
+  bindings::function("math.quatMultiply", optional_override(
+    [](const Quaternion& arg0, const Quaternion& arg1) -> Quaternion
+    {
+      return arg0 * arg1;
+    }));
+    // NOTE: garbageCollect is in sys and can't be implemented in HTML5
+}
+// end
 
 CC_BINDINGS_ALLOW_RAW_POINTERS(TMXTilesetInfo)
 
