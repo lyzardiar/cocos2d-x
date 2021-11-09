@@ -50,6 +50,49 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("release", &Node::release)
     ;
   
+  class_<Action, base<Ref>>("cc.Action")
+    .function("startWithTarget", &Action::startWithTarget, allow_raw_pointers())
+    .function("setOriginalTarget", &Action::setOriginalTarget, allow_raw_pointers())
+    .function("clone", &Action::clone, allow_raw_pointers())
+    .function("getOriginalTarget", &Action::getOriginalTarget, allow_raw_pointers())
+    .function("stop", &Action::stop)
+    .function("update", &Action::update)
+    .function("getTarget", &Action::getTarget, allow_raw_pointers())
+    .function("getFlags", &Action::getFlags)
+    .function("step", &Action::step)
+    .function("setTag", &Action::setTag)
+    .function("setFlags", &Action::setFlags)
+    .function("getTag", &Action::getTag)
+    .function("setTarget", &Action::setTarget, allow_raw_pointers())
+    .function("isDone", &Action::isDone)
+    .function("reverse", &Action::reverse, allow_raw_pointers())
+    .property("tag",  &Action::getTag, &Action::setTag)
+    .property("_className",  optional_override([](const Action& _) -> std::string {return "Action";}))    
+    ;
+
+  class_<ActionManager, base<Ref>>("cc.ActionManager")
+    .constructor(&cc_bindings_constructor<ActionManager>, allow_raw_pointers())
+    .function("getActionByTag", &ActionManager::getActionByTag, allow_raw_pointers())
+    .function("removeActionByTag", &ActionManager::removeActionByTag, allow_raw_pointers())
+    .function("removeActionsByFlags", &ActionManager::removeActionsByFlags, allow_raw_pointers())
+    .function("removeAllActions", &ActionManager::removeAllActions)
+    .function("addAction", &ActionManager::addAction, allow_raw_pointers())
+    .function("resumeTarget", &ActionManager::resumeTarget, allow_raw_pointers())
+    .function("getNumberOfRunningActions", &ActionManager::getNumberOfRunningActions)
+    .function("pauseTarget", &ActionManager::pauseTarget, allow_raw_pointers())
+    .function("getNumberOfRunningActionsInTarget", &ActionManager::getNumberOfRunningActionsInTarget, allow_raw_pointers())
+    .function("removeAllActionsFromTarget", &ActionManager::removeAllActionsFromTarget, allow_raw_pointers())
+    .function("resumeTargets", &ActionManager::resumeTargets)
+    .function("removeAction", &ActionManager::removeAction, allow_raw_pointers())
+    .function("pauseAllRunningActions", &ActionManager::pauseAllRunningActions)
+    .function("update", &ActionManager::update)
+    .function("removeAllActionsByTag", &ActionManager::removeAllActionsByTag, allow_raw_pointers())
+    .function("getNumberOfRunningActionsInTargetByTag", &ActionManager::getNumberOfRunningActionsInTargetByTag, allow_raw_pointers())
+    .property("_className",  optional_override([](const ActionManager& _) -> std::string {return "ActionManager";}))    
+    .allow_subclass<wrapper<ActionManager>>("cc.ActionManager._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
   class_<Texture2D, base<Ref>>("cc.Texture2D")
     .constructor(&cc_bindings_constructor<Texture2D>, allow_raw_pointers())
     .function("getShaderProgram", &Texture2D::getGLProgram, allow_raw_pointers())
@@ -880,76 +923,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .property("_className",  optional_override([](const AsyncTaskPool& _) -> std::string {return "AsyncTaskPool";}))    
     ;
 
-  class_<Action, base<Ref>>("cc.Action")
-    .function("startWithTarget", &Action::startWithTarget, allow_raw_pointers())
-    .function("setOriginalTarget", &Action::setOriginalTarget, allow_raw_pointers())
-    .function("clone", &Action::clone, allow_raw_pointers())
-    .function("getOriginalTarget", &Action::getOriginalTarget, allow_raw_pointers())
-    .function("stop", &Action::stop)
-    .function("update", &Action::update)
-    .function("getTarget", &Action::getTarget, allow_raw_pointers())
-    .function("getFlags", &Action::getFlags)
-    .function("step", &Action::step)
-    .function("setTag", &Action::setTag)
-    .function("setFlags", &Action::setFlags)
-    .function("getTag", &Action::getTag)
-    .function("setTarget", &Action::setTarget, allow_raw_pointers())
-    .function("isDone", &Action::isDone)
-    .function("reverse", &Action::reverse, allow_raw_pointers())
-    .property("tag",  &Action::getTag, &Action::setTag)
-    .property("_className",  optional_override([](const Action& _) -> std::string {return "Action";}))    
-    ;
-
-  class_<FiniteTimeAction, base<Action>>("cc.FiniteTimeAction")
-    .function("setDuration", &FiniteTimeAction::setDuration)
-    .function("getDuration", &FiniteTimeAction::getDuration)
-    .property("_className",  optional_override([](const FiniteTimeAction& _) -> std::string {return "FiniteTimeAction";}))    
-    ;
-
-
-  class_<Speed, base<Action>>("cc.Speed")
-    .constructor(&cc_bindings_constructor<Speed>, allow_raw_pointers())
-    .function("setInnerAction", &Speed::setInnerAction, allow_raw_pointers())
-    .function("_getSpeed", &Speed::getSpeed)
-    .function("_setSpeed", &Speed::setSpeed)
-    .function("initWithAction", &Speed::initWithAction, allow_raw_pointers())
-    .function("getInnerAction", &Speed::getInnerAction, allow_raw_pointers())
-    .class_function("create", &Speed::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Speed& _) -> std::string {return "Speed";}))
-    .allow_subclass<wrapper<Speed>>("cc.Speed._extend")    
-    ;
-
-
-  class_<Follow, base<Action>>("cc.Follow")
-    .constructor(&cc_bindings_constructor<Follow>, allow_raw_pointers())
-    .function("setBoundarySet", &Follow::setBoundarySet)
-    .function("initWithTarget", &Follow::initWithTarget, allow_raw_pointers())
-    .function("initWithTarget", optional_override(
-        [](Follow& this_, Node* arg0){
-        return this_.initWithTarget(arg0);
-      }), allow_raw_pointers())
-    .function("initWithTargetAndOffset", &Follow::initWithTargetAndOffset, allow_raw_pointers())
-    .function("initWithTargetAndOffset", optional_override(
-        [](Follow& this_, Node* arg0, float arg1, float arg2){
-        return this_.initWithTargetAndOffset(arg0, arg1, arg2);
-      }), allow_raw_pointers())
-    .function("isBoundarySet", &Follow::isBoundarySet)
-    .class_function("create", &Follow::create, allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](Node* arg0){
-        return Follow::create(arg0);
-      }), allow_raw_pointers())
-    .class_function("createWithOffset", &Follow::createWithOffset, allow_raw_pointers())
-    .class_function("createWithOffset", optional_override(
-      [](Node* arg0, float arg1, float arg2){
-        return Follow::createWithOffset(arg0, arg1, arg2);
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const Follow& _) -> std::string {return "Follow";}))    
-    .allow_subclass<wrapper<Follow>>("cc.Follow._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
   class_<Image>("cc.Image")
     .constructor(&cc_bindings_constructor<Image>, allow_raw_pointers())
     .function("hasPremultipliedAlpha", &Image::hasPremultipliedAlpha)
@@ -1232,568 +1205,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       }), allow_raw_pointers())
     .property("_className",  optional_override([](const Animation& _) -> std::string {return "Animation";}))    
     .allow_subclass<wrapper<Animation>>("cc.Animation._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-  class_<ActionInterval, base<FiniteTimeAction>>("cc.ActionInterval")
-    .function("getAmplitudeRate", &ActionInterval::getAmplitudeRate)
-    .function("initWithDuration", &ActionInterval::initWithDuration)
-    .function("setAmplitudeRate", &ActionInterval::setAmplitudeRate)
-    .function("getElapsed", &ActionInterval::getElapsed)
-    // from cocos_specifics
-    .function("repeat", optional_override(
-      [](ActionInterval& this_, unsigned int times){
-        return Repeat::create(&this_, times);
-      }), allow_raw_pointers())
-    .function("repeatForever", optional_override(
-      [](ActionInterval& this_){
-        return RepeatForever::create(&this_);
-      }), allow_raw_pointers())
-    .function("_speed", optional_override(
-      [](ActionInterval& this_, float speed){
-        return Speed::create(&this_, speed);
-      }), allow_raw_pointers())
-    .function("easing", optional_override(
-      [](ActionInterval& this_, const val& param) -> ActionEase*{
-        int32_t tag = param["tag"].as<int32_t>();
-        if (tag == EASE_IN)
-        {
-            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeIn require one float parameter");
-            return EaseIn::create(&this_, param["param"].as<float>());
-        }
-        else if (tag == EASE_OUT)
-        {
-            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeOut require one float parameter");
-            return EaseOut::create(&this_, param["param"].as<float>());
-        }
-        else if (tag == EASE_INOUT)
-        {
-            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeInOut require one float parameter");
-            return EaseInOut::create(&this_, param["param"].as<float>());
-        }
-        else if (tag == EASE_EXPONENTIAL_IN)
-        {
-            return EaseExponentialIn::create(&this_);
-        }
-        else if (tag == EASE_EXPONENTIAL_OUT)
-        {
-            return EaseExponentialOut::create(&this_);
-        }
-        else if (tag == EASE_EXPONENTIAL_INOUT)
-        {
-            return EaseExponentialInOut::create(&this_);
-        }
-        else if (tag == EASE_SINE_IN)
-        {
-            return EaseSineIn::create(&this_);
-        }
-        else if (tag == EASE_SINE_OUT)
-        {
-            return EaseSineOut::create(&this_);
-        }
-        else if (tag == EASE_SINE_INOUT)
-        {
-            return EaseSineInOut::create(&this_);
-        }
-        else if (tag == EASE_ELASTIC_IN)
-        {
-            float parameter = 0.3;
-            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
-            return EaseElasticIn::create(&this_, parameter);
-        }
-        else if (tag == EASE_ELASTIC_OUT)
-        {
-            float parameter = 0.3;
-            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
-            return EaseElasticOut::create(&this_, parameter);
-        }
-        else if (tag == EASE_ELASTIC_INOUT)
-        {
-            float parameter = 0.3;
-            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
-            return EaseElasticInOut::create(&this_, parameter);
-        }
-        else if (tag == EASE_BOUNCE_IN)
-        {
-            return EaseBounceIn::create(&this_);
-        }
-        else if (tag == EASE_BOUNCE_OUT)
-        {
-            return EaseBounceOut::create(&this_);
-        }
-        else if (tag == EASE_BOUNCE_INOUT)
-        {
-            return EaseBounceInOut::create(&this_);
-        }
-        else if (tag == EASE_BACK_IN)
-        {
-            return EaseBackIn::create(&this_);
-        }
-        else if (tag == EASE_BACK_OUT)
-        {
-            return EaseBackOut::create(&this_);
-        }
-        else if (tag == EASE_BACK_INOUT)
-        {
-            return EaseBackInOut::create(&this_);
-        }
-        else if (tag == EASE_QUADRATIC_IN)
-        {
-            return EaseQuadraticActionIn::create(&this_);
-        }
-        else if (tag == EASE_QUADRATIC_OUT)
-        {
-            return EaseQuadraticActionOut::create(&this_);
-        }
-        else if (tag == EASE_QUADRATIC_INOUT)
-        {
-            return EaseQuadraticActionInOut::create(&this_);
-        }
-        else if (tag == EASE_QUARTIC_IN)
-        {
-            return EaseQuarticActionIn::create(&this_);
-        }
-        else if (tag == EASE_QUARTIC_OUT)
-        {
-            return EaseQuarticActionOut::create(&this_);
-        }
-        else if (tag == EASE_QUARTIC_INOUT)
-        {
-            return EaseQuarticActionInOut::create(&this_);
-        }
-        else if (tag == EASE_QUINTIC_IN)
-        {
-            return EaseQuinticActionIn::create(&this_);
-        }
-        else if (tag == EASE_QUINTIC_OUT)
-        {
-            return EaseQuinticActionOut::create(&this_);
-        }
-        else if (tag == EASE_QUINTIC_INOUT)
-        {
-            return EaseQuinticActionInOut::create(&this_);
-        }
-        else if (tag == EASE_CIRCLE_IN)
-        {
-            return EaseCircleActionIn::create(&this_);
-        }
-        else if (tag == EASE_CIRCLE_OUT)
-        {
-            return EaseCircleActionOut::create(&this_);
-        }
-        else if (tag == EASE_CIRCLE_INOUT)
-        {
-            return EaseCircleActionInOut::create(&this_);
-        }
-        else if (tag == EASE_CUBIC_IN)
-        {
-            return EaseCubicActionIn::create(&this_);
-        }
-        else if (tag == EASE_CUBIC_OUT)
-        {
-            return EaseCubicActionOut::create(&this_);
-        }
-        else if (tag == EASE_CUBIC_INOUT)
-        {
-            return EaseCubicActionInOut::create(&this_);
-        }
-        else if (tag == EASE_BEZIER_ACTION)
-        {
-            
-            CCASSERT(param.hasOwnProperty("param") &&
-            param.hasOwnProperty("param2") &&
-            param.hasOwnProperty("param3") &&
-            param.hasOwnProperty("param4"), "easing with cc.easeBezierAction require 4 float parameter");
-
-            EaseBezierAction* action = EaseBezierAction::create(&this_);
-            action->setBezierParamer(param["param"].as<float>(), param["param2"].as<float>(), param["param3"].as<float>(), param["param4"].as<float>());
-            return action;
-        }
-        else
-        {
-            CCASSERT(false, "easing with unkown easing object");
-            return nullptr;
-        }
-      }), allow_raw_pointers())
-    // end
-    .property("_className",  optional_override([](const ActionInterval& _) -> std::string {return "ActionInterval";}))
-    .allow_subclass<wrapper<ActionInterval>>("cc.ActionInterval._extend")    
-    ;
-
-
-  class_<Sequence, base<ActionInterval>>("cc.Sequence")
-    .constructor(&cc_bindings_constructor<Sequence>, allow_raw_pointers())
-    .function("init", &Sequence::init)
-    .function("initWithTwoActions", &Sequence::initWithTwoActions, allow_raw_pointers())
-    // cocos_specifics
-    .class_function("create", optional_override(
-      [](const Vector<FiniteTimeAction*>& arrayOfActions)
-      {
-        return Sequence::create(arrayOfActions);
-      }), allow_raw_pointers())
-    // TODO: overloading create takes variadic arguments not supported by embind
-    // NOTE: you can get around this by adding brackets e.g: [action1, action2, ...] to the funcion call which works in both spidermonkey and embind
-    // end
-    .property("_className",  optional_override([](const Sequence& _) -> std::string {return "Sequence";}))    
-    .allow_subclass<wrapper<Sequence>>("cc.Sequence._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Repeat, base<ActionInterval>>("cc.Repeat")
-    .constructor(&cc_bindings_constructor<Repeat>, allow_raw_pointers())
-    .function("setInnerAction", &Repeat::setInnerAction, allow_raw_pointers())
-    .function("initWithAction", &Repeat::initWithAction, allow_raw_pointers())
-    .function("getInnerAction", &Repeat::getInnerAction, allow_raw_pointers())
-    .class_function("create", &Repeat::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Repeat& _) -> std::string {return "Repeat";}))    
-    .allow_subclass<wrapper<Repeat>>("cc.Repeat._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<RepeatForever, base<ActionInterval>>("cc.RepeatForever")
-    .constructor(&cc_bindings_constructor<RepeatForever>, allow_raw_pointers())
-    .function("setInnerAction", &RepeatForever::setInnerAction, allow_raw_pointers())
-    .function("initWithAction", &RepeatForever::initWithAction, allow_raw_pointers())
-    .function("getInnerAction", &RepeatForever::getInnerAction, allow_raw_pointers())
-    .class_function("create", &RepeatForever::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const RepeatForever& _) -> std::string {return "RepeatForever";}))    
-    .allow_subclass<wrapper<RepeatForever>>("cc.RepeatForever._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Spawn, base<ActionInterval>>("cc.Spawn")
-    .constructor(&cc_bindings_constructor<Spawn>, allow_raw_pointers())
-    .function("init", &Spawn::init)
-    .function("initWithTwoActions", &Spawn::initWithTwoActions, allow_raw_pointers())
-    // cocos_specifics
-    .class_function("create", optional_override(
-      [](const Vector<FiniteTimeAction*>& arrayOfActions)
-      {
-        return Spawn::create(arrayOfActions);
-      }), allow_raw_pointers())
-    // TODO: overloading create takes variadic arguments not supported by embind
-    // NOTE: you can get around this by adding brackets e.g: [action1, action2, ...] to the funcion call which works in both spidermonkey and embind
-    // end
-    .property("_className",  optional_override([](const Spawn& _) -> std::string {return "Spawn";}))    
-    .allow_subclass<wrapper<Spawn>>("cc.Spawn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<RotateTo, base<ActionInterval>>("cc.RotateTo")
-    .constructor(&cc_bindings_constructor<RotateTo>, allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&RotateTo::initWithDuration))
-    .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateTo::initWithDuration))
-    .class_function("create", select_overload<cocos2d::RotateTo*(float, float, float)>(&RotateTo::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](float arg0, const val& arg1){
-      if (!arg1.isNumber())
-      {
-        return RotateTo::create(arg0, arg1.as<const cocos2d::Vec3&>());
-      } else 
-      {
-        return RotateTo::create(arg0, arg1.as<float>());
-      }
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const RotateTo& _) -> std::string {return "RotateTo";}))    
-    .allow_subclass<wrapper<RotateTo>>("cc.RotateTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<RotateBy, base<ActionInterval>>("cc.RotateBy")
-    .constructor(&cc_bindings_constructor<RotateBy>, allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateBy::initWithDuration))
-    .function("initWithDuration", optional_override(
-      [](RotateBy& this_, float arg0, const val& arg1){
-      if (!arg1.isNumber())
-      {
-        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
-      } else 
-      {
-        return this_.initWithDuration(arg0, arg1.as<float>());
-      }
-    }))
-    .class_function("create", select_overload<cocos2d::RotateBy*(float, float, float)>(&RotateBy::create), allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](float arg0, const val& arg1){
-      if (!arg1.isNumber())
-      {
-        return RotateBy::create(arg0, arg1.as<const cocos2d::Vec3&>());
-      } else 
-      {
-        return RotateBy::create(arg0, arg1.as<float>());
-      }
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const RotateBy& _) -> std::string {return "RotateBy";}))    
-    .allow_subclass<wrapper<RotateBy>>("cc.RotateBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<MoveBy, base<ActionInterval>>("cc.MoveBy")
-    .constructor(&cc_bindings_constructor<MoveBy>, allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-      [](MoveBy& this_, float arg0, const val& arg1){
-      if (!arg1.hasOwnProperty("z"))
-      {
-        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec2&>());
-      } else 
-      {
-        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
-      }
-    }))
-    .class_function("create", optional_override(
-      [](float arg0, const val& arg1){
-      if (!arg1.hasOwnProperty("z"))
-      {
-        return MoveBy::create(arg0, arg1.as<const cocos2d::Vec2&>());
-      } else 
-      {
-        return MoveBy::create(arg0, arg1.as<const cocos2d::Vec3&>());
-      }
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const MoveBy& _) -> std::string {return "MoveBy";}))    
-    .allow_subclass<wrapper<MoveBy>>("cc.MoveBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<MoveTo, base<MoveBy>>("cc.MoveTo")
-    .constructor(&cc_bindings_constructor<MoveTo>, allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-      [](MoveTo& this_, float arg0, const val& arg1){
-      if (!arg1.hasOwnProperty("z"))
-      {
-        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec2&>());
-      } else 
-      {
-        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
-      }
-    }))
-    .class_function("create", optional_override(
-      [](float arg0, const val& arg1){
-      if (!arg1.hasOwnProperty("z"))
-      {
-        return MoveTo::create(arg0, arg1.as<const cocos2d::Vec2&>());
-      } else 
-      {
-        return MoveTo::create(arg0, arg1.as<const cocos2d::Vec3&>());
-      }
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const MoveTo& _) -> std::string {return "MoveTo";}))    
-    .allow_subclass<wrapper<MoveTo>>("cc.MoveTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<SkewTo, base<ActionInterval>>("cc.SkewTo")
-    .constructor(&cc_bindings_constructor<SkewTo>, allow_raw_pointers())
-    .function("initWithDuration", &SkewTo::initWithDuration)
-    .class_function("create", &SkewTo::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const SkewTo& _) -> std::string {return "SkewTo";}))    
-    .allow_subclass<wrapper<SkewTo>>("cc.SkewTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<SkewBy, base<SkewTo>>("cc.SkewBy")
-    .constructor(&cc_bindings_constructor<SkewBy>, allow_raw_pointers())
-    .function("initWithDuration", &SkewBy::initWithDuration)
-    .class_function("create", &SkewBy::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const SkewBy& _) -> std::string {return "SkewBy";}))    
-    .allow_subclass<wrapper<SkewBy>>("cc.SkewBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<JumpBy, base<ActionInterval>>("cc.JumpBy")
-    .constructor(&cc_bindings_constructor<JumpBy>, allow_raw_pointers())
-    .function("initWithDuration", &JumpBy::initWithDuration)
-    .class_function("create", &JumpBy::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const JumpBy& _) -> std::string {return "JumpBy";}))    
-    .allow_subclass<wrapper<JumpBy>>("cc.JumpBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<JumpTo, base<JumpBy>>("cc.JumpTo")
-    .constructor(&cc_bindings_constructor<JumpTo>, allow_raw_pointers())
-    .function("initWithDuration", &JumpTo::initWithDuration)
-    .class_function("create", &JumpTo::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const JumpTo& _) -> std::string {return "JumpTo";}))    
-    .allow_subclass<wrapper<JumpTo>>("cc.JumpTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  value_array<ccBezierConfig>("_.ccBezierConfig")
-    .element(&ccBezierConfig::controlPoint_1)
-    .element(&ccBezierConfig::controlPoint_2)
-    .element(&ccBezierConfig::endPosition)
-    ;
-
-  class_<BezierBy, base<ActionInterval>>("cc.BezierBy")
-    .constructor(&cc_bindings_constructor<BezierBy>, allow_raw_pointers())
-    // from cocos2d_specifics
-    .class_function("create", &BezierBy::create, allow_raw_pointers())
-    // end
-    .property("_className",  optional_override([](const BezierBy& _) -> std::string {return "BezierBy";}))    
-    .allow_subclass<wrapper<BezierBy>>("cc.BezierBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<BezierTo, base<BezierBy>>("cc.BezierTo")
-    .constructor(&cc_bindings_constructor<BezierTo>, allow_raw_pointers())
-    // from cocos2d_specifics
-    .class_function("create", &BezierTo::create, allow_raw_pointers())
-    // end
-    .property("_className",  optional_override([](const BezierTo& _) -> std::string {return "BezierTo";}))    
-    .allow_subclass<wrapper<BezierTo>>("cc.BezierTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ScaleTo, base<ActionInterval>>("cc.ScaleTo")
-    .constructor(&cc_bindings_constructor<ScaleTo>, allow_raw_pointers())
-    .function("initWithDuration", select_overload<bool(float, float, float)>(&ScaleTo::initWithDuration))
-    .function("initWithDuration", select_overload<bool(float, float)>(&ScaleTo::initWithDuration))
-    .function("initWithDuration", select_overload<bool(float, float, float, float)>(&ScaleTo::initWithDuration))
-    .class_function("create", select_overload<ScaleTo*(float, float, float)>(&ScaleTo::create), allow_raw_pointers())
-    .class_function("create", select_overload<ScaleTo*(float, float)>(&ScaleTo::create), allow_raw_pointers())
-    .class_function("create", select_overload<ScaleTo*(float, float, float, float)>(&ScaleTo::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const ScaleTo& _) -> std::string {return "ScaleTo";}))    
-    .allow_subclass<wrapper<ScaleTo>>("cc.ScaleTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ScaleBy, base<ScaleTo>>("cc.ScaleBy")
-    .constructor(&cc_bindings_constructor<ScaleBy>, allow_raw_pointers())
-    .class_function("create", select_overload<ScaleBy*(float, float, float)>(&ScaleBy::create), allow_raw_pointers())
-    .class_function("create", select_overload<ScaleBy*(float, float)>(&ScaleBy::create), allow_raw_pointers())
-    .class_function("create", select_overload<ScaleBy*(float, float, float, float)>(&ScaleBy::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const ScaleBy& _) -> std::string {return "ScaleBy";}))    
-    .allow_subclass<wrapper<ScaleBy>>("cc.ScaleBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Blink, base<ActionInterval>>("cc.Blink")
-    .constructor(&cc_bindings_constructor<Blink>, allow_raw_pointers())
-    .function("initWithDuration", &Blink::initWithDuration)
-    .class_function("create", &Blink::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Blink& _) -> std::string {return "Blink";}))    
-    .allow_subclass<wrapper<Blink>>("cc.Blink._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FadeTo, base<ActionInterval>>("cc.FadeTo")
-    .constructor(&cc_bindings_constructor<FadeTo>, allow_raw_pointers())
-    .function("initWithDuration", &FadeTo::initWithDuration)
-    .class_function("create", &FadeTo::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeTo& _) -> std::string {return "FadeTo";}))    
-    .allow_subclass<wrapper<FadeTo>>("cc.FadeTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FadeIn, base<FadeTo>>("cc.FadeIn")
-    .constructor(&cc_bindings_constructor<FadeIn>, allow_raw_pointers())
-    .function("setReverseAction", &FadeIn::setReverseAction, allow_raw_pointers())
-    .class_function("create", &FadeIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeIn& _) -> std::string {return "FadeIn";}))    
-    .allow_subclass<wrapper<FadeIn>>("cc.FadeIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FadeOut, base<FadeTo>>("cc.FadeOut")
-    .constructor(&cc_bindings_constructor<FadeOut>, allow_raw_pointers())
-    .function("setReverseAction", &FadeOut::setReverseAction, allow_raw_pointers())
-    .class_function("create", &FadeOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeOut& _) -> std::string {return "FadeOut";}))    
-    .allow_subclass<wrapper<FadeOut>>("cc.FadeOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TintTo, base<ActionInterval>>("cc.TintTo")
-    .constructor(&cc_bindings_constructor<TintTo>, allow_raw_pointers())
-    .function("initWithDuration", &TintTo::initWithDuration)
-    .class_function("create", select_overload<TintTo*(float, const Color3B&)>(&TintTo::create), allow_raw_pointers())
-    .class_function("create", select_overload<TintTo*(float, unsigned char, unsigned char, unsigned char)>(&TintTo::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const TintTo& _) -> std::string {return "TintTo";}))    
-    .allow_subclass<wrapper<TintTo>>("cc.TintTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TintBy, base<ActionInterval>>("cc.TintBy")
-    .constructor(&cc_bindings_constructor<TintBy>, allow_raw_pointers())
-    .function("initWithDuration", &TintBy::initWithDuration)
-    .class_function("create", &TintBy::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TintBy& _) -> std::string {return "TintBy";}))    
-    .allow_subclass<wrapper<TintBy>>("cc.TintBy._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<DelayTime, base<ActionInterval>>("cc.DelayTime")
-    .constructor(&cc_bindings_constructor<DelayTime>, allow_raw_pointers())
-    .class_function("create", &DelayTime::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const DelayTime& _) -> std::string {return "DelayTime";}))    
-    .allow_subclass<wrapper<DelayTime>>("cc.DelayTime._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ReverseTime, base<ActionInterval>>("cc.ReverseTime")
-    .constructor(&cc_bindings_constructor<ReverseTime>, allow_raw_pointers())
-    .function("initWithAction", &ReverseTime::initWithAction, allow_raw_pointers())
-    .class_function("create", &ReverseTime::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ReverseTime& _) -> std::string {return "ReverseTime";}))    
-    .allow_subclass<wrapper<ReverseTime>>("cc.ReverseTime._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Animate, base<ActionInterval>>("cc.Animate")
-    .constructor(&cc_bindings_constructor<Animate>, allow_raw_pointers())
-    .function("initWithAnimation", &Animate::initWithAnimation, allow_raw_pointers())
-    .function("getAnimation", select_overload<const Animation*() const>(&Animate::getAnimation), allow_raw_pointers())
-    .function("getCurrentFrameIndex", &Animate::getCurrentFrameIndex)
-    .function("setAnimation", &Animate::setAnimation, allow_raw_pointers())
-    .class_function("create", &Animate::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Animate& _) -> std::string {return "Animate";}))    
-    .allow_subclass<wrapper<Animate>>("cc.Animate._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TargetedAction, base<ActionInterval>>("cc.TargetedAction")
-    .constructor(&cc_bindings_constructor<TargetedAction>, allow_raw_pointers())
-    .function("getForcedTarget", select_overload<const Node*() const>(&TargetedAction::getForcedTarget), allow_raw_pointers())
-    .function("initWithTarget", &TargetedAction::initWithTarget, allow_raw_pointers())
-    .function("setForcedTarget", &TargetedAction::setForcedTarget, allow_raw_pointers())
-    .class_function("create", &TargetedAction::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const TargetedAction& _) -> std::string {return "TargetedAction";}))    
-    .allow_subclass<wrapper<TargetedAction>>("cc.TargetedAction._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ActionFloat, base<ActionInterval>>("cc.ActionFloat")
-    .constructor(&cc_bindings_constructor<ActionFloat>, allow_raw_pointers())
-    .function("initWithDuration", &ActionFloat::initWithDuration)
-    .class_function("create", &ActionFloat::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ActionFloat& _) -> std::string {return "ActionFloat";}))    
-    .allow_subclass<wrapper<ActionFloat>>("cc.ActionFloat._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 
@@ -2226,9 +1637,10 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .class_function("create", optional_override(
       []()
       {
-        auto ret = EventListenerFocus::create();
-        ret->onFocusChanged = [ret](ui::Widget* widgetLoseFocus, ui::Widget* widgetGetFocus){
-            ScriptEngine::getInstance()->handleFocusEvent(ret, widgetLoseFocus, widgetGetFocus);
+        auto listener = EventListenerFocus::create();
+        val ret(listener);
+        listener->onFocusChanged = [ret](ui::Widget* widgetLoseFocus, ui::Widget* widgetGetFocus){
+            ScriptEngine::getInstance()->handleFocusEvent((void*)&ret, widgetLoseFocus, widgetGetFocus);
         };
         return ret;
       }
@@ -2245,14 +1657,14 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .class_function("create", optional_override(
       []()
       {
-        auto ret = EventListenerKeyboard::create();
-
-        ret->onKeyPressed = [ret](EventKeyboard::KeyCode keyCode, Event* event) {
-            ScriptEngine::getInstance()->handleKeyboardEvent(ret, keyCode, true, event);
+        auto listener = EventListenerKeyboard::create();
+        val ret(listener);
+        listener->onKeyPressed = [ret](EventKeyboard::KeyCode keyCode, Event* event) {
+            ScriptEngine::getInstance()->handleKeyboardEvent((void*)&ret, keyCode, true, event);
         };
 
-        ret->onKeyReleased = [ret](EventKeyboard::KeyCode keyCode, Event* event) {
-            ScriptEngine::getInstance()->handleKeyboardEvent(ret, keyCode, false, event);
+        listener->onKeyReleased = [ret](EventKeyboard::KeyCode keyCode, Event* event) {
+            ScriptEngine::getInstance()->handleKeyboardEvent((void*)&ret, keyCode, false, event);
         };
 
         return ret;
@@ -2297,22 +1709,23 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // from manual
     .class_function("create", optional_override(
     [](){
-      auto ret = EventListenerMouse::create();
+      auto listener = EventListenerMouse::create();
+      val ret(listener);
 
-      ret->onMouseDown = [ret](Event* event) {
-          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_DOWN, event);
+      listener->onMouseDown = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent((void*)&ret, EventMouse::MouseEventType::MOUSE_DOWN, event);
       };
 
-      ret->onMouseUp = [ret](Event* event) {
-          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_UP, event);
+      listener->onMouseUp = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent((void*)&ret, EventMouse::MouseEventType::MOUSE_UP, event);
       };
 
-      ret->onMouseMove = [ret](Event* event) {
-          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_MOVE, event);
+      listener->onMouseMove = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent((void*)&ret, EventMouse::MouseEventType::MOUSE_MOVE, event);
       };
 
-      ret->onMouseScroll = [ret](Event* event) {
-          ScriptEngine::getInstance()->handleMouseEvent(ret, EventMouse::MouseEventType::MOUSE_SCROLL, event);
+      listener->onMouseScroll = [ret](Event* event) {
+          ScriptEngine::getInstance()->handleMouseEvent((void*)&ret, EventMouse::MouseEventType::MOUSE_SCROLL, event);
       };
 
       return ret;
@@ -2336,24 +1749,25 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .class_function("create", optional_override(
       []()
       {
-        auto ret = EventListenerTouchOneByOne::create();
+        auto listener = EventListenerTouchOneByOne::create();
+        val ret(listener);
 
-        ret->onTouchBegan = [ret](Touch* touch, Event* event) -> bool {
+        listener->onTouchBegan = [ret](Touch* touch, Event* event) -> bool {
           bool lret;
-          ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::BEGAN, touch, event, lret);
+          ScriptEngine::getInstance()->handleTouchEvent((void*)&ret, EventTouch::EventCode::BEGAN, touch, event, lret);
           return lret;
         };
 
-        ret->onTouchMoved = [ret](Touch* touch, Event* event) {
-            ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::MOVED, touch, event);
+        listener->onTouchMoved = [ret](Touch* touch, Event* event) {
+            ScriptEngine::getInstance()->handleTouchEvent((void*)&ret, EventTouch::EventCode::MOVED, touch, event);
         };
 
-        ret->onTouchEnded = [ret](Touch* touch, Event* event) {
-            ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::ENDED, touch, event);
+        listener->onTouchEnded = [ret](Touch* touch, Event* event) {
+            ScriptEngine::getInstance()->handleTouchEvent((void*)&ret, EventTouch::EventCode::ENDED, touch, event);
         };
 
-        ret->onTouchCancelled = [ret](Touch* touch, Event* event) {
-            ScriptEngine::getInstance()->handleTouchEvent(ret, EventTouch::EventCode::CANCELLED, touch, event);
+        listener->onTouchCancelled = [ret](Touch* touch, Event* event) {
+            ScriptEngine::getInstance()->handleTouchEvent((void*)&ret, EventTouch::EventCode::CANCELLED, touch, event);
         };
 
         return ret;
@@ -2371,22 +1785,23 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .class_function("create", optional_override(
       []()
       {
-        auto ret = EventListenerTouchAllAtOnce::create();
+        auto listener = EventListenerTouchAllAtOnce::create();
+        val ret(listener);
 
-        ret->onTouchesBegan = [ret](const std::vector<Touch*>& touches, Event* event) {
-            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::BEGAN, touches, event);
+        listener->onTouchesBegan = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent((void*)&ret, EventTouch::EventCode::BEGAN, touches, event);
         };
 
-        ret->onTouchesMoved = [ret](const std::vector<Touch*>& touches, Event* event) {
-            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::MOVED, touches, event);
+        listener->onTouchesMoved = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent((void*)&ret, EventTouch::EventCode::MOVED, touches, event);
         };
 
-        ret->onTouchesEnded = [ret](const std::vector<Touch*>& touches, Event* event) {
-            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::ENDED, touches, event);
+        listener->onTouchesEnded = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent((void*)&ret, EventTouch::EventCode::ENDED, touches, event);
         };
 
-        ret->onTouchesCancelled = [ret](const std::vector<Touch*>& touches, Event* event) {
-            ScriptEngine::getInstance()->handleTouchesEvent(ret, EventTouch::EventCode::CANCELLED, touches, event);
+        listener->onTouchesCancelled = [ret](const std::vector<Touch*>& touches, Event* event) {
+            ScriptEngine::getInstance()->handleTouchesEvent((void*)&ret, EventTouch::EventCode::CANCELLED, touches, event);
         };
 
         return ret;
@@ -2419,961 +1834,6 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("getKeyCode", &EventController::getKeyCode)
     .property("_className",  optional_override([](const EventController& _) -> std::string {return "EventController";}))    
     ;
-
-
-  class_<ActionCamera, base<ActionInterval>>("cc.ActionCamera")
-    .constructor(&cc_bindings_constructor<ActionCamera>, allow_raw_pointers())
-    .function("setEye", select_overload<void(float, float, float)>(&ActionCamera::setEye))
-    .function("setEye", select_overload<void(const Vec3&)>(&ActionCamera::setEye))
-    .function("getEye", &ActionCamera::getEye)
-    .function("setUp", &ActionCamera::setUp)
-    .function("getCenter", &ActionCamera::getCenter)
-    .function("setCenter", &ActionCamera::setCenter)
-    .function("getUp", &ActionCamera::getUp)
-    .property("_className",  optional_override([](const ActionCamera& _) -> std::string {return "ActionCamera";}))    
-    .allow_subclass<wrapper<ActionCamera>>("cc.ActionCamera._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<OrbitCamera, base<ActionCamera>>("cc.OrbitCamera")
-    .constructor(&cc_bindings_constructor<OrbitCamera>, allow_raw_pointers())
-    .function("sphericalRadius", &OrbitCamera::sphericalRadius, allow_raw_pointers())
-    .function("initWithDuration", &OrbitCamera::initWithDuration)
-    .class_function("create", &OrbitCamera::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const OrbitCamera& _) -> std::string {return "OrbitCamera";}))    
-    .allow_subclass<wrapper<OrbitCamera>>("cc.OrbitCamera._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<CardinalSplineTo, base<ActionInterval>>("cc.CardinalSplineTo")
-    .constructor(&cc_bindings_constructor<CardinalSplineTo>, allow_raw_pointers())
-    // from manual
-    .class_function("create", optional_override(
-      [](float duration, const std::vector<Vec2>& points, float tension)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        return CardinalSplineTo::create(duration, pointArray, tension);
-      }
-    ), allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-      [](CardinalSplineTo& this_, float duration, const std::vector<Vec2>& points, float tension)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        return this_.initWithDuration(duration, pointArray, tension);
-      }
-    ), allow_raw_pointers())
-    // end of manual
-    .function("getPoints", &CardinalSplineTo::getPoints, allow_raw_pointers())
-    .function("updatePosition", &CardinalSplineTo::updatePosition)
-    .property("_className",  optional_override([](const CardinalSplineTo& _) -> std::string {return "CardinalSplineTo";}))
-    .allow_subclass<wrapper<CardinalSplineTo>>("cc.CardinalSplineTo._extend")    
-    ;
-
-
-  class_<CardinalSplineBy, base<CardinalSplineTo>>("cc.CardinalSplineBy")
-    .constructor(&cc_bindings_constructor<CardinalSplineBy>, allow_raw_pointers())
-    // from manual
-    .class_function("create", optional_override(
-      [](float duration, const std::vector<Vec2>& points, float tension)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        return CardinalSplineBy::create(duration, pointArray, tension);
-      }
-    ), allow_raw_pointers())
-    // end of manual
-    .property("_className",  optional_override([](const CardinalSplineBy& _) -> std::string {return "CardinalSplineBy";}))
-    .allow_subclass<wrapper<CardinalSplineBy>>("cc.CardinalSplineBy._extend")    
-    ;
-
-  class_<CatmullRomTo, base<CardinalSplineTo>>("cc.CatmullRomTo")
-    // from manual
-    .class_function("create", optional_override(
-      [](float duration, const std::vector<Vec2>& points)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        return CatmullRomTo::create(duration, pointArray);
-      }
-    ), allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-      [](CatmullRomTo& this_, float duration, const std::vector<Vec2>& points)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        this_.initWithDuration(duration, pointArray);
-      }
-    ), allow_raw_pointers())
-    // end of manual
-    .property("_className",  optional_override([](const CatmullRomTo& _) -> std::string {return "CatmullRomTo";}))
-    .allow_subclass<wrapper<CatmullRomTo>>("cc.CatmullRomTo._extend")    
-    ;
-
-  class_<CatmullRomBy, base<CardinalSplineBy>>("cc.CatmullRomBy")
-    // from manual
-    .class_function("create", optional_override(
-      [](float duration, const std::vector<Vec2>& points)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        return CatmullRomBy::create(duration, pointArray);
-      }
-    ), allow_raw_pointers())
-    .function("initWithDuration", optional_override(
-      [](CatmullRomBy& this_, float duration, const std::vector<Vec2>& points)
-      {
-        PointArray* pointArray = PointArray::create(points.size());
-        pointArray->setControlPoints(points);
-        this_.initWithDuration(duration, pointArray);
-      }
-    ), allow_raw_pointers())
-    // end of manual
-    .property("_className",  optional_override([](const CatmullRomBy& _) -> std::string {return "CatmullRomBy";}))
-    .allow_subclass<wrapper<CatmullRomBy>>("cc.CatmullRomBy._extend")    
-    ;
-
-  class_<ActionEase, base<ActionInterval>>("cc.ActionEase")
-    .function("initWithAction", &ActionEase::initWithAction, allow_raw_pointers())
-    .function("getInnerAction", &ActionEase::getInnerAction, allow_raw_pointers())
-    .property("_className",  optional_override([](const ActionEase& _) -> std::string {return "ActionEase";}))
-    .allow_subclass<wrapper<ActionEase>>("cc.ActionEase._extend")    
-    ;
-
-  class_<EaseRateAction, base<ActionEase>>("cc.EaseRateAction")
-    .function("setRate", &EaseRateAction::setRate)
-    .function("initWithAction", &EaseRateAction::initWithAction, allow_raw_pointers())
-    .function("getRate", &EaseRateAction::getRate)
-    .class_function("create", &EaseRateAction::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseRateAction& _) -> std::string {return "EaseRateAction";}))
-    .allow_subclass<wrapper<EaseRateAction>>("cc.EaseRateAction._extend")    
-    ;
-
-
-  class_<EaseExponentialIn, base<ActionEase>>("cc.EaseExponentialIn")
-    .constructor(&cc_bindings_constructor<EaseExponentialIn>, allow_raw_pointers())
-    .class_function("create", &EaseExponentialIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseExponentialIn& _) -> std::string {return "EaseExponentialIn";}))    
-    .allow_subclass<wrapper<EaseExponentialIn>>("cc.EaseExponentialIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseExponentialOut, base<ActionEase>>("cc.EaseExponentialOut")
-    .constructor(&cc_bindings_constructor<EaseExponentialOut>, allow_raw_pointers())
-    .class_function("create", &EaseExponentialOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseExponentialOut& _) -> std::string {return "EaseExponentialOut";}))    
-    .allow_subclass<wrapper<EaseExponentialOut>>("cc.EaseExponentialOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseExponentialInOut, base<ActionEase>>("cc.EaseExponentialInOut")
-    .constructor(&cc_bindings_constructor<EaseExponentialInOut>, allow_raw_pointers())
-    .class_function("create", &EaseExponentialInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseExponentialInOut& _) -> std::string {return "EaseExponentialInOut";}))    
-    .allow_subclass<wrapper<EaseExponentialInOut>>("cc.EaseExponentialInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseSineIn, base<ActionEase>>("cc.EaseSineIn")
-    .constructor(&cc_bindings_constructor<EaseSineIn>, allow_raw_pointers())
-    .class_function("create", &EaseSineIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseSineIn& _) -> std::string {return "EaseSineIn";}))    
-    .allow_subclass<wrapper<EaseSineIn>>("cc.EaseSineIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseSineOut, base<ActionEase>>("cc.EaseSineOut")
-    .constructor(&cc_bindings_constructor<EaseSineOut>, allow_raw_pointers())
-    .class_function("create", &EaseSineOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseSineOut& _) -> std::string {return "EaseSineOut";}))    
-    .allow_subclass<wrapper<EaseSineOut>>("cc.EaseSineOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseSineInOut, base<ActionEase>>("cc.EaseSineInOut")
-    .constructor(&cc_bindings_constructor<EaseSineInOut>, allow_raw_pointers())
-    .class_function("create", &EaseSineInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseSineInOut& _) -> std::string {return "EaseSineInOut";}))    
-    .allow_subclass<wrapper<EaseSineInOut>>("cc.EaseSineInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-  class_<EaseBounce, base<ActionEase>>("cc.EaseBounce")
-    .property("_className",  optional_override([](const EaseBounce& _) -> std::string {return "EaseBounce";}))
-    .allow_subclass<wrapper<EaseBounce>>("cc.EaseBounce._extend")    
-    ;
-
-
-  class_<EaseBounceIn, base<ActionEase>>("cc.EaseBounceIn")
-    .constructor(&cc_bindings_constructor<EaseBounceIn>, allow_raw_pointers())
-    .class_function("create", &EaseBounceIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBounceIn& _) -> std::string {return "EaseBounceIn";}))    
-    .allow_subclass<wrapper<EaseBounceIn>>("cc.EaseBounceIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseBounceOut, base<ActionEase>>("cc.EaseBounceOut")
-    .constructor(&cc_bindings_constructor<EaseBounceOut>, allow_raw_pointers())
-    .class_function("create", &EaseBounceOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBounceOut& _) -> std::string {return "EaseBounceOut";}))    
-    .allow_subclass<wrapper<EaseBounceOut>>("cc.EaseBounceOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseBounceInOut, base<ActionEase>>("cc.EaseBounceInOut")
-    .constructor(&cc_bindings_constructor<EaseBounceInOut>, allow_raw_pointers())
-    .class_function("create", &EaseBounceInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBounceInOut& _) -> std::string {return "EaseBounceInOut";}))    
-    .allow_subclass<wrapper<EaseBounceInOut>>("cc.EaseBounceInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseBackIn, base<ActionEase>>("cc.EaseBackIn")
-    .constructor(&cc_bindings_constructor<EaseBackIn>, allow_raw_pointers())
-    .class_function("create", &EaseBackIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBackIn& _) -> std::string {return "EaseBackIn";}))    
-    .allow_subclass<wrapper<EaseBackIn>>("cc.EaseBackIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseBackOut, base<ActionEase>>("cc.EaseBackOut")
-    .constructor(&cc_bindings_constructor<EaseBackOut>, allow_raw_pointers())
-    .class_function("create", &EaseBackOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBackOut& _) -> std::string {return "EaseBackOut";}))    
-    .allow_subclass<wrapper<EaseBackOut>>("cc.EaseBackOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseBackInOut, base<ActionEase>>("cc.EaseBackInOut")
-    .constructor(&cc_bindings_constructor<EaseBackInOut>, allow_raw_pointers())
-    .class_function("create", &EaseBackInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBackInOut& _) -> std::string {return "EaseBackInOut";}))    
-    .allow_subclass<wrapper<EaseBackInOut>>("cc.EaseBackInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuadraticActionIn, base<ActionEase>>("cc.EaseQuadraticActionIn")
-    .constructor(&cc_bindings_constructor<EaseQuadraticActionIn>, allow_raw_pointers())
-    .class_function("create", &EaseQuadraticActionIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuadraticActionIn& _) -> std::string {return "EaseQuadraticActionIn";}))    
-    .allow_subclass<wrapper<EaseQuadraticActionIn>>("cc.EaseQuadraticActionIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuadraticActionOut, base<ActionEase>>("cc.EaseQuadraticActionOut")
-    .constructor(&cc_bindings_constructor<EaseQuadraticActionOut>, allow_raw_pointers())
-    .class_function("create", &EaseQuadraticActionOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuadraticActionOut& _) -> std::string {return "EaseQuadraticActionOut";}))    
-    .allow_subclass<wrapper<EaseQuadraticActionOut>>("cc.EaseQuadraticActionOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuadraticActionInOut, base<ActionEase>>("cc.EaseQuadraticActionInOut")
-    .constructor(&cc_bindings_constructor<EaseQuadraticActionInOut>, allow_raw_pointers())
-    .class_function("create", &EaseQuadraticActionInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuadraticActionInOut& _) -> std::string {return "EaseQuadraticActionInOut";}))    
-    .allow_subclass<wrapper<EaseQuadraticActionInOut>>("cc.EaseQuadraticActionInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuarticActionIn, base<ActionEase>>("cc.EaseQuarticActionIn")
-    .constructor(&cc_bindings_constructor<EaseQuarticActionIn>, allow_raw_pointers())
-    .class_function("create", &EaseQuarticActionIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuarticActionIn& _) -> std::string {return "EaseQuarticActionIn";}))    
-    .allow_subclass<wrapper<EaseQuarticActionIn>>("cc.EaseQuarticActionIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuarticActionOut, base<ActionEase>>("cc.EaseQuarticActionOut")
-    .constructor(&cc_bindings_constructor<EaseQuarticActionOut>, allow_raw_pointers())
-    .class_function("create", &EaseQuarticActionOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuarticActionOut& _) -> std::string {return "EaseQuarticActionOut";}))    
-    .allow_subclass<wrapper<EaseQuarticActionOut>>("cc.EaseQuarticActionOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuarticActionInOut, base<ActionEase>>("cc.EaseQuarticActionInOut")
-    .constructor(&cc_bindings_constructor<EaseQuarticActionInOut>, allow_raw_pointers())
-    .class_function("create", &EaseQuarticActionInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuarticActionInOut& _) -> std::string {return "EaseQuarticActionInOut";}))    
-    .allow_subclass<wrapper<EaseQuarticActionInOut>>("cc.EaseQuarticActionInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuinticActionIn, base<ActionEase>>("cc.EaseQuinticActionIn")
-    .constructor(&cc_bindings_constructor<EaseQuinticActionIn>, allow_raw_pointers())
-    .class_function("create", &EaseQuinticActionIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuinticActionIn& _) -> std::string {return "EaseQuinticActionIn";}))    
-    .allow_subclass<wrapper<EaseQuinticActionIn>>("cc.EaseQuinticActionIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuinticActionOut, base<ActionEase>>("cc.EaseQuinticActionOut")
-    .constructor(&cc_bindings_constructor<EaseQuinticActionOut>, allow_raw_pointers())
-    .class_function("create", &EaseQuinticActionOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuinticActionOut& _) -> std::string {return "EaseQuinticActionOut";}))    
-    .allow_subclass<wrapper<EaseQuinticActionOut>>("cc.EaseQuinticActionOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseQuinticActionInOut, base<ActionEase>>("cc.EaseQuinticActionInOut")
-    .constructor(&cc_bindings_constructor<EaseQuinticActionInOut>, allow_raw_pointers())
-    .class_function("create", &EaseQuinticActionInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseQuinticActionInOut& _) -> std::string {return "EaseQuinticActionInOut";}))    
-    .allow_subclass<wrapper<EaseQuinticActionInOut>>("cc.EaseQuinticActionInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseCircleActionIn, base<ActionEase>>("cc.EaseCircleActionIn")
-    .constructor(&cc_bindings_constructor<EaseCircleActionIn>, allow_raw_pointers())
-    .class_function("create", &EaseCircleActionIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseCircleActionIn& _) -> std::string {return "EaseCircleActionIn";}))    
-    .allow_subclass<wrapper<EaseCircleActionIn>>("cc.EaseCircleActionIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseCircleActionOut, base<ActionEase>>("cc.EaseCircleActionOut")
-    .constructor(&cc_bindings_constructor<EaseCircleActionOut>, allow_raw_pointers())
-    .class_function("create", &EaseCircleActionOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseCircleActionOut& _) -> std::string {return "EaseCircleActionOut";}))    
-    .allow_subclass<wrapper<EaseCircleActionOut>>("cc.EaseCircleActionOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseCircleActionInOut, base<ActionEase>>("cc.EaseCircleActionInOut")
-    .constructor(&cc_bindings_constructor<EaseCircleActionInOut>, allow_raw_pointers())
-    .class_function("create", &EaseCircleActionInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseCircleActionInOut& _) -> std::string {return "EaseCircleActionInOut";}))    
-    .allow_subclass<wrapper<EaseCircleActionInOut>>("cc.EaseCircleActionInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseCubicActionIn, base<ActionEase>>("cc.EaseCubicActionIn")
-    .constructor(&cc_bindings_constructor<EaseCubicActionIn>, allow_raw_pointers())
-    .class_function("create", &EaseCubicActionIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseCubicActionIn& _) -> std::string {return "EaseCubicActionIn";}))    
-    .allow_subclass<wrapper<EaseCubicActionIn>>("cc.EaseCubicActionIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseCubicActionOut, base<ActionEase>>("cc.EaseCubicActionOut")
-    .constructor(&cc_bindings_constructor<EaseCubicActionOut>, allow_raw_pointers())
-    .class_function("create", &EaseCubicActionOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseCubicActionOut& _) -> std::string {return "EaseCubicActionOut";}))    
-    .allow_subclass<wrapper<EaseCubicActionOut>>("cc.EaseCubicActionOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseCubicActionInOut, base<ActionEase>>("cc.EaseCubicActionInOut")
-    .constructor(&cc_bindings_constructor<EaseCubicActionInOut>, allow_raw_pointers())
-    .class_function("create", &EaseCubicActionInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseCubicActionInOut& _) -> std::string {return "EaseCubicActionInOut";}))    
-    .allow_subclass<wrapper<EaseCubicActionInOut>>("cc.EaseCubicActionInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseIn, base<EaseRateAction>>("cc.EaseIn")
-    .constructor(&cc_bindings_constructor<EaseIn>, allow_raw_pointers())
-    .class_function("create", &EaseIn::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseIn& _) -> std::string {return "EaseIn";}))    
-    .allow_subclass<wrapper<EaseIn>>("cc.EaseIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseOut, base<EaseRateAction>>("cc.EaseOut")
-    .constructor(&cc_bindings_constructor<EaseOut>, allow_raw_pointers())
-    .class_function("create", &EaseOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseOut& _) -> std::string {return "EaseOut";}))    
-    .allow_subclass<wrapper<EaseOut>>("cc.EaseOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseInOut, base<EaseRateAction>>("cc.EaseInOut")
-    .constructor(&cc_bindings_constructor<EaseInOut>, allow_raw_pointers())
-    .class_function("create", &EaseInOut::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseInOut& _) -> std::string {return "EaseInOut";}))    
-    .allow_subclass<wrapper<EaseInOut>>("cc.EaseInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-  class_<EaseElastic, base<ActionEase>>("cc.EaseElastic")
-    .function("setPeriod", &EaseElastic::setPeriod)
-    .function("initWithAction", &EaseElastic::initWithAction, allow_raw_pointers())
-    .function("initWithAction", optional_override(
-        [](EaseElastic& this_, ActionInterval* arg0){
-        return this_.initWithAction(arg0);
-      }), allow_raw_pointers())
-    .function("getPeriod", &EaseElastic::getPeriod)
-    .property("_className",  optional_override([](const EaseElastic& _) -> std::string {return "EaseElastic";}))
-    .allow_subclass<wrapper<EaseElastic>>("cc.EaseElastic._extend")    
-    ;
-
-
-  class_<EaseElasticIn, base<EaseElastic>>("cc.EaseElasticIn")
-    .constructor(&cc_bindings_constructor<EaseElasticIn>, allow_raw_pointers())
-    .class_function("create", &EaseElasticIn::create, allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](ActionInterval* arg0){
-        return EaseElasticIn::create(arg0);
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseElasticIn& _) -> std::string {return "EaseElasticIn";}))    
-    .allow_subclass<wrapper<EaseElasticIn>>("cc.EaseElasticIn._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseElasticOut, base<EaseElastic>>("cc.EaseElasticOut")
-    .constructor(&cc_bindings_constructor<EaseElasticOut>, allow_raw_pointers())
-    .class_function("create", &EaseElasticOut::create, allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](ActionInterval* arg0){
-        return EaseElasticOut::create(arg0);
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseElasticOut& _) -> std::string {return "EaseElasticOut";}))    
-    .allow_subclass<wrapper<EaseElasticOut>>("cc.EaseElasticOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseElasticInOut, base<EaseElastic>>("cc.EaseElasticInOut")
-    .constructor(&cc_bindings_constructor<EaseElasticInOut>, allow_raw_pointers())
-    .class_function("create", &EaseElasticInOut::create, allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](ActionInterval* arg0){
-        return EaseElasticInOut::create(arg0);
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseElasticInOut& _) -> std::string {return "EaseElasticInOut";}))    
-    .allow_subclass<wrapper<EaseElasticInOut>>("cc.EaseElasticInOut._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<EaseBezierAction, base<ActionEase>>("cc.EaseBezierAction")
-    .constructor(&cc_bindings_constructor<EaseBezierAction>, allow_raw_pointers())
-    .function("setBezierParamer", &EaseBezierAction::setBezierParamer)
-    .class_function("create", &EaseBezierAction::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const EaseBezierAction& _) -> std::string {return "EaseBezierAction";}))    
-    .allow_subclass<wrapper<EaseBezierAction>>("cc.EaseBezierAction._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-  class_<ActionInstant, base<FiniteTimeAction>>("cc.ActionInstant")
-    .property("_className",  optional_override([](const ActionInstant& _) -> std::string {return "ActionInstant";}))    
-    ;
-
-
-  class_<Show, base<ActionInstant>>("cc.Show")
-    .constructor(&cc_bindings_constructor<Show>, allow_raw_pointers())
-    .class_function("create", &Show::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Show& _) -> std::string {return "Show";}))    
-    .allow_subclass<wrapper<Show>>("cc.Show._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Hide, base<ActionInstant>>("cc.Hide")
-    .constructor(&cc_bindings_constructor<Hide>, allow_raw_pointers())
-    .class_function("create", &Hide::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Hide& _) -> std::string {return "Hide";}))    
-    .allow_subclass<wrapper<Hide>>("cc.Hide._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ToggleVisibility, base<ActionInstant>>("cc.ToggleVisibility")
-    .constructor(&cc_bindings_constructor<ToggleVisibility>, allow_raw_pointers())
-    .class_function("create", &ToggleVisibility::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ToggleVisibility& _) -> std::string {return "ToggleVisibility";}))    
-    ;
-
-
-  class_<RemoveSelf, base<ActionInstant>>("cc.RemoveSelf")
-    .constructor(&cc_bindings_constructor<RemoveSelf>, allow_raw_pointers())
-    .function("init", &RemoveSelf::init)
-    .class_function("create", &RemoveSelf::create, allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](){
-        return RemoveSelf::create();
-      }), allow_raw_pointers())
-    .property("_className",  optional_override([](const RemoveSelf& _) -> std::string {return "RemoveSelf";}))
-    .allow_subclass<wrapper<RemoveSelf>>("cc.RemoveSelf._extend")    
-    ;
-
-
-  class_<FlipX, base<ActionInstant>>("cc.FlipX")
-    .constructor(&cc_bindings_constructor<FlipX>, allow_raw_pointers())
-    .function("initWithFlipX", &FlipX::initWithFlipX)
-    .class_function("create", &FlipX::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FlipX& _) -> std::string {return "FlipX";}))    
-    .allow_subclass<wrapper<FlipX>>("cc.FlipX._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FlipY, base<ActionInstant>>("cc.FlipY")
-    .constructor(&cc_bindings_constructor<FlipY>, allow_raw_pointers())
-    .function("initWithFlipY", &FlipY::initWithFlipY)
-    .class_function("create", &FlipY::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FlipY& _) -> std::string {return "FlipY";}))    
-    .allow_subclass<wrapper<FlipY>>("cc.FlipY._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Place, base<ActionInstant>>("cc.Place")
-    .constructor(&cc_bindings_constructor<Place>, allow_raw_pointers())
-    .function("initWithPosition", &Place::initWithPosition)
-    .class_function("create", &Place::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Place& _) -> std::string {return "Place";}))    
-    .allow_subclass<wrapper<Place>>("cc.Place._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<CallFunc, base<ActionInstant>>("cc._CallFunc")
-    .constructor(&cc_bindings_constructor<CallFunc>, allow_raw_pointers())
-    .function("execute", &CallFunc::execute)
-    .property("_className",  optional_override([](const CallFunc& _) -> std::string {return "CallFunc";}))    
-    // cocos specifics
-    .class_function("create", optional_override(
-      [](const val& callback){
-        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
-        return CallFuncN::create([callback, ret](Node* sender)
-        {
-          if (sender == nullptr)
-          {
-            sender = ret->getTarget();
-          }
-
-          callback(val(sender));
-        });
-      }), allow_raw_pointers())
-    .class_function("create", optional_override(
-      [](const val& callback, const val& thisv){
-        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
-        return CallFuncN::create([callback, thisv, ret](Node* sender)
-        {
-          if (sender == nullptr)
-          {
-            sender = ret->getTarget();
-          }
-
-          callback.call<void>("call", thisv, val(sender));
-        });
-      }), allow_raw_pointers())
-      .class_function("create", optional_override(
-      [](const val& callback, const val& thisv, const val& extraData){
-        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
-        return CallFuncN::create([callback, thisv, extraData, ret](Node* sender)
-        {
-          if (sender == nullptr)
-          {
-            sender = ret->getTarget();
-          }
-
-          callback.call<void>("call", thisv, val(sender), extraData);
-        });
-      }), allow_raw_pointers())
-    // end
-    .allow_subclass<wrapper<CallFunc>>("cc._CallFunc._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<CallFuncN, base<CallFunc>>("cc.CallFunc")
-    .constructor(&cc_bindings_constructor<CallFuncN>, allow_raw_pointers())
-    // cocos specifics
-    .function("initWithFunction", optional_override(
-      [](CallFuncN& this_, const val& callback){
-        return this_.initWithFunction([callback](Node* sender)
-        {
-          callback(val(sender));
-        });
-      }))
-    .function("initWithFunction", optional_override(
-      [](CallFuncN& this_, const val& callback, const val& thisv){
-        return this_.initWithFunction([callback, thisv](Node* sender)
-        {
-          callback.call<void>("call", thisv, val(sender));
-        });
-      }))
-    .function("initWithFunction", optional_override(
-      [](CallFuncN& this_, const val& callback, const val& thisv, const val& extraData){
-        return this_.initWithFunction([callback, thisv, extraData](Node* sender)
-        {
-          callback.call<void>("call", thisv, val(sender), extraData);
-        });
-      }))
-    // end
-    .property("_className",  optional_override([](const CallFuncN& _) -> std::string {return "CallFuncN";}))    
-    .allow_subclass<wrapper<CallFuncN>>("cc.CallFunc._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-  class_<GridAction, base<ActionInterval>>("cc.GridAction")
-    .function("getGrid", &GridAction::getGrid, allow_raw_pointers())
-    .function("initWithDuration", &GridAction::initWithDuration)
-    .property("_className",  optional_override([](const GridAction& _) -> std::string {return "GridAction";}))
-    .allow_subclass<wrapper<GridAction>>("cc.GridAction._extend")    
-    ;
-
-  class_<Grid3DAction, base<GridAction>>("cc.Grid3DAction")
-    .function("getGridRect", &Grid3DAction::getGridRect)
-    .property("_className",  optional_override([](const Grid3DAction& _) -> std::string {return "Grid3DAction";}))
-    .allow_subclass<wrapper<Grid3DAction>>("cc.Grid3DAction._extend")    
-    ;
-
-  class_<TiledGrid3DAction, base<GridAction>>("cc.TiledGrid3DAction")
-    .property("_className",  optional_override([](const TiledGrid3DAction& _) -> std::string {return "TiledGrid3DAction";}))
-    .allow_subclass<wrapper<TiledGrid3DAction>>("cc.TiledGrid3DAction._extend")    
-    ;
-
-
-  class_<StopGrid, base<ActionInstant>>("cc.StopGrid")
-    .constructor(&cc_bindings_constructor<StopGrid>, allow_raw_pointers())
-    .class_function("create", &StopGrid::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const StopGrid& _) -> std::string {return "StopGrid";}))    
-    ;
-
-
-  class_<ReuseGrid, base<ActionInstant>>("cc.ReuseGrid")
-    .constructor(&cc_bindings_constructor<ReuseGrid>, allow_raw_pointers())
-    .function("initWithTimes", &ReuseGrid::initWithTimes)
-    .class_function("create", &ReuseGrid::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ReuseGrid& _) -> std::string {return "ReuseGrid";}))
-    .allow_subclass<wrapper<ReuseGrid>>("cc.ReuseGrid._extend")    
-    ;
-
-
-  class_<Waves3D, base<Grid3DAction>>("cc.Waves3D")
-    .constructor(&cc_bindings_constructor<Waves3D>, allow_raw_pointers())
-    .function("setAmplitudeRate", &Waves3D::setAmplitudeRate)
-    .function("initWithDuration", &Waves3D::initWithDuration)
-    .function("getAmplitude", &Waves3D::getAmplitude)
-    .function("getAmplitudeRate", &Waves3D::getAmplitudeRate)
-    .function("setAmplitude", &Waves3D::setAmplitude)
-    .class_function("create", &Waves3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Waves3D& _) -> std::string {return "Waves3D";}))
-    .allow_subclass<wrapper<Waves3D>>("cc.Waves3D._extend")    
-    ;
-
-
-  class_<FlipX3D, base<Grid3DAction>>("cc.FlipX3D")
-    .constructor(&cc_bindings_constructor<FlipX3D>, allow_raw_pointers())
-    .function("initWithSize", &FlipX3D::initWithSize)
-    .function("initWithDuration", &FlipX3D::initWithDuration)
-    .class_function("create", &FlipX3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FlipX3D& _) -> std::string {return "FlipX3D";}))    
-    .allow_subclass<wrapper<FlipX3D>>("cc.FlipX3D._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FlipY3D, base<FlipX3D>>("cc.FlipY3D")
-    .constructor(&cc_bindings_constructor<FlipY3D>, allow_raw_pointers())
-    .class_function("create", &FlipY3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FlipY3D& _) -> std::string {return "FlipY3D";}))    
-    .allow_subclass<wrapper<FlipY3D>>("cc.FlipY3D._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<Lens3D, base<Grid3DAction>>("cc.Lens3D")
-    .constructor(&cc_bindings_constructor<Lens3D>, allow_raw_pointers())
-    .function("setConcave", &Lens3D::setConcave)
-    .function("initWithDuration", &Lens3D::initWithDuration)
-    .function("setLensEffect", &Lens3D::setLensEffect)
-    .function("getLensEffect", &Lens3D::getLensEffect)
-    .function("setPosition", &Lens3D::setPosition)
-    .function("getPosition", &Lens3D::getPosition)
-    .class_function("create", &Lens3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Lens3D& _) -> std::string {return "Lens3D";}))
-    .allow_subclass<wrapper<Lens3D>>("cc.Lens3D._extend")    
-    ;
-
-
-  class_<Ripple3D, base<Grid3DAction>>("cc.Ripple3D")
-    .constructor(&cc_bindings_constructor<Ripple3D>, allow_raw_pointers())
-    .function("setAmplitudeRate", &Ripple3D::setAmplitudeRate)
-    .function("initWithDuration", &Ripple3D::initWithDuration)
-    .function("getAmplitudeRate", &Ripple3D::getAmplitudeRate)
-    .function("setAmplitude", &Ripple3D::setAmplitude)
-    .function("getAmplitude", &Ripple3D::getAmplitude)
-    .function("setPosition", &Ripple3D::setPosition)
-    .function("getPosition", &Ripple3D::getPosition)
-    .class_function("create", &Ripple3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Ripple3D& _) -> std::string {return "Ripple3D";}))
-    .allow_subclass<wrapper<Ripple3D>>("cc.Ripple3D._extend")    
-    ;
-
-
-  class_<Shaky3D, base<Grid3DAction>>("cc.Shaky3D")
-    .constructor(&cc_bindings_constructor<Shaky3D>, allow_raw_pointers())
-    .function("initWithDuration", &Shaky3D::initWithDuration)
-    .class_function("create", &Shaky3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Shaky3D& _) -> std::string {return "Shaky3D";}))
-    .allow_subclass<wrapper<Shaky3D>>("cc.Shaky3D._extend")    
-    ;
-
-
-  class_<Liquid, base<Grid3DAction>>("cc.Liquid")
-    .constructor(&cc_bindings_constructor<Liquid>, allow_raw_pointers())
-    .function("setAmplitudeRate", &Liquid::setAmplitudeRate)
-    .function("initWithDuration", &Liquid::initWithDuration)
-    .function("getAmplitude", &Liquid::getAmplitude)
-    .function("getAmplitudeRate", &Liquid::getAmplitudeRate)
-    .function("setAmplitude", &Liquid::setAmplitude)
-    .class_function("create", &Liquid::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Liquid& _) -> std::string {return "Liquid";}))
-    .allow_subclass<wrapper<Liquid>>("cc.Liquid._extend")    
-    ;
-
-
-  class_<Waves, base<Grid3DAction>>("cc.Waves")
-    .constructor(&cc_bindings_constructor<Waves>, allow_raw_pointers())
-    .function("setAmplitudeRate", &Waves::setAmplitudeRate)
-    .function("initWithDuration", &Waves::initWithDuration)
-    .function("getAmplitude", &Waves::getAmplitude)
-    .function("getAmplitudeRate", &Waves::getAmplitudeRate)
-    .function("setAmplitude", &Waves::setAmplitude)
-    .class_function("create", &Waves::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Waves& _) -> std::string {return "Waves";}))
-    .allow_subclass<wrapper<Waves>>("cc.Waves._extend")    
-    ;
-
-
-  class_<Twirl, base<Grid3DAction>>("cc.Twirl")
-    .constructor(&cc_bindings_constructor<Twirl>, allow_raw_pointers())
-    .function("setAmplitudeRate", &Twirl::setAmplitudeRate)
-    .function("initWithDuration", &Twirl::initWithDuration)
-    .function("getAmplitudeRate", &Twirl::getAmplitudeRate)
-    .function("setAmplitude", &Twirl::setAmplitude)
-    .function("getAmplitude", &Twirl::getAmplitude)
-    .function("setPosition", &Twirl::setPosition)
-    .function("getPosition", &Twirl::getPosition)
-    .class_function("create", &Twirl::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const Twirl& _) -> std::string {return "Twirl";}))
-    .allow_subclass<wrapper<Twirl>>("cc.Twirl._extend")    
-    ;
-
-
-  class_<ActionManager, base<Ref>>("cc.ActionManager")
-    .constructor(&cc_bindings_constructor<ActionManager>, allow_raw_pointers())
-    .function("getActionByTag", &ActionManager::getActionByTag, allow_raw_pointers())
-    .function("removeActionByTag", &ActionManager::removeActionByTag, allow_raw_pointers())
-    .function("removeActionsByFlags", &ActionManager::removeActionsByFlags, allow_raw_pointers())
-    .function("removeAllActions", &ActionManager::removeAllActions)
-    .function("addAction", &ActionManager::addAction, allow_raw_pointers())
-    .function("resumeTarget", &ActionManager::resumeTarget, allow_raw_pointers())
-    .function("getNumberOfRunningActions", &ActionManager::getNumberOfRunningActions)
-    .function("pauseTarget", &ActionManager::pauseTarget, allow_raw_pointers())
-    .function("getNumberOfRunningActionsInTarget", &ActionManager::getNumberOfRunningActionsInTarget, allow_raw_pointers())
-    .function("removeAllActionsFromTarget", &ActionManager::removeAllActionsFromTarget, allow_raw_pointers())
-    .function("resumeTargets", &ActionManager::resumeTargets)
-    .function("removeAction", &ActionManager::removeAction, allow_raw_pointers())
-    .function("pauseAllRunningActions", &ActionManager::pauseAllRunningActions)
-    .function("update", &ActionManager::update)
-    .function("removeAllActionsByTag", &ActionManager::removeAllActionsByTag, allow_raw_pointers())
-    .function("getNumberOfRunningActionsInTargetByTag", &ActionManager::getNumberOfRunningActionsInTargetByTag, allow_raw_pointers())
-    .property("_className",  optional_override([](const ActionManager& _) -> std::string {return "ActionManager";}))    
-    .allow_subclass<wrapper<ActionManager>>("cc.ActionManager._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-  class_<PageTurn3D, base<Grid3DAction>>("cc.PageTurn3D")
-    .class_function("create", &PageTurn3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const PageTurn3D& _) -> std::string {return "PageTurn3D";}))
-    .allow_subclass<wrapper<PageTurn3D>>("cc.PageTurn3D._extend")    
-    ;
-
-
-  class_<ProgressTo, base<ActionInterval>>("cc.ProgressTo")
-    .constructor(&cc_bindings_constructor<ProgressTo>, allow_raw_pointers())
-    .function("initWithDuration", &ProgressTo::initWithDuration)
-    .class_function("create", &ProgressTo::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ProgressTo& _) -> std::string {return "ProgressTo";}))    
-    .allow_subclass<wrapper<ProgressTo>>("cc.ProgressTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ProgressFromTo, base<ActionInterval>>("cc.ProgressFromTo")
-    .constructor(&cc_bindings_constructor<ProgressFromTo>, allow_raw_pointers())
-    .function("initWithDuration", &ProgressFromTo::initWithDuration)
-    .class_function("create", &ProgressFromTo::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ProgressFromTo& _) -> std::string {return "ProgressFromTo";}))    
-    .allow_subclass<wrapper<ProgressFromTo>>("cc.ProgressFromTo._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<ShakyTiles3D, base<TiledGrid3DAction>>("cc.ShakyTiles3D")
-    .constructor(&cc_bindings_constructor<ShakyTiles3D>, allow_raw_pointers())
-    .function("initWithDuration", &ShakyTiles3D::initWithDuration)
-    .class_function("create", &ShakyTiles3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ShakyTiles3D& _) -> std::string {return "ShakyTiles3D";}))
-    .allow_subclass<wrapper<ShakyTiles3D>>("cc.ShakyTiles3D._extend")    
-    ;
-
-
-  class_<ShatteredTiles3D, base<TiledGrid3DAction>>("cc.ShatteredTiles3D")
-    .constructor(&cc_bindings_constructor<ShatteredTiles3D>, allow_raw_pointers())
-    .function("initWithDuration", &ShatteredTiles3D::initWithDuration)
-    .class_function("create", &ShatteredTiles3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ShatteredTiles3D& _) -> std::string {return "ShatteredTiles3D";}))
-    .allow_subclass<wrapper<ShatteredTiles3D>>("cc.ShatteredTiles3D._extend")    
-    ;
-
-
-  class_<ShuffleTiles, base<TiledGrid3DAction>>("cc.ShuffleTiles")
-    .constructor(&cc_bindings_constructor<ShuffleTiles>, allow_raw_pointers())
-    .function("placeTile", &ShuffleTiles::placeTile, allow_raw_pointers())
-    .function("shuffle", &ShuffleTiles::shuffle, allow_raw_pointers())
-    .function("initWithDuration", &ShuffleTiles::initWithDuration)
-    .function("getDelta", &ShuffleTiles::getDelta)
-    .class_function("create", &ShuffleTiles::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ShuffleTiles& _) -> std::string {return "ShuffleTiles";}))
-    .allow_subclass<wrapper<ShuffleTiles>>("cc.ShuffleTiles._extend")    
-    ;
-
-
-  class_<FadeOutTRTiles, base<TiledGrid3DAction>>("cc.FadeOutTRTiles")
-    .constructor(&cc_bindings_constructor<FadeOutTRTiles>, allow_raw_pointers())
-    .function("turnOnTile", &FadeOutTRTiles::turnOnTile)
-    .function("turnOffTile", &FadeOutTRTiles::turnOffTile)
-    .function("transformTile", &FadeOutTRTiles::transformTile)
-    .function("testFunc", &FadeOutTRTiles::testFunc)
-    .class_function("create", &FadeOutTRTiles::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeOutTRTiles& _) -> std::string {return "FadeOutTRTiles";}))    
-    .allow_subclass<wrapper<FadeOutTRTiles>>("cc.FadeOutTRTiles._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FadeOutBLTiles, base<FadeOutTRTiles>>("cc.FadeOutBLTiles")
-    .constructor(&cc_bindings_constructor<FadeOutBLTiles>, allow_raw_pointers())
-    .class_function("create", &FadeOutBLTiles::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeOutBLTiles& _) -> std::string {return "FadeOutBLTiles";}))    
-    .allow_subclass<wrapper<FadeOutBLTiles>>("cc.FadeOutBLTiles._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FadeOutUpTiles, base<FadeOutTRTiles>>("cc.FadeOutUpTiles")
-    .constructor(&cc_bindings_constructor<FadeOutUpTiles>, allow_raw_pointers())
-    .class_function("create", &FadeOutUpTiles::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeOutUpTiles& _) -> std::string {return "FadeOutUpTiles";}))    
-    .allow_subclass<wrapper<FadeOutUpTiles>>("cc.FadeOutUpTiles._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<FadeOutDownTiles, base<FadeOutUpTiles>>("cc.FadeOutDownTiles")
-    .constructor(&cc_bindings_constructor<FadeOutDownTiles>, allow_raw_pointers())
-    .class_function("create", &FadeOutDownTiles::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const FadeOutDownTiles& _) -> std::string {return "FadeOutDownTiles";}))    
-    .allow_subclass<wrapper<FadeOutDownTiles>>("cc.FadeOutDownTiles._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<TurnOffTiles, base<TiledGrid3DAction>>("cc.TurnOffTiles")
-    .constructor(&cc_bindings_constructor<TurnOffTiles>, allow_raw_pointers())
-    .function("turnOnTile", &TurnOffTiles::turnOnTile)
-    .function("turnOffTile", &TurnOffTiles::turnOffTile)
-    .function("shuffle", &TurnOffTiles::shuffle, allow_raw_pointers())
-    .function("initWithDuration", &TurnOffTiles::initWithDuration)
-    .class_function("create", select_overload<TurnOffTiles*(float, const Size&, unsigned int)>(&TurnOffTiles::create), allow_raw_pointers())
-    .class_function("create", select_overload<TurnOffTiles*(float, const Size&)>(&TurnOffTiles::create), allow_raw_pointers())
-    .property("_className",  optional_override([](const TurnOffTiles& _) -> std::string {return "TurnOffTiles";}))
-    .allow_subclass<wrapper<TurnOffTiles>>("cc.TurnOffTiles._extend")    
-    ;
-
-
-  class_<WavesTiles3D, base<TiledGrid3DAction>>("cc.WavesTiles3D")
-    .constructor(&cc_bindings_constructor<WavesTiles3D>, allow_raw_pointers())
-    .function("setAmplitudeRate", &WavesTiles3D::setAmplitudeRate)
-    .function("initWithDuration", &WavesTiles3D::initWithDuration)
-    .function("getAmplitude", &WavesTiles3D::getAmplitude)
-    .function("getAmplitudeRate", &WavesTiles3D::getAmplitudeRate)
-    .function("setAmplitude", &WavesTiles3D::setAmplitude)
-    .class_function("create", &WavesTiles3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const WavesTiles3D& _) -> std::string {return "WavesTiles3D";}))
-    .allow_subclass<wrapper<WavesTiles3D>>("cc.WavesTiles3D._extend")    
-    ;
-
-
-  class_<JumpTiles3D, base<TiledGrid3DAction>>("cc.JumpTiles3D")
-    .constructor(&cc_bindings_constructor<JumpTiles3D>, allow_raw_pointers())
-    .function("setAmplitudeRate", &JumpTiles3D::setAmplitudeRate)
-    .function("initWithDuration", &JumpTiles3D::initWithDuration)
-    .function("getAmplitude", &JumpTiles3D::getAmplitude)
-    .function("getAmplitudeRate", &JumpTiles3D::getAmplitudeRate)
-    .function("setAmplitude", &JumpTiles3D::setAmplitude)
-    .class_function("create", &JumpTiles3D::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const JumpTiles3D& _) -> std::string {return "JumpTiles3D";}))    
-    .allow_subclass<wrapper<JumpTiles3D>>("cc.JumpTiles3D._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
-
-  class_<SplitRows, base<TiledGrid3DAction>>("cc.SplitRows")
-    .constructor(&cc_bindings_constructor<SplitRows>, allow_raw_pointers())
-    .function("initWithDuration", &SplitRows::initWithDuration)
-    .class_function("create", &SplitRows::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const SplitRows& _) -> std::string {return "SplitRows";}))
-    .allow_subclass<wrapper<SplitRows>>("cc.SplitRows._extend")    
-    ;
-
-
-  class_<SplitCols, base<TiledGrid3DAction>>("cc.SplitCols")
-    .constructor(&cc_bindings_constructor<SplitCols>, allow_raw_pointers())
-    .function("initWithDuration", &SplitCols::initWithDuration)
-    .class_function("create", &SplitCols::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const SplitCols& _) -> std::string {return "SplitCols";}))
-    .allow_subclass<wrapper<SplitCols>>("cc.SplitCols._extend")    
-    ;
-
-  class_<ActionTween, base<ActionInterval>>("cc.ActionTween")
-    .constructor(&cc_bindings_constructor<ActionTween>, allow_raw_pointers())
-    .function("initWithDuration", &ActionTween::initWithDuration)
-    .class_function("create", &ActionTween::create, allow_raw_pointers())
-    .property("_className",  optional_override([](const ActionTween& _) -> std::string {return "ActionTween";}))    
-    .allow_subclass<wrapper<ActionTween>>("cc.ActionTween._extend")
-    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
-    ;
-
 
   class_<AtlasNode, base<Node>>("cc.AtlasNode")
     .constructor(&cc_bindings_constructor<AtlasNode>, allow_raw_pointers())
@@ -5598,7 +4058,7 @@ COCOS_BINDINGS(jsb_cocos2dx_functions)
       return p1.getLength();
     }));
   bindings::function("cc.registerTargetedDelegate", optional_override(
-    [](int priority, bool swallowsTouches, Ref* this_)
+    [](int priority, bool swallowsTouches, const val& thisv)
     {
       auto dispatcher = Director::getInstance()->getEventDispatcher();
       dispatcher->removeEventListener(_touchListenerOneByOne);
@@ -5606,52 +4066,78 @@ COCOS_BINDINGS(jsb_cocos2dx_functions)
       _touchListenerOneByOne = EventListenerTouchOneByOne::create();
       _touchListenerOneByOne->setSwallowTouches(swallowsTouches);
 
-      _touchListenerOneByOne->onTouchBegan = [this_](Touch* touch, Event* event) -> bool
+      _touchListenerOneByOne->onTouchBegan = [thisv](Touch* touch, Event* event) -> bool
       {
         bool ret;
-        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::BEGAN, touch, event, ret);
+        ScriptEngine::getInstance()->handleTouchEvent((void*)&thisv, EventTouch::EventCode::BEGAN, touch, event, ret);
         return ret;
       };
-      _touchListenerOneByOne->onTouchMoved = [this_](Touch* touch, Event* event)
+      _touchListenerOneByOne->onTouchMoved = [thisv](Touch* touch, Event* event)
       {
-        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::MOVED, touch, event);
+        ScriptEngine::getInstance()->handleTouchEvent((void*)&thisv, EventTouch::EventCode::MOVED, touch, event);
       };
-      _touchListenerOneByOne->onTouchEnded = [this_](Touch* touch, Event* event)
+      _touchListenerOneByOne->onTouchEnded = [thisv](Touch* touch, Event* event)
       {
-        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::ENDED, touch, event);
+        ScriptEngine::getInstance()->handleTouchEvent((void*)&thisv, EventTouch::EventCode::ENDED, touch, event);
       };
-      _touchListenerOneByOne->onTouchCancelled = [this_](Touch* touch, Event* event)
+      _touchListenerOneByOne->onTouchCancelled = [thisv](Touch* touch, Event* event)
       {
-        ScriptEngine::getInstance()->handleTouchEvent(this_, EventTouch::EventCode::CANCELLED, touch, event);
+        ScriptEngine::getInstance()->handleTouchEvent((void*)&thisv, EventTouch::EventCode::CANCELLED, touch, event);
       };
 
       dispatcher->addEventListenerWithFixedPriority(_touchListenerOneByOne, priority);
     }));
   bindings::function("cc.registerStandardDelegate", optional_override(
-    [](Ref* this_, int priority)
+    [](const val& thisv, int priority)
     {
       auto dispatcher = Director::getInstance()->getEventDispatcher();
       dispatcher->removeEventListener(_touchListenerAllAtOnce);
 
       _touchListenerAllAtOnce = EventListenerTouchAllAtOnce::create();
-      _touchListenerAllAtOnce->onTouchesBegan = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::BEGAN, _1, _2);
-      _touchListenerAllAtOnce->onTouchesMoved = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::MOVED, _1, _2);
-      _touchListenerAllAtOnce->onTouchesEnded = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::ENDED, _1, _2);
-      _touchListenerAllAtOnce->onTouchesCancelled = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::CANCELLED, _1, _2);
+
+      _touchListenerAllAtOnce->onTouchesBegan = [thisv](const std::vector<Touch*>& touches, Event* event) -> bool
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::BEGAN, touches, event);
+      };
+      _touchListenerAllAtOnce->onTouchesMoved = [thisv](const std::vector<Touch*>& touches, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::MOVED, touches, event);
+      };
+      _touchListenerAllAtOnce->onTouchesEnded = [thisv](const std::vector<Touch*>& touches, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::ENDED, touches, event);
+      };
+      _touchListenerAllAtOnce->onTouchesCancelled = [thisv](const std::vector<Touch*>& touches, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::CANCELLED, touches, event);
+      };
 
       dispatcher->addEventListenerWithFixedPriority(_touchListenerAllAtOnce, priority);
     }));
   bindings::function("cc.registerStandardDelegate", optional_override(
-    [](Ref* this_)
+    [](const val& thisv)
     {
       auto dispatcher = Director::getInstance()->getEventDispatcher();
       dispatcher->removeEventListener(_touchListenerAllAtOnce);
 
       _touchListenerAllAtOnce = EventListenerTouchAllAtOnce::create();
-      _touchListenerAllAtOnce->onTouchesBegan = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::BEGAN, _1, _2);
-      _touchListenerAllAtOnce->onTouchesMoved = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::MOVED, _1, _2);
-      _touchListenerAllAtOnce->onTouchesEnded = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::ENDED, _1, _2);
-      _touchListenerAllAtOnce->onTouchesCancelled = std::bind(&ScriptEngine::handleTouchesEvent, ScriptEngine::getInstance(), this_, EventTouch::EventCode::CANCELLED, _1, _2);
+      
+      _touchListenerAllAtOnce->onTouchesBegan = [thisv](const std::vector<Touch*>& touches, Event* event) -> bool
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::BEGAN, touches, event);
+      };
+      _touchListenerAllAtOnce->onTouchesMoved = [thisv](const std::vector<Touch*>& touches, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::MOVED, touches, event);
+      };
+      _touchListenerAllAtOnce->onTouchesEnded = [thisv](const std::vector<Touch*>& touches, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::ENDED, touches, event);
+      };
+      _touchListenerAllAtOnce->onTouchesCancelled = [thisv](const std::vector<Touch*>& touches, Event* event)
+      {
+        ScriptEngine::getInstance()->handleTouchesEvent((void*)&thisv, EventTouch::EventCode::CANCELLED, touches, event);
+      };
 
       dispatcher->addEventListenerWithFixedPriority(_touchListenerAllAtOnce, 1);
     }));
@@ -6375,6 +4861,1452 @@ COCOS_BINDINGS(cocos2d_specifics) {
         return AutoPolygon::generatePolygon(filename);
       }
     ))
+    ;
+}
+
+
+COCOS_BINDINGS(cocos2d_actions) {
+  
+  
+
+  class_<FiniteTimeAction, base<Action>>("cc.FiniteTimeAction")
+    .function("setDuration", &FiniteTimeAction::setDuration)
+    .function("getDuration", &FiniteTimeAction::getDuration)
+    .property("_className",  optional_override([](const FiniteTimeAction& _) -> std::string {return "FiniteTimeAction";}))    
+    ;
+
+  class_<Speed, base<Action>>("cc.Speed")
+    .constructor(&cc_bindings_constructor<Speed>, allow_raw_pointers())
+    .function("setInnerAction", &Speed::setInnerAction, allow_raw_pointers())
+    .function("_getSpeed", &Speed::getSpeed)
+    .function("_setSpeed", &Speed::setSpeed)
+    .function("initWithAction", &Speed::initWithAction, allow_raw_pointers())
+    .function("getInnerAction", &Speed::getInnerAction, allow_raw_pointers())
+    .class_function("create", &Speed::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Speed& _) -> std::string {return "Speed";}))
+    .allow_subclass<wrapper<Speed>>("cc.Speed._extend")    
+    ;
+
+  class_<Follow, base<Action>>("cc.Follow")
+    .constructor(&cc_bindings_constructor<Follow>, allow_raw_pointers())
+    .function("setBoundarySet", &Follow::setBoundarySet)
+    .function("initWithTarget", &Follow::initWithTarget, allow_raw_pointers())
+    .function("initWithTarget", optional_override(
+        [](Follow& this_, Node* arg0){
+        return this_.initWithTarget(arg0);
+      }), allow_raw_pointers())
+    .function("initWithTargetAndOffset", &Follow::initWithTargetAndOffset, allow_raw_pointers())
+    .function("initWithTargetAndOffset", optional_override(
+        [](Follow& this_, Node* arg0, float arg1, float arg2){
+        return this_.initWithTargetAndOffset(arg0, arg1, arg2);
+      }), allow_raw_pointers())
+    .function("isBoundarySet", &Follow::isBoundarySet)
+    .class_function("create", &Follow::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](Node* arg0){
+        return Follow::create(arg0);
+      }), allow_raw_pointers())
+    .class_function("createWithOffset", &Follow::createWithOffset, allow_raw_pointers())
+    .class_function("createWithOffset", optional_override(
+      [](Node* arg0, float arg1, float arg2){
+        return Follow::createWithOffset(arg0, arg1, arg2);
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const Follow& _) -> std::string {return "Follow";}))    
+    .allow_subclass<wrapper<Follow>>("cc.Follow._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ActionInterval, base<FiniteTimeAction>>("cc.ActionInterval")
+    .function("getAmplitudeRate", &ActionInterval::getAmplitudeRate)
+    .function("initWithDuration", &ActionInterval::initWithDuration)
+    .function("setAmplitudeRate", &ActionInterval::setAmplitudeRate)
+    .function("getElapsed", &ActionInterval::getElapsed)
+    // from cocos_specifics
+    .function("repeat", optional_override(
+      [](ActionInterval& this_, unsigned int times){
+        return Repeat::create(&this_, times);
+      }), allow_raw_pointers())
+    .function("repeatForever", optional_override(
+      [](ActionInterval& this_){
+        return RepeatForever::create(&this_);
+      }), allow_raw_pointers())
+    .function("_speed", optional_override(
+      [](ActionInterval& this_, float speed){
+        return Speed::create(&this_, speed);
+      }), allow_raw_pointers())
+    .function("easing", optional_override(
+      [](ActionInterval& this_, const val& param) -> ActionEase*{
+        int32_t tag = param["tag"].as<int32_t>();
+        if (tag == EASE_IN)
+        {
+            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeIn require one float parameter");
+            return EaseIn::create(&this_, param["param"].as<float>());
+        }
+        else if (tag == EASE_OUT)
+        {
+            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeOut require one float parameter");
+            return EaseOut::create(&this_, param["param"].as<float>());
+        }
+        else if (tag == EASE_INOUT)
+        {
+            CCASSERT(param.hasOwnProperty("param"), "easing with cc.easeInOut require one float parameter");
+            return EaseInOut::create(&this_, param["param"].as<float>());
+        }
+        else if (tag == EASE_EXPONENTIAL_IN)
+        {
+            return EaseExponentialIn::create(&this_);
+        }
+        else if (tag == EASE_EXPONENTIAL_OUT)
+        {
+            return EaseExponentialOut::create(&this_);
+        }
+        else if (tag == EASE_EXPONENTIAL_INOUT)
+        {
+            return EaseExponentialInOut::create(&this_);
+        }
+        else if (tag == EASE_SINE_IN)
+        {
+            return EaseSineIn::create(&this_);
+        }
+        else if (tag == EASE_SINE_OUT)
+        {
+            return EaseSineOut::create(&this_);
+        }
+        else if (tag == EASE_SINE_INOUT)
+        {
+            return EaseSineInOut::create(&this_);
+        }
+        else if (tag == EASE_ELASTIC_IN)
+        {
+            float parameter = 0.3;
+            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
+            return EaseElasticIn::create(&this_, parameter);
+        }
+        else if (tag == EASE_ELASTIC_OUT)
+        {
+            float parameter = 0.3;
+            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
+            return EaseElasticOut::create(&this_, parameter);
+        }
+        else if (tag == EASE_ELASTIC_INOUT)
+        {
+            float parameter = 0.3;
+            if(param.hasOwnProperty("param")) parameter = param["param"].as<float>();
+            return EaseElasticInOut::create(&this_, parameter);
+        }
+        else if (tag == EASE_BOUNCE_IN)
+        {
+            return EaseBounceIn::create(&this_);
+        }
+        else if (tag == EASE_BOUNCE_OUT)
+        {
+            return EaseBounceOut::create(&this_);
+        }
+        else if (tag == EASE_BOUNCE_INOUT)
+        {
+            return EaseBounceInOut::create(&this_);
+        }
+        else if (tag == EASE_BACK_IN)
+        {
+            return EaseBackIn::create(&this_);
+        }
+        else if (tag == EASE_BACK_OUT)
+        {
+            return EaseBackOut::create(&this_);
+        }
+        else if (tag == EASE_BACK_INOUT)
+        {
+            return EaseBackInOut::create(&this_);
+        }
+        else if (tag == EASE_QUADRATIC_IN)
+        {
+            return EaseQuadraticActionIn::create(&this_);
+        }
+        else if (tag == EASE_QUADRATIC_OUT)
+        {
+            return EaseQuadraticActionOut::create(&this_);
+        }
+        else if (tag == EASE_QUADRATIC_INOUT)
+        {
+            return EaseQuadraticActionInOut::create(&this_);
+        }
+        else if (tag == EASE_QUARTIC_IN)
+        {
+            return EaseQuarticActionIn::create(&this_);
+        }
+        else if (tag == EASE_QUARTIC_OUT)
+        {
+            return EaseQuarticActionOut::create(&this_);
+        }
+        else if (tag == EASE_QUARTIC_INOUT)
+        {
+            return EaseQuarticActionInOut::create(&this_);
+        }
+        else if (tag == EASE_QUINTIC_IN)
+        {
+            return EaseQuinticActionIn::create(&this_);
+        }
+        else if (tag == EASE_QUINTIC_OUT)
+        {
+            return EaseQuinticActionOut::create(&this_);
+        }
+        else if (tag == EASE_QUINTIC_INOUT)
+        {
+            return EaseQuinticActionInOut::create(&this_);
+        }
+        else if (tag == EASE_CIRCLE_IN)
+        {
+            return EaseCircleActionIn::create(&this_);
+        }
+        else if (tag == EASE_CIRCLE_OUT)
+        {
+            return EaseCircleActionOut::create(&this_);
+        }
+        else if (tag == EASE_CIRCLE_INOUT)
+        {
+            return EaseCircleActionInOut::create(&this_);
+        }
+        else if (tag == EASE_CUBIC_IN)
+        {
+            return EaseCubicActionIn::create(&this_);
+        }
+        else if (tag == EASE_CUBIC_OUT)
+        {
+            return EaseCubicActionOut::create(&this_);
+        }
+        else if (tag == EASE_CUBIC_INOUT)
+        {
+            return EaseCubicActionInOut::create(&this_);
+        }
+        else if (tag == EASE_BEZIER_ACTION)
+        {
+            
+            CCASSERT(param.hasOwnProperty("param") &&
+            param.hasOwnProperty("param2") &&
+            param.hasOwnProperty("param3") &&
+            param.hasOwnProperty("param4"), "easing with cc.easeBezierAction require 4 float parameter");
+
+            EaseBezierAction* action = EaseBezierAction::create(&this_);
+            action->setBezierParamer(param["param"].as<float>(), param["param2"].as<float>(), param["param3"].as<float>(), param["param4"].as<float>());
+            return action;
+        }
+        else
+        {
+            CCASSERT(false, "easing with unkown easing object");
+            return nullptr;
+        }
+      }), allow_raw_pointers())
+    // end
+    .property("_className",  optional_override([](const ActionInterval& _) -> std::string {return "ActionInterval";}))
+    .allow_subclass<wrapper<ActionInterval>>("cc.ActionInterval._extend")    
+    ;
+
+  class_<Sequence, base<ActionInterval>>("cc.Sequence")
+    .constructor(&cc_bindings_constructor<Sequence>, allow_raw_pointers())
+    .function("init", &Sequence::init)
+    .function("initWithTwoActions", &Sequence::initWithTwoActions, allow_raw_pointers())
+    // cocos_specifics
+    .class_function("create", optional_override(
+      [](const Vector<FiniteTimeAction*>& arrayOfActions)
+      {
+        return Sequence::create(arrayOfActions);
+      }), allow_raw_pointers())
+    // TODO: overloading create takes variadic arguments not supported by embind
+    // NOTE: you can get around this by adding brackets e.g: [action1, action2, ...] to the funcion call which works in both spidermonkey and embind
+    // end
+    .property("_className",  optional_override([](const Sequence& _) -> std::string {return "Sequence";}))    
+    .allow_subclass<wrapper<Sequence>>("cc.Sequence._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Repeat, base<ActionInterval>>("cc.Repeat")
+    .constructor(&cc_bindings_constructor<Repeat>, allow_raw_pointers())
+    .function("setInnerAction", &Repeat::setInnerAction, allow_raw_pointers())
+    .function("initWithAction", &Repeat::initWithAction, allow_raw_pointers())
+    .function("getInnerAction", &Repeat::getInnerAction, allow_raw_pointers())
+    .class_function("create", &Repeat::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Repeat& _) -> std::string {return "Repeat";}))    
+    .allow_subclass<wrapper<Repeat>>("cc.Repeat._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<RepeatForever, base<ActionInterval>>("cc.RepeatForever")
+    .constructor(&cc_bindings_constructor<RepeatForever>, allow_raw_pointers())
+    .function("setInnerAction", &RepeatForever::setInnerAction, allow_raw_pointers())
+    .function("initWithAction", &RepeatForever::initWithAction, allow_raw_pointers())
+    .function("getInnerAction", &RepeatForever::getInnerAction, allow_raw_pointers())
+    .class_function("create", &RepeatForever::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const RepeatForever& _) -> std::string {return "RepeatForever";}))    
+    .allow_subclass<wrapper<RepeatForever>>("cc.RepeatForever._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Spawn, base<ActionInterval>>("cc.Spawn")
+    .constructor(&cc_bindings_constructor<Spawn>, allow_raw_pointers())
+    .function("init", &Spawn::init)
+    .function("initWithTwoActions", &Spawn::initWithTwoActions, allow_raw_pointers())
+    // cocos_specifics
+    .class_function("create", optional_override(
+      [](const Vector<FiniteTimeAction*>& arrayOfActions)
+      {
+        return Spawn::create(arrayOfActions);
+      }), allow_raw_pointers())
+    // TODO: overloading create takes variadic arguments not supported by embind
+    // NOTE: you can get around this by adding brackets e.g: [action1, action2, ...] to the funcion call which works in both spidermonkey and embind
+    // end
+    .property("_className",  optional_override([](const Spawn& _) -> std::string {return "Spawn";}))    
+    .allow_subclass<wrapper<Spawn>>("cc.Spawn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<RotateTo, base<ActionInterval>>("cc.RotateTo")
+    .constructor(&cc_bindings_constructor<RotateTo>, allow_raw_pointers())
+    .function("initWithDuration", select_overload<bool(float, const Vec3&)>(&RotateTo::initWithDuration))
+    .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateTo::initWithDuration))
+    .class_function("create", select_overload<cocos2d::RotateTo*(float, float, float)>(&RotateTo::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.isNumber())
+      {
+        return RotateTo::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return RotateTo::create(arg0, arg1.as<float>());
+      }
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const RotateTo& _) -> std::string {return "RotateTo";}))    
+    .allow_subclass<wrapper<RotateTo>>("cc.RotateTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<RotateBy, base<ActionInterval>>("cc.RotateBy")
+    .constructor(&cc_bindings_constructor<RotateBy>, allow_raw_pointers())
+    .function("initWithDuration", select_overload<bool(float, float, float)>(&RotateBy::initWithDuration))
+    .function("initWithDuration", optional_override(
+      [](RotateBy& this_, float arg0, const val& arg1){
+      if (!arg1.isNumber())
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return this_.initWithDuration(arg0, arg1.as<float>());
+      }
+    }))
+    .class_function("create", select_overload<cocos2d::RotateBy*(float, float, float)>(&RotateBy::create), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.isNumber())
+      {
+        return RotateBy::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      } else 
+      {
+        return RotateBy::create(arg0, arg1.as<float>());
+      }
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const RotateBy& _) -> std::string {return "RotateBy";}))    
+    .allow_subclass<wrapper<RotateBy>>("cc.RotateBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<MoveBy, base<ActionInterval>>("cc.MoveBy")
+    .constructor(&cc_bindings_constructor<MoveBy>, allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](MoveBy& this_, float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+    }))
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return MoveBy::create(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return MoveBy::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const MoveBy& _) -> std::string {return "MoveBy";}))    
+    .allow_subclass<wrapper<MoveBy>>("cc.MoveBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<MoveTo, base<MoveBy>>("cc.MoveTo")
+    .constructor(&cc_bindings_constructor<MoveTo>, allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](MoveTo& this_, float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return this_.initWithDuration(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+    }))
+    .class_function("create", optional_override(
+      [](float arg0, const val& arg1){
+      if (!arg1.hasOwnProperty("z"))
+      {
+        return MoveTo::create(arg0, arg1.as<const cocos2d::Vec2&>());
+      } else 
+      {
+        return MoveTo::create(arg0, arg1.as<const cocos2d::Vec3&>());
+      }
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const MoveTo& _) -> std::string {return "MoveTo";}))    
+    .allow_subclass<wrapper<MoveTo>>("cc.MoveTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<SkewTo, base<ActionInterval>>("cc.SkewTo")
+    .constructor(&cc_bindings_constructor<SkewTo>, allow_raw_pointers())
+    .function("initWithDuration", &SkewTo::initWithDuration)
+    .class_function("create", &SkewTo::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const SkewTo& _) -> std::string {return "SkewTo";}))    
+    .allow_subclass<wrapper<SkewTo>>("cc.SkewTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<SkewBy, base<SkewTo>>("cc.SkewBy")
+    .constructor(&cc_bindings_constructor<SkewBy>, allow_raw_pointers())
+    .function("initWithDuration", &SkewBy::initWithDuration)
+    .class_function("create", &SkewBy::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const SkewBy& _) -> std::string {return "SkewBy";}))    
+    .allow_subclass<wrapper<SkewBy>>("cc.SkewBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<JumpBy, base<ActionInterval>>("cc.JumpBy")
+    .constructor(&cc_bindings_constructor<JumpBy>, allow_raw_pointers())
+    .function("initWithDuration", &JumpBy::initWithDuration)
+    .class_function("create", &JumpBy::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const JumpBy& _) -> std::string {return "JumpBy";}))    
+    .allow_subclass<wrapper<JumpBy>>("cc.JumpBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<JumpTo, base<JumpBy>>("cc.JumpTo")
+    .constructor(&cc_bindings_constructor<JumpTo>, allow_raw_pointers())
+    .function("initWithDuration", &JumpTo::initWithDuration)
+    .class_function("create", &JumpTo::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const JumpTo& _) -> std::string {return "JumpTo";}))    
+    .allow_subclass<wrapper<JumpTo>>("cc.JumpTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  value_array<ccBezierConfig>("_.ccBezierConfig")
+    .element(&ccBezierConfig::controlPoint_1)
+    .element(&ccBezierConfig::controlPoint_2)
+    .element(&ccBezierConfig::endPosition)
+    ;
+
+  class_<BezierBy, base<ActionInterval>>("cc.BezierBy")
+    .constructor(&cc_bindings_constructor<BezierBy>, allow_raw_pointers())
+    // from cocos2d_specifics
+    .class_function("create", &BezierBy::create, allow_raw_pointers())
+    // end
+    .property("_className",  optional_override([](const BezierBy& _) -> std::string {return "BezierBy";}))    
+    .allow_subclass<wrapper<BezierBy>>("cc.BezierBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<BezierTo, base<BezierBy>>("cc.BezierTo")
+    .constructor(&cc_bindings_constructor<BezierTo>, allow_raw_pointers())
+    // from cocos2d_specifics
+    .class_function("create", &BezierTo::create, allow_raw_pointers())
+    // end
+    .property("_className",  optional_override([](const BezierTo& _) -> std::string {return "BezierTo";}))    
+    .allow_subclass<wrapper<BezierTo>>("cc.BezierTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ScaleTo, base<ActionInterval>>("cc.ScaleTo")
+    .constructor(&cc_bindings_constructor<ScaleTo>, allow_raw_pointers())
+    .function("initWithDuration", select_overload<bool(float, float, float)>(&ScaleTo::initWithDuration))
+    .function("initWithDuration", select_overload<bool(float, float)>(&ScaleTo::initWithDuration))
+    .function("initWithDuration", select_overload<bool(float, float, float, float)>(&ScaleTo::initWithDuration))
+    .class_function("create", select_overload<ScaleTo*(float, float, float)>(&ScaleTo::create), allow_raw_pointers())
+    .class_function("create", select_overload<ScaleTo*(float, float)>(&ScaleTo::create), allow_raw_pointers())
+    .class_function("create", select_overload<ScaleTo*(float, float, float, float)>(&ScaleTo::create), allow_raw_pointers())
+    .property("_className",  optional_override([](const ScaleTo& _) -> std::string {return "ScaleTo";}))    
+    .allow_subclass<wrapper<ScaleTo>>("cc.ScaleTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ScaleBy, base<ScaleTo>>("cc.ScaleBy")
+    .constructor(&cc_bindings_constructor<ScaleBy>, allow_raw_pointers())
+    .class_function("create", select_overload<ScaleBy*(float, float, float)>(&ScaleBy::create), allow_raw_pointers())
+    .class_function("create", select_overload<ScaleBy*(float, float)>(&ScaleBy::create), allow_raw_pointers())
+    .class_function("create", select_overload<ScaleBy*(float, float, float, float)>(&ScaleBy::create), allow_raw_pointers())
+    .property("_className",  optional_override([](const ScaleBy& _) -> std::string {return "ScaleBy";}))    
+    .allow_subclass<wrapper<ScaleBy>>("cc.ScaleBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Blink, base<ActionInterval>>("cc.Blink")
+    .constructor(&cc_bindings_constructor<Blink>, allow_raw_pointers())
+    .function("initWithDuration", &Blink::initWithDuration)
+    .class_function("create", &Blink::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Blink& _) -> std::string {return "Blink";}))    
+    .allow_subclass<wrapper<Blink>>("cc.Blink._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FadeTo, base<ActionInterval>>("cc.FadeTo")
+    .constructor(&cc_bindings_constructor<FadeTo>, allow_raw_pointers())
+    .function("initWithDuration", &FadeTo::initWithDuration)
+    .class_function("create", &FadeTo::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeTo& _) -> std::string {return "FadeTo";}))    
+    .allow_subclass<wrapper<FadeTo>>("cc.FadeTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FadeIn, base<FadeTo>>("cc.FadeIn")
+    .constructor(&cc_bindings_constructor<FadeIn>, allow_raw_pointers())
+    .function("setReverseAction", &FadeIn::setReverseAction, allow_raw_pointers())
+    .class_function("create", &FadeIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeIn& _) -> std::string {return "FadeIn";}))    
+    .allow_subclass<wrapper<FadeIn>>("cc.FadeIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FadeOut, base<FadeTo>>("cc.FadeOut")
+    .constructor(&cc_bindings_constructor<FadeOut>, allow_raw_pointers())
+    .function("setReverseAction", &FadeOut::setReverseAction, allow_raw_pointers())
+    .class_function("create", &FadeOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeOut& _) -> std::string {return "FadeOut";}))    
+    .allow_subclass<wrapper<FadeOut>>("cc.FadeOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<TintTo, base<ActionInterval>>("cc.TintTo")
+    .constructor(&cc_bindings_constructor<TintTo>, allow_raw_pointers())
+    .function("initWithDuration", &TintTo::initWithDuration)
+    .class_function("create", select_overload<TintTo*(float, const Color3B&)>(&TintTo::create), allow_raw_pointers())
+    .class_function("create", select_overload<TintTo*(float, unsigned char, unsigned char, unsigned char)>(&TintTo::create), allow_raw_pointers())
+    .property("_className",  optional_override([](const TintTo& _) -> std::string {return "TintTo";}))    
+    .allow_subclass<wrapper<TintTo>>("cc.TintTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<TintBy, base<ActionInterval>>("cc.TintBy")
+    .constructor(&cc_bindings_constructor<TintBy>, allow_raw_pointers())
+    .function("initWithDuration", &TintBy::initWithDuration)
+    .class_function("create", &TintBy::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TintBy& _) -> std::string {return "TintBy";}))    
+    .allow_subclass<wrapper<TintBy>>("cc.TintBy._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<DelayTime, base<ActionInterval>>("cc.DelayTime")
+    .constructor(&cc_bindings_constructor<DelayTime>, allow_raw_pointers())
+    .class_function("create", &DelayTime::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const DelayTime& _) -> std::string {return "DelayTime";}))    
+    .allow_subclass<wrapper<DelayTime>>("cc.DelayTime._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ReverseTime, base<ActionInterval>>("cc.ReverseTime")
+    .constructor(&cc_bindings_constructor<ReverseTime>, allow_raw_pointers())
+    .function("initWithAction", &ReverseTime::initWithAction, allow_raw_pointers())
+    .class_function("create", &ReverseTime::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ReverseTime& _) -> std::string {return "ReverseTime";}))    
+    .allow_subclass<wrapper<ReverseTime>>("cc.ReverseTime._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Animate, base<ActionInterval>>("cc.Animate")
+    .constructor(&cc_bindings_constructor<Animate>, allow_raw_pointers())
+    .function("initWithAnimation", &Animate::initWithAnimation, allow_raw_pointers())
+    .function("getAnimation", select_overload<const Animation*() const>(&Animate::getAnimation), allow_raw_pointers())
+    .function("getCurrentFrameIndex", &Animate::getCurrentFrameIndex)
+    .function("setAnimation", &Animate::setAnimation, allow_raw_pointers())
+    .class_function("create", &Animate::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Animate& _) -> std::string {return "Animate";}))    
+    .allow_subclass<wrapper<Animate>>("cc.Animate._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<TargetedAction, base<ActionInterval>>("cc.TargetedAction")
+    .constructor(&cc_bindings_constructor<TargetedAction>, allow_raw_pointers())
+    .function("getForcedTarget", select_overload<const Node*() const>(&TargetedAction::getForcedTarget), allow_raw_pointers())
+    .function("initWithTarget", &TargetedAction::initWithTarget, allow_raw_pointers())
+    .function("setForcedTarget", &TargetedAction::setForcedTarget, allow_raw_pointers())
+    .class_function("create", &TargetedAction::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const TargetedAction& _) -> std::string {return "TargetedAction";}))    
+    .allow_subclass<wrapper<TargetedAction>>("cc.TargetedAction._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ActionFloat, base<ActionInterval>>("cc.ActionFloat")
+    .constructor(&cc_bindings_constructor<ActionFloat>, allow_raw_pointers())
+    .function("initWithDuration", &ActionFloat::initWithDuration)
+    .class_function("create", &ActionFloat::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ActionFloat& _) -> std::string {return "ActionFloat";}))    
+    .allow_subclass<wrapper<ActionFloat>>("cc.ActionFloat._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ActionCamera, base<ActionInterval>>("cc.ActionCamera")
+    .constructor(&cc_bindings_constructor<ActionCamera>, allow_raw_pointers())
+    .function("setEye", select_overload<void(float, float, float)>(&ActionCamera::setEye))
+    .function("setEye", select_overload<void(const Vec3&)>(&ActionCamera::setEye))
+    .function("getEye", &ActionCamera::getEye)
+    .function("setUp", &ActionCamera::setUp)
+    .function("getCenter", &ActionCamera::getCenter)
+    .function("setCenter", &ActionCamera::setCenter)
+    .function("getUp", &ActionCamera::getUp)
+    .property("_className",  optional_override([](const ActionCamera& _) -> std::string {return "ActionCamera";}))    
+    .allow_subclass<wrapper<ActionCamera>>("cc.ActionCamera._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<OrbitCamera, base<ActionCamera>>("cc.OrbitCamera")
+    .constructor(&cc_bindings_constructor<OrbitCamera>, allow_raw_pointers())
+    .function("sphericalRadius", &OrbitCamera::sphericalRadius, allow_raw_pointers())
+    .function("initWithDuration", &OrbitCamera::initWithDuration)
+    .class_function("create", &OrbitCamera::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const OrbitCamera& _) -> std::string {return "OrbitCamera";}))    
+    .allow_subclass<wrapper<OrbitCamera>>("cc.OrbitCamera._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<CardinalSplineTo, base<ActionInterval>>("cc.CardinalSplineTo")
+    .constructor(&cc_bindings_constructor<CardinalSplineTo>, allow_raw_pointers())
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points, float tension)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CardinalSplineTo::create(duration, pointArray, tension);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](CardinalSplineTo& this_, float duration, const std::vector<Vec2>& points, float tension)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return this_.initWithDuration(duration, pointArray, tension);
+      }
+    ), allow_raw_pointers())
+    // end of manual
+    .function("getPoints", &CardinalSplineTo::getPoints, allow_raw_pointers())
+    .function("updatePosition", &CardinalSplineTo::updatePosition)
+    .property("_className",  optional_override([](const CardinalSplineTo& _) -> std::string {return "CardinalSplineTo";}))
+    .allow_subclass<wrapper<CardinalSplineTo>>("cc.CardinalSplineTo._extend")    
+    ;
+
+  class_<CardinalSplineBy, base<CardinalSplineTo>>("cc.CardinalSplineBy")
+    .constructor(&cc_bindings_constructor<CardinalSplineBy>, allow_raw_pointers())
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points, float tension)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CardinalSplineBy::create(duration, pointArray, tension);
+      }
+    ), allow_raw_pointers())
+    // end of manual
+    .property("_className",  optional_override([](const CardinalSplineBy& _) -> std::string {return "CardinalSplineBy";}))
+    .allow_subclass<wrapper<CardinalSplineBy>>("cc.CardinalSplineBy._extend")    
+    ;
+
+  class_<CatmullRomTo, base<CardinalSplineTo>>("cc.CatmullRomTo")
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CatmullRomTo::create(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](CatmullRomTo& this_, float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        this_.initWithDuration(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    // end of manual
+    .property("_className",  optional_override([](const CatmullRomTo& _) -> std::string {return "CatmullRomTo";}))
+    .allow_subclass<wrapper<CatmullRomTo>>("cc.CatmullRomTo._extend")    
+    ;
+
+  class_<CatmullRomBy, base<CardinalSplineBy>>("cc.CatmullRomBy")
+    // from manual
+    .class_function("create", optional_override(
+      [](float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        return CatmullRomBy::create(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    .function("initWithDuration", optional_override(
+      [](CatmullRomBy& this_, float duration, const std::vector<Vec2>& points)
+      {
+        PointArray* pointArray = PointArray::create(points.size());
+        pointArray->setControlPoints(points);
+        this_.initWithDuration(duration, pointArray);
+      }
+    ), allow_raw_pointers())
+    // end of manual
+    .property("_className",  optional_override([](const CatmullRomBy& _) -> std::string {return "CatmullRomBy";}))
+    .allow_subclass<wrapper<CatmullRomBy>>("cc.CatmullRomBy._extend")    
+    ;
+
+  class_<ActionEase, base<ActionInterval>>("cc.ActionEase")
+    .function("initWithAction", &ActionEase::initWithAction, allow_raw_pointers())
+    .function("getInnerAction", &ActionEase::getInnerAction, allow_raw_pointers())
+    .property("_className",  optional_override([](const ActionEase& _) -> std::string {return "ActionEase";}))
+    .allow_subclass<wrapper<ActionEase>>("cc.ActionEase._extend")    
+    ;
+
+  class_<EaseRateAction, base<ActionEase>>("cc.EaseRateAction")
+    .function("setRate", &EaseRateAction::setRate)
+    .function("initWithAction", &EaseRateAction::initWithAction, allow_raw_pointers())
+    .function("getRate", &EaseRateAction::getRate)
+    .class_function("create", &EaseRateAction::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseRateAction& _) -> std::string {return "EaseRateAction";}))
+    .allow_subclass<wrapper<EaseRateAction>>("cc.EaseRateAction._extend")    
+    ;
+
+  class_<EaseExponentialIn, base<ActionEase>>("cc.EaseExponentialIn")
+    .constructor(&cc_bindings_constructor<EaseExponentialIn>, allow_raw_pointers())
+    .class_function("create", &EaseExponentialIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseExponentialIn& _) -> std::string {return "EaseExponentialIn";}))    
+    .allow_subclass<wrapper<EaseExponentialIn>>("cc.EaseExponentialIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseExponentialOut, base<ActionEase>>("cc.EaseExponentialOut")
+    .constructor(&cc_bindings_constructor<EaseExponentialOut>, allow_raw_pointers())
+    .class_function("create", &EaseExponentialOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseExponentialOut& _) -> std::string {return "EaseExponentialOut";}))    
+    .allow_subclass<wrapper<EaseExponentialOut>>("cc.EaseExponentialOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseExponentialInOut, base<ActionEase>>("cc.EaseExponentialInOut")
+    .constructor(&cc_bindings_constructor<EaseExponentialInOut>, allow_raw_pointers())
+    .class_function("create", &EaseExponentialInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseExponentialInOut& _) -> std::string {return "EaseExponentialInOut";}))    
+    .allow_subclass<wrapper<EaseExponentialInOut>>("cc.EaseExponentialInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseSineIn, base<ActionEase>>("cc.EaseSineIn")
+    .constructor(&cc_bindings_constructor<EaseSineIn>, allow_raw_pointers())
+    .class_function("create", &EaseSineIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseSineIn& _) -> std::string {return "EaseSineIn";}))    
+    .allow_subclass<wrapper<EaseSineIn>>("cc.EaseSineIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseSineOut, base<ActionEase>>("cc.EaseSineOut")
+    .constructor(&cc_bindings_constructor<EaseSineOut>, allow_raw_pointers())
+    .class_function("create", &EaseSineOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseSineOut& _) -> std::string {return "EaseSineOut";}))    
+    .allow_subclass<wrapper<EaseSineOut>>("cc.EaseSineOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseSineInOut, base<ActionEase>>("cc.EaseSineInOut")
+    .constructor(&cc_bindings_constructor<EaseSineInOut>, allow_raw_pointers())
+    .class_function("create", &EaseSineInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseSineInOut& _) -> std::string {return "EaseSineInOut";}))    
+    .allow_subclass<wrapper<EaseSineInOut>>("cc.EaseSineInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBounce, base<ActionEase>>("cc.EaseBounce")
+    .property("_className",  optional_override([](const EaseBounce& _) -> std::string {return "EaseBounce";}))
+    .allow_subclass<wrapper<EaseBounce>>("cc.EaseBounce._extend")    
+    ;
+
+  class_<EaseBounceIn, base<ActionEase>>("cc.EaseBounceIn")
+    .constructor(&cc_bindings_constructor<EaseBounceIn>, allow_raw_pointers())
+    .class_function("create", &EaseBounceIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBounceIn& _) -> std::string {return "EaseBounceIn";}))    
+    .allow_subclass<wrapper<EaseBounceIn>>("cc.EaseBounceIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBounceOut, base<ActionEase>>("cc.EaseBounceOut")
+    .constructor(&cc_bindings_constructor<EaseBounceOut>, allow_raw_pointers())
+    .class_function("create", &EaseBounceOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBounceOut& _) -> std::string {return "EaseBounceOut";}))    
+    .allow_subclass<wrapper<EaseBounceOut>>("cc.EaseBounceOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBounceInOut, base<ActionEase>>("cc.EaseBounceInOut")
+    .constructor(&cc_bindings_constructor<EaseBounceInOut>, allow_raw_pointers())
+    .class_function("create", &EaseBounceInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBounceInOut& _) -> std::string {return "EaseBounceInOut";}))    
+    .allow_subclass<wrapper<EaseBounceInOut>>("cc.EaseBounceInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBackIn, base<ActionEase>>("cc.EaseBackIn")
+    .constructor(&cc_bindings_constructor<EaseBackIn>, allow_raw_pointers())
+    .class_function("create", &EaseBackIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBackIn& _) -> std::string {return "EaseBackIn";}))    
+    .allow_subclass<wrapper<EaseBackIn>>("cc.EaseBackIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBackOut, base<ActionEase>>("cc.EaseBackOut")
+    .constructor(&cc_bindings_constructor<EaseBackOut>, allow_raw_pointers())
+    .class_function("create", &EaseBackOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBackOut& _) -> std::string {return "EaseBackOut";}))    
+    .allow_subclass<wrapper<EaseBackOut>>("cc.EaseBackOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBackInOut, base<ActionEase>>("cc.EaseBackInOut")
+    .constructor(&cc_bindings_constructor<EaseBackInOut>, allow_raw_pointers())
+    .class_function("create", &EaseBackInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBackInOut& _) -> std::string {return "EaseBackInOut";}))    
+    .allow_subclass<wrapper<EaseBackInOut>>("cc.EaseBackInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuadraticActionIn, base<ActionEase>>("cc.EaseQuadraticActionIn")
+    .constructor(&cc_bindings_constructor<EaseQuadraticActionIn>, allow_raw_pointers())
+    .class_function("create", &EaseQuadraticActionIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuadraticActionIn& _) -> std::string {return "EaseQuadraticActionIn";}))    
+    .allow_subclass<wrapper<EaseQuadraticActionIn>>("cc.EaseQuadraticActionIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuadraticActionOut, base<ActionEase>>("cc.EaseQuadraticActionOut")
+    .constructor(&cc_bindings_constructor<EaseQuadraticActionOut>, allow_raw_pointers())
+    .class_function("create", &EaseQuadraticActionOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuadraticActionOut& _) -> std::string {return "EaseQuadraticActionOut";}))    
+    .allow_subclass<wrapper<EaseQuadraticActionOut>>("cc.EaseQuadraticActionOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuadraticActionInOut, base<ActionEase>>("cc.EaseQuadraticActionInOut")
+    .constructor(&cc_bindings_constructor<EaseQuadraticActionInOut>, allow_raw_pointers())
+    .class_function("create", &EaseQuadraticActionInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuadraticActionInOut& _) -> std::string {return "EaseQuadraticActionInOut";}))    
+    .allow_subclass<wrapper<EaseQuadraticActionInOut>>("cc.EaseQuadraticActionInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuarticActionIn, base<ActionEase>>("cc.EaseQuarticActionIn")
+    .constructor(&cc_bindings_constructor<EaseQuarticActionIn>, allow_raw_pointers())
+    .class_function("create", &EaseQuarticActionIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuarticActionIn& _) -> std::string {return "EaseQuarticActionIn";}))    
+    .allow_subclass<wrapper<EaseQuarticActionIn>>("cc.EaseQuarticActionIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuarticActionOut, base<ActionEase>>("cc.EaseQuarticActionOut")
+    .constructor(&cc_bindings_constructor<EaseQuarticActionOut>, allow_raw_pointers())
+    .class_function("create", &EaseQuarticActionOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuarticActionOut& _) -> std::string {return "EaseQuarticActionOut";}))    
+    .allow_subclass<wrapper<EaseQuarticActionOut>>("cc.EaseQuarticActionOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuarticActionInOut, base<ActionEase>>("cc.EaseQuarticActionInOut")
+    .constructor(&cc_bindings_constructor<EaseQuarticActionInOut>, allow_raw_pointers())
+    .class_function("create", &EaseQuarticActionInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuarticActionInOut& _) -> std::string {return "EaseQuarticActionInOut";}))    
+    .allow_subclass<wrapper<EaseQuarticActionInOut>>("cc.EaseQuarticActionInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuinticActionIn, base<ActionEase>>("cc.EaseQuinticActionIn")
+    .constructor(&cc_bindings_constructor<EaseQuinticActionIn>, allow_raw_pointers())
+    .class_function("create", &EaseQuinticActionIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuinticActionIn& _) -> std::string {return "EaseQuinticActionIn";}))    
+    .allow_subclass<wrapper<EaseQuinticActionIn>>("cc.EaseQuinticActionIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuinticActionOut, base<ActionEase>>("cc.EaseQuinticActionOut")
+    .constructor(&cc_bindings_constructor<EaseQuinticActionOut>, allow_raw_pointers())
+    .class_function("create", &EaseQuinticActionOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuinticActionOut& _) -> std::string {return "EaseQuinticActionOut";}))    
+    .allow_subclass<wrapper<EaseQuinticActionOut>>("cc.EaseQuinticActionOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseQuinticActionInOut, base<ActionEase>>("cc.EaseQuinticActionInOut")
+    .constructor(&cc_bindings_constructor<EaseQuinticActionInOut>, allow_raw_pointers())
+    .class_function("create", &EaseQuinticActionInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseQuinticActionInOut& _) -> std::string {return "EaseQuinticActionInOut";}))    
+    .allow_subclass<wrapper<EaseQuinticActionInOut>>("cc.EaseQuinticActionInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseCircleActionIn, base<ActionEase>>("cc.EaseCircleActionIn")
+    .constructor(&cc_bindings_constructor<EaseCircleActionIn>, allow_raw_pointers())
+    .class_function("create", &EaseCircleActionIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseCircleActionIn& _) -> std::string {return "EaseCircleActionIn";}))    
+    .allow_subclass<wrapper<EaseCircleActionIn>>("cc.EaseCircleActionIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseCircleActionOut, base<ActionEase>>("cc.EaseCircleActionOut")
+    .constructor(&cc_bindings_constructor<EaseCircleActionOut>, allow_raw_pointers())
+    .class_function("create", &EaseCircleActionOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseCircleActionOut& _) -> std::string {return "EaseCircleActionOut";}))    
+    .allow_subclass<wrapper<EaseCircleActionOut>>("cc.EaseCircleActionOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseCircleActionInOut, base<ActionEase>>("cc.EaseCircleActionInOut")
+    .constructor(&cc_bindings_constructor<EaseCircleActionInOut>, allow_raw_pointers())
+    .class_function("create", &EaseCircleActionInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseCircleActionInOut& _) -> std::string {return "EaseCircleActionInOut";}))    
+    .allow_subclass<wrapper<EaseCircleActionInOut>>("cc.EaseCircleActionInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseCubicActionIn, base<ActionEase>>("cc.EaseCubicActionIn")
+    .constructor(&cc_bindings_constructor<EaseCubicActionIn>, allow_raw_pointers())
+    .class_function("create", &EaseCubicActionIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseCubicActionIn& _) -> std::string {return "EaseCubicActionIn";}))    
+    .allow_subclass<wrapper<EaseCubicActionIn>>("cc.EaseCubicActionIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseCubicActionOut, base<ActionEase>>("cc.EaseCubicActionOut")
+    .constructor(&cc_bindings_constructor<EaseCubicActionOut>, allow_raw_pointers())
+    .class_function("create", &EaseCubicActionOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseCubicActionOut& _) -> std::string {return "EaseCubicActionOut";}))    
+    .allow_subclass<wrapper<EaseCubicActionOut>>("cc.EaseCubicActionOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseCubicActionInOut, base<ActionEase>>("cc.EaseCubicActionInOut")
+    .constructor(&cc_bindings_constructor<EaseCubicActionInOut>, allow_raw_pointers())
+    .class_function("create", &EaseCubicActionInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseCubicActionInOut& _) -> std::string {return "EaseCubicActionInOut";}))    
+    .allow_subclass<wrapper<EaseCubicActionInOut>>("cc.EaseCubicActionInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseIn, base<EaseRateAction>>("cc.EaseIn")
+    .constructor(&cc_bindings_constructor<EaseIn>, allow_raw_pointers())
+    .class_function("create", &EaseIn::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseIn& _) -> std::string {return "EaseIn";}))    
+    .allow_subclass<wrapper<EaseIn>>("cc.EaseIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseOut, base<EaseRateAction>>("cc.EaseOut")
+    .constructor(&cc_bindings_constructor<EaseOut>, allow_raw_pointers())
+    .class_function("create", &EaseOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseOut& _) -> std::string {return "EaseOut";}))    
+    .allow_subclass<wrapper<EaseOut>>("cc.EaseOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseInOut, base<EaseRateAction>>("cc.EaseInOut")
+    .constructor(&cc_bindings_constructor<EaseInOut>, allow_raw_pointers())
+    .class_function("create", &EaseInOut::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseInOut& _) -> std::string {return "EaseInOut";}))    
+    .allow_subclass<wrapper<EaseInOut>>("cc.EaseInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseElastic, base<ActionEase>>("cc.EaseElastic")
+    .function("setPeriod", &EaseElastic::setPeriod)
+    .function("initWithAction", &EaseElastic::initWithAction, allow_raw_pointers())
+    .function("initWithAction", optional_override(
+        [](EaseElastic& this_, ActionInterval* arg0){
+        return this_.initWithAction(arg0);
+      }), allow_raw_pointers())
+    .function("getPeriod", &EaseElastic::getPeriod)
+    .property("_className",  optional_override([](const EaseElastic& _) -> std::string {return "EaseElastic";}))
+    .allow_subclass<wrapper<EaseElastic>>("cc.EaseElastic._extend")    
+    ;
+
+  class_<EaseElasticIn, base<EaseElastic>>("cc.EaseElasticIn")
+    .constructor(&cc_bindings_constructor<EaseElasticIn>, allow_raw_pointers())
+    .class_function("create", &EaseElasticIn::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](ActionInterval* arg0){
+        return EaseElasticIn::create(arg0);
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseElasticIn& _) -> std::string {return "EaseElasticIn";}))    
+    .allow_subclass<wrapper<EaseElasticIn>>("cc.EaseElasticIn._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseElasticOut, base<EaseElastic>>("cc.EaseElasticOut")
+    .constructor(&cc_bindings_constructor<EaseElasticOut>, allow_raw_pointers())
+    .class_function("create", &EaseElasticOut::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](ActionInterval* arg0){
+        return EaseElasticOut::create(arg0);
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseElasticOut& _) -> std::string {return "EaseElasticOut";}))    
+    .allow_subclass<wrapper<EaseElasticOut>>("cc.EaseElasticOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseElasticInOut, base<EaseElastic>>("cc.EaseElasticInOut")
+    .constructor(&cc_bindings_constructor<EaseElasticInOut>, allow_raw_pointers())
+    .class_function("create", &EaseElasticInOut::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](ActionInterval* arg0){
+        return EaseElasticInOut::create(arg0);
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseElasticInOut& _) -> std::string {return "EaseElasticInOut";}))    
+    .allow_subclass<wrapper<EaseElasticInOut>>("cc.EaseElasticInOut._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<EaseBezierAction, base<ActionEase>>("cc.EaseBezierAction")
+    .constructor(&cc_bindings_constructor<EaseBezierAction>, allow_raw_pointers())
+    .function("setBezierParamer", &EaseBezierAction::setBezierParamer)
+    .class_function("create", &EaseBezierAction::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const EaseBezierAction& _) -> std::string {return "EaseBezierAction";}))    
+    .allow_subclass<wrapper<EaseBezierAction>>("cc.EaseBezierAction._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ActionInstant, base<FiniteTimeAction>>("cc.ActionInstant")
+    .property("_className",  optional_override([](const ActionInstant& _) -> std::string {return "ActionInstant";}))    
+    ;
+
+  class_<Show, base<ActionInstant>>("cc.Show")
+    .constructor(&cc_bindings_constructor<Show>, allow_raw_pointers())
+    .class_function("create", &Show::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Show& _) -> std::string {return "Show";}))    
+    .allow_subclass<wrapper<Show>>("cc.Show._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Hide, base<ActionInstant>>("cc.Hide")
+    .constructor(&cc_bindings_constructor<Hide>, allow_raw_pointers())
+    .class_function("create", &Hide::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Hide& _) -> std::string {return "Hide";}))    
+    .allow_subclass<wrapper<Hide>>("cc.Hide._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ToggleVisibility, base<ActionInstant>>("cc.ToggleVisibility")
+    .constructor(&cc_bindings_constructor<ToggleVisibility>, allow_raw_pointers())
+    .class_function("create", &ToggleVisibility::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ToggleVisibility& _) -> std::string {return "ToggleVisibility";}))    
+    ;
+
+  class_<RemoveSelf, base<ActionInstant>>("cc.RemoveSelf")
+    .constructor(&cc_bindings_constructor<RemoveSelf>, allow_raw_pointers())
+    .function("init", &RemoveSelf::init)
+    .class_function("create", &RemoveSelf::create, allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](){
+        return RemoveSelf::create();
+      }), allow_raw_pointers())
+    .property("_className",  optional_override([](const RemoveSelf& _) -> std::string {return "RemoveSelf";}))
+    .allow_subclass<wrapper<RemoveSelf>>("cc.RemoveSelf._extend")    
+    ;
+
+  class_<FlipX, base<ActionInstant>>("cc.FlipX")
+    .constructor(&cc_bindings_constructor<FlipX>, allow_raw_pointers())
+    .function("initWithFlipX", &FlipX::initWithFlipX)
+    .class_function("create", &FlipX::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FlipX& _) -> std::string {return "FlipX";}))    
+    .allow_subclass<wrapper<FlipX>>("cc.FlipX._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FlipY, base<ActionInstant>>("cc.FlipY")
+    .constructor(&cc_bindings_constructor<FlipY>, allow_raw_pointers())
+    .function("initWithFlipY", &FlipY::initWithFlipY)
+    .class_function("create", &FlipY::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FlipY& _) -> std::string {return "FlipY";}))    
+    .allow_subclass<wrapper<FlipY>>("cc.FlipY._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Place, base<ActionInstant>>("cc.Place")
+    .constructor(&cc_bindings_constructor<Place>, allow_raw_pointers())
+    .function("initWithPosition", &Place::initWithPosition)
+    .class_function("create", &Place::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Place& _) -> std::string {return "Place";}))    
+    .allow_subclass<wrapper<Place>>("cc.Place._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<CallFunc, base<ActionInstant>>("cc._CallFunc")
+    .constructor(&cc_bindings_constructor<CallFunc>, allow_raw_pointers())
+    .function("execute", &CallFunc::execute)
+    .property("_className",  optional_override([](const CallFunc& _) -> std::string {return "CallFunc";}))    
+    // cocos specifics
+    .class_function("create", optional_override(
+      [](const val& callback){
+        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
+        return CallFuncN::create([callback, ret](Node* sender)
+        {
+          if (sender == nullptr)
+          {
+            sender = ret->getTarget();
+          }
+
+          callback(val(sender));
+        });
+      }), allow_raw_pointers())
+    .class_function("create", optional_override(
+      [](const val& callback, const val& thisv){
+        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
+        return CallFuncN::create([callback, thisv, ret](Node* sender)
+        {
+          if (sender == nullptr)
+          {
+            sender = ret->getTarget();
+          }
+
+          callback.call<void>("call", thisv, val(sender));
+        });
+      }), allow_raw_pointers())
+      .class_function("create", optional_override(
+      [](const val& callback, const val& thisv, const val& extraData){
+        cocos2d::CallFuncN *ret = new (std::nothrow) cocos2d::CallFuncN;
+        return CallFuncN::create([callback, thisv, extraData, ret](Node* sender)
+        {
+          if (sender == nullptr)
+          {
+            sender = ret->getTarget();
+          }
+
+          callback.call<void>("call", thisv, val(sender), extraData);
+        });
+      }), allow_raw_pointers())
+    // end
+    .allow_subclass<wrapper<CallFunc>>("cc._CallFunc._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<CallFuncN, base<CallFunc>>("cc.CallFunc")
+    .constructor(&cc_bindings_constructor<CallFuncN>, allow_raw_pointers())
+    // cocos specifics
+    .function("initWithFunction", optional_override(
+      [](CallFuncN& this_, const val& callback){
+        return this_.initWithFunction([callback](Node* sender)
+        {
+          callback(val(sender));
+        });
+      }))
+    .function("initWithFunction", optional_override(
+      [](CallFuncN& this_, const val& callback, const val& thisv){
+        return this_.initWithFunction([callback, thisv](Node* sender)
+        {
+          callback.call<void>("call", thisv, val(sender));
+        });
+      }))
+    .function("initWithFunction", optional_override(
+      [](CallFuncN& this_, const val& callback, const val& thisv, const val& extraData){
+        return this_.initWithFunction([callback, thisv, extraData](Node* sender)
+        {
+          callback.call<void>("call", thisv, val(sender), extraData);
+        });
+      }))
+    // end
+    .property("_className",  optional_override([](const CallFuncN& _) -> std::string {return "CallFuncN";}))    
+    .allow_subclass<wrapper<CallFuncN>>("cc.CallFunc._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<GridAction, base<ActionInterval>>("cc.GridAction")
+    .function("getGrid", &GridAction::getGrid, allow_raw_pointers())
+    .function("initWithDuration", &GridAction::initWithDuration)
+    .property("_className",  optional_override([](const GridAction& _) -> std::string {return "GridAction";}))
+    .allow_subclass<wrapper<GridAction>>("cc.GridAction._extend")    
+    ;
+
+  class_<Grid3DAction, base<GridAction>>("cc.Grid3DAction")
+    .function("getGridRect", &Grid3DAction::getGridRect)
+    .property("_className",  optional_override([](const Grid3DAction& _) -> std::string {return "Grid3DAction";}))
+    .allow_subclass<wrapper<Grid3DAction>>("cc.Grid3DAction._extend")    
+    ;
+
+  class_<TiledGrid3DAction, base<GridAction>>("cc.TiledGrid3DAction")
+    .property("_className",  optional_override([](const TiledGrid3DAction& _) -> std::string {return "TiledGrid3DAction";}))
+    .allow_subclass<wrapper<TiledGrid3DAction>>("cc.TiledGrid3DAction._extend")    
+    ;
+
+  class_<StopGrid, base<ActionInstant>>("cc.StopGrid")
+    .constructor(&cc_bindings_constructor<StopGrid>, allow_raw_pointers())
+    .class_function("create", &StopGrid::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const StopGrid& _) -> std::string {return "StopGrid";}))    
+    ;
+
+  class_<ReuseGrid, base<ActionInstant>>("cc.ReuseGrid")
+    .constructor(&cc_bindings_constructor<ReuseGrid>, allow_raw_pointers())
+    .function("initWithTimes", &ReuseGrid::initWithTimes)
+    .class_function("create", &ReuseGrid::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ReuseGrid& _) -> std::string {return "ReuseGrid";}))
+    .allow_subclass<wrapper<ReuseGrid>>("cc.ReuseGrid._extend")    
+    ;
+
+  class_<Waves3D, base<Grid3DAction>>("cc.Waves3D")
+    .constructor(&cc_bindings_constructor<Waves3D>, allow_raw_pointers())
+    .function("setAmplitudeRate", &Waves3D::setAmplitudeRate)
+    .function("initWithDuration", &Waves3D::initWithDuration)
+    .function("getAmplitude", &Waves3D::getAmplitude)
+    .function("getAmplitudeRate", &Waves3D::getAmplitudeRate)
+    .function("setAmplitude", &Waves3D::setAmplitude)
+    .class_function("create", &Waves3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Waves3D& _) -> std::string {return "Waves3D";}))
+    .allow_subclass<wrapper<Waves3D>>("cc.Waves3D._extend")    
+    ;
+
+  class_<FlipX3D, base<Grid3DAction>>("cc.FlipX3D")
+    .constructor(&cc_bindings_constructor<FlipX3D>, allow_raw_pointers())
+    .function("initWithSize", &FlipX3D::initWithSize)
+    .function("initWithDuration", &FlipX3D::initWithDuration)
+    .class_function("create", &FlipX3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FlipX3D& _) -> std::string {return "FlipX3D";}))    
+    .allow_subclass<wrapper<FlipX3D>>("cc.FlipX3D._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FlipY3D, base<FlipX3D>>("cc.FlipY3D")
+    .constructor(&cc_bindings_constructor<FlipY3D>, allow_raw_pointers())
+    .class_function("create", &FlipY3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FlipY3D& _) -> std::string {return "FlipY3D";}))    
+    .allow_subclass<wrapper<FlipY3D>>("cc.FlipY3D._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<Lens3D, base<Grid3DAction>>("cc.Lens3D")
+    .constructor(&cc_bindings_constructor<Lens3D>, allow_raw_pointers())
+    .function("setConcave", &Lens3D::setConcave)
+    .function("initWithDuration", &Lens3D::initWithDuration)
+    .function("setLensEffect", &Lens3D::setLensEffect)
+    .function("getLensEffect", &Lens3D::getLensEffect)
+    .function("setPosition", &Lens3D::setPosition)
+    .function("getPosition", &Lens3D::getPosition)
+    .class_function("create", &Lens3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Lens3D& _) -> std::string {return "Lens3D";}))
+    .allow_subclass<wrapper<Lens3D>>("cc.Lens3D._extend")    
+    ;
+
+  class_<Ripple3D, base<Grid3DAction>>("cc.Ripple3D")
+    .constructor(&cc_bindings_constructor<Ripple3D>, allow_raw_pointers())
+    .function("setAmplitudeRate", &Ripple3D::setAmplitudeRate)
+    .function("initWithDuration", &Ripple3D::initWithDuration)
+    .function("getAmplitudeRate", &Ripple3D::getAmplitudeRate)
+    .function("setAmplitude", &Ripple3D::setAmplitude)
+    .function("getAmplitude", &Ripple3D::getAmplitude)
+    .function("setPosition", &Ripple3D::setPosition)
+    .function("getPosition", &Ripple3D::getPosition)
+    .class_function("create", &Ripple3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Ripple3D& _) -> std::string {return "Ripple3D";}))
+    .allow_subclass<wrapper<Ripple3D>>("cc.Ripple3D._extend")    
+    ;
+
+  class_<Shaky3D, base<Grid3DAction>>("cc.Shaky3D")
+    .constructor(&cc_bindings_constructor<Shaky3D>, allow_raw_pointers())
+    .function("initWithDuration", &Shaky3D::initWithDuration)
+    .class_function("create", &Shaky3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Shaky3D& _) -> std::string {return "Shaky3D";}))
+    .allow_subclass<wrapper<Shaky3D>>("cc.Shaky3D._extend")    
+    ;
+
+  class_<Liquid, base<Grid3DAction>>("cc.Liquid")
+    .constructor(&cc_bindings_constructor<Liquid>, allow_raw_pointers())
+    .function("setAmplitudeRate", &Liquid::setAmplitudeRate)
+    .function("initWithDuration", &Liquid::initWithDuration)
+    .function("getAmplitude", &Liquid::getAmplitude)
+    .function("getAmplitudeRate", &Liquid::getAmplitudeRate)
+    .function("setAmplitude", &Liquid::setAmplitude)
+    .class_function("create", &Liquid::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Liquid& _) -> std::string {return "Liquid";}))
+    .allow_subclass<wrapper<Liquid>>("cc.Liquid._extend")    
+    ;
+
+  class_<Waves, base<Grid3DAction>>("cc.Waves")
+    .constructor(&cc_bindings_constructor<Waves>, allow_raw_pointers())
+    .function("setAmplitudeRate", &Waves::setAmplitudeRate)
+    .function("initWithDuration", &Waves::initWithDuration)
+    .function("getAmplitude", &Waves::getAmplitude)
+    .function("getAmplitudeRate", &Waves::getAmplitudeRate)
+    .function("setAmplitude", &Waves::setAmplitude)
+    .class_function("create", &Waves::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Waves& _) -> std::string {return "Waves";}))
+    .allow_subclass<wrapper<Waves>>("cc.Waves._extend")    
+    ;
+
+  class_<Twirl, base<Grid3DAction>>("cc.Twirl")
+    .constructor(&cc_bindings_constructor<Twirl>, allow_raw_pointers())
+    .function("setAmplitudeRate", &Twirl::setAmplitudeRate)
+    .function("initWithDuration", &Twirl::initWithDuration)
+    .function("getAmplitudeRate", &Twirl::getAmplitudeRate)
+    .function("setAmplitude", &Twirl::setAmplitude)
+    .function("getAmplitude", &Twirl::getAmplitude)
+    .function("setPosition", &Twirl::setPosition)
+    .function("getPosition", &Twirl::getPosition)
+    .class_function("create", &Twirl::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const Twirl& _) -> std::string {return "Twirl";}))
+    .allow_subclass<wrapper<Twirl>>("cc.Twirl._extend")    
+    ;
+
+  class_<PageTurn3D, base<Grid3DAction>>("cc.PageTurn3D")
+    .class_function("create", &PageTurn3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const PageTurn3D& _) -> std::string {return "PageTurn3D";}))
+    .allow_subclass<wrapper<PageTurn3D>>("cc.PageTurn3D._extend")    
+    ;
+
+  class_<ProgressTo, base<ActionInterval>>("cc.ProgressTo")
+    .constructor(&cc_bindings_constructor<ProgressTo>, allow_raw_pointers())
+    .function("initWithDuration", &ProgressTo::initWithDuration)
+    .class_function("create", &ProgressTo::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ProgressTo& _) -> std::string {return "ProgressTo";}))    
+    .allow_subclass<wrapper<ProgressTo>>("cc.ProgressTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ProgressFromTo, base<ActionInterval>>("cc.ProgressFromTo")
+    .constructor(&cc_bindings_constructor<ProgressFromTo>, allow_raw_pointers())
+    .function("initWithDuration", &ProgressFromTo::initWithDuration)
+    .class_function("create", &ProgressFromTo::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ProgressFromTo& _) -> std::string {return "ProgressFromTo";}))    
+    .allow_subclass<wrapper<ProgressFromTo>>("cc.ProgressFromTo._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<ShakyTiles3D, base<TiledGrid3DAction>>("cc.ShakyTiles3D")
+    .constructor(&cc_bindings_constructor<ShakyTiles3D>, allow_raw_pointers())
+    .function("initWithDuration", &ShakyTiles3D::initWithDuration)
+    .class_function("create", &ShakyTiles3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ShakyTiles3D& _) -> std::string {return "ShakyTiles3D";}))
+    .allow_subclass<wrapper<ShakyTiles3D>>("cc.ShakyTiles3D._extend")    
+    ;
+
+  class_<ShatteredTiles3D, base<TiledGrid3DAction>>("cc.ShatteredTiles3D")
+    .constructor(&cc_bindings_constructor<ShatteredTiles3D>, allow_raw_pointers())
+    .function("initWithDuration", &ShatteredTiles3D::initWithDuration)
+    .class_function("create", &ShatteredTiles3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ShatteredTiles3D& _) -> std::string {return "ShatteredTiles3D";}))
+    .allow_subclass<wrapper<ShatteredTiles3D>>("cc.ShatteredTiles3D._extend")    
+    ;
+
+  class_<ShuffleTiles, base<TiledGrid3DAction>>("cc.ShuffleTiles")
+    .constructor(&cc_bindings_constructor<ShuffleTiles>, allow_raw_pointers())
+    .function("placeTile", &ShuffleTiles::placeTile, allow_raw_pointers())
+    .function("shuffle", &ShuffleTiles::shuffle, allow_raw_pointers())
+    .function("initWithDuration", &ShuffleTiles::initWithDuration)
+    .function("getDelta", &ShuffleTiles::getDelta)
+    .class_function("create", &ShuffleTiles::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ShuffleTiles& _) -> std::string {return "ShuffleTiles";}))
+    .allow_subclass<wrapper<ShuffleTiles>>("cc.ShuffleTiles._extend")    
+    ;
+
+  class_<FadeOutTRTiles, base<TiledGrid3DAction>>("cc.FadeOutTRTiles")
+    .constructor(&cc_bindings_constructor<FadeOutTRTiles>, allow_raw_pointers())
+    .function("turnOnTile", &FadeOutTRTiles::turnOnTile)
+    .function("turnOffTile", &FadeOutTRTiles::turnOffTile)
+    .function("transformTile", &FadeOutTRTiles::transformTile)
+    .function("testFunc", &FadeOutTRTiles::testFunc)
+    .class_function("create", &FadeOutTRTiles::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeOutTRTiles& _) -> std::string {return "FadeOutTRTiles";}))    
+    .allow_subclass<wrapper<FadeOutTRTiles>>("cc.FadeOutTRTiles._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FadeOutBLTiles, base<FadeOutTRTiles>>("cc.FadeOutBLTiles")
+    .constructor(&cc_bindings_constructor<FadeOutBLTiles>, allow_raw_pointers())
+    .class_function("create", &FadeOutBLTiles::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeOutBLTiles& _) -> std::string {return "FadeOutBLTiles";}))    
+    .allow_subclass<wrapper<FadeOutBLTiles>>("cc.FadeOutBLTiles._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FadeOutUpTiles, base<FadeOutTRTiles>>("cc.FadeOutUpTiles")
+    .constructor(&cc_bindings_constructor<FadeOutUpTiles>, allow_raw_pointers())
+    .class_function("create", &FadeOutUpTiles::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeOutUpTiles& _) -> std::string {return "FadeOutUpTiles";}))    
+    .allow_subclass<wrapper<FadeOutUpTiles>>("cc.FadeOutUpTiles._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<FadeOutDownTiles, base<FadeOutUpTiles>>("cc.FadeOutDownTiles")
+    .constructor(&cc_bindings_constructor<FadeOutDownTiles>, allow_raw_pointers())
+    .class_function("create", &FadeOutDownTiles::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const FadeOutDownTiles& _) -> std::string {return "FadeOutDownTiles";}))    
+    .allow_subclass<wrapper<FadeOutDownTiles>>("cc.FadeOutDownTiles._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<TurnOffTiles, base<TiledGrid3DAction>>("cc.TurnOffTiles")
+    .constructor(&cc_bindings_constructor<TurnOffTiles>, allow_raw_pointers())
+    .function("turnOnTile", &TurnOffTiles::turnOnTile)
+    .function("turnOffTile", &TurnOffTiles::turnOffTile)
+    .function("shuffle", &TurnOffTiles::shuffle, allow_raw_pointers())
+    .function("initWithDuration", &TurnOffTiles::initWithDuration)
+    .class_function("create", select_overload<TurnOffTiles*(float, const Size&, unsigned int)>(&TurnOffTiles::create), allow_raw_pointers())
+    .class_function("create", select_overload<TurnOffTiles*(float, const Size&)>(&TurnOffTiles::create), allow_raw_pointers())
+    .property("_className",  optional_override([](const TurnOffTiles& _) -> std::string {return "TurnOffTiles";}))
+    .allow_subclass<wrapper<TurnOffTiles>>("cc.TurnOffTiles._extend")    
+    ;
+
+  class_<WavesTiles3D, base<TiledGrid3DAction>>("cc.WavesTiles3D")
+    .constructor(&cc_bindings_constructor<WavesTiles3D>, allow_raw_pointers())
+    .function("setAmplitudeRate", &WavesTiles3D::setAmplitudeRate)
+    .function("initWithDuration", &WavesTiles3D::initWithDuration)
+    .function("getAmplitude", &WavesTiles3D::getAmplitude)
+    .function("getAmplitudeRate", &WavesTiles3D::getAmplitudeRate)
+    .function("setAmplitude", &WavesTiles3D::setAmplitude)
+    .class_function("create", &WavesTiles3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const WavesTiles3D& _) -> std::string {return "WavesTiles3D";}))
+    .allow_subclass<wrapper<WavesTiles3D>>("cc.WavesTiles3D._extend")    
+    ;
+
+  class_<JumpTiles3D, base<TiledGrid3DAction>>("cc.JumpTiles3D")
+    .constructor(&cc_bindings_constructor<JumpTiles3D>, allow_raw_pointers())
+    .function("setAmplitudeRate", &JumpTiles3D::setAmplitudeRate)
+    .function("initWithDuration", &JumpTiles3D::initWithDuration)
+    .function("getAmplitude", &JumpTiles3D::getAmplitude)
+    .function("getAmplitudeRate", &JumpTiles3D::getAmplitudeRate)
+    .function("setAmplitude", &JumpTiles3D::setAmplitude)
+    .class_function("create", &JumpTiles3D::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const JumpTiles3D& _) -> std::string {return "JumpTiles3D";}))    
+    .allow_subclass<wrapper<JumpTiles3D>>("cc.JumpTiles3D._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
+    ;
+
+  class_<SplitRows, base<TiledGrid3DAction>>("cc.SplitRows")
+    .constructor(&cc_bindings_constructor<SplitRows>, allow_raw_pointers())
+    .function("initWithDuration", &SplitRows::initWithDuration)
+    .class_function("create", &SplitRows::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const SplitRows& _) -> std::string {return "SplitRows";}))
+    .allow_subclass<wrapper<SplitRows>>("cc.SplitRows._extend")    
+    ;
+
+  class_<SplitCols, base<TiledGrid3DAction>>("cc.SplitCols")
+    .constructor(&cc_bindings_constructor<SplitCols>, allow_raw_pointers())
+    .function("initWithDuration", &SplitCols::initWithDuration)
+    .class_function("create", &SplitCols::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const SplitCols& _) -> std::string {return "SplitCols";}))
+    .allow_subclass<wrapper<SplitCols>>("cc.SplitCols._extend")    
+    ;
+
+  class_<ActionTween, base<ActionInterval>>("cc.ActionTween")
+    .constructor(&cc_bindings_constructor<ActionTween>, allow_raw_pointers())
+    .function("initWithDuration", &ActionTween::initWithDuration)
+    .class_function("create", &ActionTween::create, allow_raw_pointers())
+    .property("_className",  optional_override([](const ActionTween& _) -> std::string {return "ActionTween";}))    
+    .allow_subclass<wrapper<ActionTween>>("cc.ActionTween._extend")
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 }
 

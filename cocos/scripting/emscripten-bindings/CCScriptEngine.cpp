@@ -188,7 +188,7 @@ int ScriptEngine::handleNodeEvent(void* data)
     if (NULL == basicScriptData->nativeObject || NULL == basicScriptData->value)
         return 0;
     
-    val handler(static_cast<Node*>(basicScriptData->nativeObject));
+    val& handler = *(static_cast<val*>(basicScriptData->nativeObject));
     
     if (handler.isUndefined())
         return 0;
@@ -197,23 +197,43 @@ int ScriptEngine::handleNodeEvent(void* data)
     switch (action)
     {
         case cocos2d::kNodeOnEnter:
-            handler.call<void>("onEnter");
+            if(!handler["onEnter"].isUndefined())
+            {
+                handler.call<void>("onEnter");
+                return 1;
+            }
             return 0;
             
         case kNodeOnExit:
-            handler.call<void>("onExit");
+            if(!handler["onExit"].isUndefined())
+            {
+                handler.call<void>("onExit");
+                return 1;
+            }
             return 0;
             
         case kNodeOnEnterTransitionDidFinish:
-            handler.call<void>("onEnterTransitionDidFinish");
+            if(!handler["onEnterTransitionDidFinish"].isUndefined())
+            {
+                handler.call<void>("onEnterTransitionDidFinish");
+                return 1;
+            }
             return 0;
             
         case kNodeOnExitTransitionDidStart:
-            handler.call<void>("onExitTransitionDidStart");
+            if(!handler["onExitTransitionDidStart"].isUndefined())
+            {
+                handler.call<void>("onExitTransitionDidStart");
+                return 1;
+            }
             return 0;
             
         case kNodeOnCleanup:
-            handler.call<void>("cleanup");
+            if(!handler["cleanup"].isUndefined())
+            {
+                handler.call<void>("cleanup");
+                return 1;
+            }
             return 0;
             
         default:
@@ -225,9 +245,9 @@ bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventC
 {
     std::string funcName = getTouchFuncName(eventCode);
     
-    val handler(static_cast<Ref*>(nativeObj));
+    val& handler = *(static_cast<val*>(nativeObj));
 
-    if (handler.isUndefined())
+    if (handler.isUndefined() || handler[funcName].isUndefined())
         return false;
 
     ret = handler.call<bool>(funcName.c_str(), val(touch), val(event));
@@ -238,9 +258,9 @@ bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventC
 {
     std::string funcName = getTouchFuncName(eventCode);
     
-    val handler(static_cast<Ref*>(nativeObj));
+    val& handler = *(static_cast<val*>(nativeObj));
 
-    if (handler.isUndefined())
+    if (handler.isUndefined() || handler[funcName].isUndefined())
         return false;
 
     handler.call<void>(funcName.c_str(), val(touch), val(event));
@@ -251,9 +271,9 @@ bool ScriptEngine::handleTouchesEvent(void* nativeObj, cocos2d::EventTouch::Even
 {
     std::string funcName = getTouchesFuncName(eventCode);
     
-    val handler(static_cast<Ref*>(nativeObj));
+    val& handler = *(static_cast<val*>(nativeObj));
 
-    if (handler.isUndefined())
+    if (handler.isUndefined() || handler[funcName].isUndefined())
         return false;
 
     handler.call<void>(funcName.c_str(), val(touches), val(event));
@@ -264,9 +284,9 @@ bool ScriptEngine::handleMouseEvent(void* nativeObj, cocos2d::EventMouse::MouseE
 {
     std::string funcName = getMouseFuncName(eventType);
     
-    val handler(static_cast<Ref*>(nativeObj));
+    val& handler = *(static_cast<val*>(nativeObj));
 
-    if (handler.isUndefined())
+    if (handler.isUndefined() || handler[funcName].isUndefined())
         return false;
 
     handler.call<void>(funcName.c_str(), val(event));
@@ -275,28 +295,37 @@ bool ScriptEngine::handleMouseEvent(void* nativeObj, cocos2d::EventMouse::MouseE
 
 bool ScriptEngine::handleKeyboardEvent(void* nativeObj, cocos2d::EventKeyboard::KeyCode keyCode, bool isPressed, cocos2d::Event* event)
 {
-    val handler(static_cast<Ref*>(nativeObj));
+    val& handler = *(static_cast<val*>(nativeObj));
 
     if (handler.isUndefined())
         return false;
 
     if (isPressed)
     {
-        handler.call<void>("_onKeyPressed", val(keyCode), val(event));
+        if(!handler["_onKeyPressed"].isUndefined())
+        {
+            handler.call<void>("_onKeyPressed", val(keyCode), val(event));
+            return true;
+        }
     }
     else
     {
-        handler.call<void>("_onKeyReleased", val(keyCode), val(event));
+        if(!handler["_onKeyReleased"].isUndefined())
+        {
+            handler.call<void>("_onKeyReleased", val(keyCode), val(event));
+            return true;
+        }
     }
-    return true;
+    
+    return false;
 }
 
 
 bool ScriptEngine::handleFocusEvent(void* nativeObj, cocos2d::ui::Widget* widgetLoseFocus, cocos2d::ui::Widget* widgetGetFocus)
 {
-    val handler(static_cast<Ref*>(nativeObj));
+    val& handler = *(static_cast<val*>(nativeObj));
 
-    if (handler.isUndefined())
+    if (handler.isUndefined() || !!handler["onFocusChanged"].isUndefined())
         return false;
 
     handler.call<void>("onFocusChanged", val(widgetLoseFocus), val(widgetGetFocus));
