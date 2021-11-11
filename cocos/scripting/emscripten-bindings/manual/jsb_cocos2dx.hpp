@@ -34,6 +34,31 @@ namespace cocos2d {
         bool _isStoringCharacters;
         std::string _currentValue;
     };
+
+    
+    class NodeWrapper : public wrapper<Node> {
+        EMSCRIPTEN_WRAPPER(NodeWrapper);
+        void onEnter() {
+            return call<void>("onEnter");
+        };
+
+        void onEnterTransitionDidFinish() {
+            return call<void>("onEnterTransitionDidFinish");
+        };
+
+        void onExit() {
+            return call<void>("onExit");
+        };
+
+        void onExitTransitionDidStart() {
+            return call<void>("onExitTransitionDidStart");
+        };
+
+        void cleanup() {
+            return call<void>("cleanup");
+        };
+    };
+
     
     
     enum ACTION_TAG {
