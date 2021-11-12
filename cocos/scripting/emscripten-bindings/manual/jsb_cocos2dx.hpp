@@ -37,6 +37,7 @@ namespace cocos2d {
 
     
     class NodeWrapper : public wrapper<Node> {
+    public:
         EMSCRIPTEN_WRAPPER(NodeWrapper);
         void onEnter() {
             return call<void>("onEnter");
