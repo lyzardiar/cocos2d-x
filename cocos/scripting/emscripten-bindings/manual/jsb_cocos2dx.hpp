@@ -60,6 +60,30 @@ namespace cocos2d {
         };
     };
 
+    // ComponentJS for emscripten
+    class ComponentJS : public Component {};
+
+    class ComponentJSWrapper : public wrapper<ComponentJS>
+    {
+    public:
+        EMSCRIPTEN_WRAPPER(ComponentJSWrapper);
+
+        void onEnter() override
+        {
+            return call<void>("onEnter");
+        };
+
+        void onExit() override
+        {
+            return call<void>("onExit");
+        };
+
+        void update(float dt) override
+        {
+            return call<void>("update", val(dt));
+        };
+    };
+    // end of ComponentJS
     
     
     enum ACTION_TAG {

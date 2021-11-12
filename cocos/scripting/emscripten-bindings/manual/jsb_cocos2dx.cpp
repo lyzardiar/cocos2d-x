@@ -5,8 +5,6 @@
 #include "audio/include/SimpleAudioEngine.h"
 #include "2d/CCProtectedNode.h"
 #include "base/CCAsyncTaskPool.h"
-#include "scripting/emscripten-bindings/component/CCComponentJS.h"
-#include "scripting/emscripten-bindings/component/CCComponentJS.h"
 #include "base/ccMacros.h"
 
 using namespace std;
@@ -3937,18 +3935,20 @@ COCOS_BINDINGS(jsb_cocos2dx) {
 
   class_<ComponentJS, base<Component>>("cc.ComponentJS")
     // cocos_specifics
-    // NOTE: not sure if this will work
-    .constructor(&ComponentJS::create, allow_raw_pointers())
-    .function("getScriptObject", optional_override(
-    [](const val& thisv)
-    {
-      return thisv;
+    // TODO: the spidermonkey implementation require some mechanism of eval which we are trying to avoid 
+    // to return the last evaluated expression statement as the js Component class
+    // I would say it looks better if it is like 'new ComponentPlayer()' other than 'new ComonentJS("player.js")' in js code.
+    .constructor(&cc_bindings_constructor<ComponentJS>, allow_raw_pointers())
+    .function("onEnter", optional_override([](Component& this_) {
+        return this_.Component::onEnter();
     }))
-    .class_function("create", optional_override(
-    [](const string& arg0)
-    {
-      return ComponentJS::create(arg0);
-    }), allow_raw_pointers())
+    .function("onExit", optional_override([](Component& this_) {
+        return this_.Component::onExit();
+    }))
+    .function("update", optional_override([](Component& this_, float dt) {
+        return this_.Component::update(dt);
+    }))
+    .allow_subclass<ComponentJSWrapper>("cc.ComponentJS._extend")
     // end
     .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
     ;

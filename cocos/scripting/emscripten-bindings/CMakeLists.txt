@@ -17,7 +17,6 @@ set(bindings_files
     manual/jsb_cocos2dx_ui.cpp
     manual/jsb_conversions.cpp
     manual/jsb_global.cpp
-    component/CCComponentJS.cpp
     CCScriptEngine.cpp
     )
 set(bindings_headers
@@ -37,7 +36,6 @@ set(bindings_headers
     manual/jsb_cocos2dx_ui.hpp
     manual/jsb_conversions.h
     manual/jsb_global.h
-    component/CCComponentJS.h
     CCScriptBindings.h
     CCScriptEngine.h
     )
