@@ -86,6 +86,12 @@ public:
     /** Return const_iterator to end.*/
     const_iterator cend() const { return _data.cend(); }
     
+    /** std style key_type */
+    typedef K key_type;
+
+    /** std style value_type */
+    typedef V value_type;
+
     /** Default constructor */
     Map<K, V>()
     : _data()

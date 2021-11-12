@@ -194,6 +194,7 @@ cocos2d::Vector<T> ccvecFromJSArray(const val& v) {
     return rv;
 };
 
+// custom marshal
 // std::vector auto binding
 template <typename T, typename Allocator>
 struct BindingType<std::vector<T, Allocator>> {
@@ -243,10 +244,82 @@ struct TypeID<T,
     static constexpr TYPEID get() { return TypeID<val>::get(); }
 };
 
+// unordered_map auto binding
+template <typename K, typename V>
+struct BindingType<std::unordered_map<K, V>> {
+    using ValBinding = BindingType<val>;
+    using WireType = ValBinding::WireType;
+
+    static WireType toWireType(const std::unordered_map<K, V> &map) {
+        val v(val::object());
+        for( const auto& i : map ) {
+            v[i.first] = val(i.second);
+        }
+        return ValBinding::toWireType(v);
+    }
+
+    static std::unordered_map<K, V> fromWireType(WireType value) {
+        const val& v = ValBinding::fromWireType(value);
+        const val& entries = val::global("Object").call<val>("entries", v);
+        const size_t l = entries["length"].as<size_t>();
+
+        std::unordered_map<K, V> map;
+        map.reserve(l);
+
+        for (size_t i = 0; i < l; ++i) {
+            const K& key = entries[i].as<K>(allow_raw_pointers());
+            map.insert({key, v[key].template as<V>(allow_raw_pointers())});
+        }
+        
+        return map;
+    }
+};
+
+// CCMap auto binding
+template <typename K, typename V>
+struct BindingType<cocos2d::Map<K, V>> {
+    using ValBinding = BindingType<val>;
+    using WireType = ValBinding::WireType;
+
+    static WireType toWireType(const cocos2d::Map<K, V> &map) {
+        val v(val::object());
+        for( const auto& i : map ) {
+            v[i.first] = val(i.second);
+        }
+        return ValBinding::toWireType(v);
+    }
+
+    static cocos2d::Map<K, V> fromWireType(WireType value) {
+        const val& v = ValBinding::fromWireType(value);
+        const val& entries = val::global("Object").call<val>("entries", v);
+        const size_t l = entries["length"].as<size_t>();
+
+        cocos2d::Map<K, V> map;
+        map.reserve(l);
+
+        for (size_t i = 0; i < l; ++i) {
+            const K& key = entries[i].as<K>(allow_raw_pointers());
+            map.insert(key, v[key].template as<V>(allow_raw_pointers()));
+        }
+        
+        return map;
+    }
+};
+
+
+template <typename T>
+struct TypeID<T,
+              typename std::enable_if<std::is_same<
+                  typename Canonicalized<T>::type,
+                  cocos2d::Map<typename Canonicalized<T>::type::key_type, typename Canonicalized<T>::type::value_type>>::value>::type> {
+    static constexpr TYPEID get() { return TypeID<val>::get(); }
+};
+
+
 // enum to int32_t auto binding
 // NOTE: For now we don't use embind's enum solution. That says it's compatable with latest cocos2d-x, 
 // but we have to declare enum value somewhere in JS, which cocos2d-x already did
-// (or we still can if we want for specific case? e.g. we don't have a proper js file to declare enum in some plugin)
+// (or we still can if we want for specific case? e.g. we don't have a proper js file to declare enum for some plugin)
 template<typename T>
 struct BindingType<T, typename std::enable_if<std::is_enum<T>::value>::type> {
   typedef typename BindingType<int32_t>::WireType WireType;
@@ -263,6 +336,8 @@ template <typename T>
 struct TypeID<T, typename std::enable_if<std::is_enum<T>::value>::type> {
     static constexpr TYPEID get() { return TypeID<int32_t>::get(); }
 };
+
+// end of custom marshal
 
 }  // namespace internal
 }  // namespace emscripten

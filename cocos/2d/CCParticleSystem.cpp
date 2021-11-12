@@ -306,12 +306,12 @@ bool ParticleSystem::initWithFile(const std::string& plistFile)
     return ret;
 }
 
-bool ParticleSystem::initWithDictionary(ValueMap& dictionary)
+bool ParticleSystem::initWithDictionary(const ValueMap& dictionary)
 {
     return initWithDictionary(dictionary, "");
 }
 
-bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string& dirname)
+bool ParticleSystem::initWithDictionary(const ValueMap& dictionary, const std::string& dirname)
 {
     bool ret = false;
     unsigned char *buffer = nullptr;
@@ -319,99 +319,99 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
     Image *image = nullptr;
     do 
     {
-        int maxParticles = dictionary["maxParticles"].asInt();
+        int maxParticles = dictionary.at("maxParticles").asInt();
         // self, not super
         if(this->initWithTotalParticles(maxParticles))
         {
             // Emitter name in particle designer 2.0
-            _configName = dictionary["configName"].asString();
+            _configName = dictionary.at("configName").asString();
 
             // angle
-            _angle = dictionary["angle"].asFloat();
-            _angleVar = dictionary["angleVariance"].asFloat();
+            _angle = dictionary.at("angle").asFloat();
+            _angleVar = dictionary.at("angleVariance").asFloat();
 
             // duration
-            _duration = dictionary["duration"].asFloat();
+            _duration = dictionary.at("duration").asFloat();
 
             // blend function 
             if (!_configName.empty())
             {
-                _blendFunc.src = dictionary["blendFuncSource"].asFloat();
+                _blendFunc.src = dictionary.at("blendFuncSource").asFloat();
             }
             else
             {
-                _blendFunc.src = dictionary["blendFuncSource"].asInt();
+                _blendFunc.src = dictionary.at("blendFuncSource").asInt();
             }
-            _blendFunc.dst = dictionary["blendFuncDestination"].asInt();
+            _blendFunc.dst = dictionary.at("blendFuncDestination").asInt();
 
             // color
-            _startColor.r = dictionary["startColorRed"].asFloat();
-            _startColor.g = dictionary["startColorGreen"].asFloat();
-            _startColor.b = dictionary["startColorBlue"].asFloat();
-            _startColor.a = dictionary["startColorAlpha"].asFloat();
+            _startColor.r = dictionary.at("startColorRed").asFloat();
+            _startColor.g = dictionary.at("startColorGreen").asFloat();
+            _startColor.b = dictionary.at("startColorBlue").asFloat();
+            _startColor.a = dictionary.at("startColorAlpha").asFloat();
 
-            _startColorVar.r = dictionary["startColorVarianceRed"].asFloat();
-            _startColorVar.g = dictionary["startColorVarianceGreen"].asFloat();
-            _startColorVar.b = dictionary["startColorVarianceBlue"].asFloat();
-            _startColorVar.a = dictionary["startColorVarianceAlpha"].asFloat();
+            _startColorVar.r = dictionary.at("startColorVarianceRed").asFloat();
+            _startColorVar.g = dictionary.at("startColorVarianceGreen").asFloat();
+            _startColorVar.b = dictionary.at("startColorVarianceBlue").asFloat();
+            _startColorVar.a = dictionary.at("startColorVarianceAlpha").asFloat();
 
-            _endColor.r = dictionary["finishColorRed"].asFloat();
-            _endColor.g = dictionary["finishColorGreen"].asFloat();
-            _endColor.b = dictionary["finishColorBlue"].asFloat();
-            _endColor.a = dictionary["finishColorAlpha"].asFloat();
+            _endColor.r = dictionary.at("finishColorRed").asFloat();
+            _endColor.g = dictionary.at("finishColorGreen").asFloat();
+            _endColor.b = dictionary.at("finishColorBlue").asFloat();
+            _endColor.a = dictionary.at("finishColorAlpha").asFloat();
 
-            _endColorVar.r = dictionary["finishColorVarianceRed"].asFloat();
-            _endColorVar.g = dictionary["finishColorVarianceGreen"].asFloat();
-            _endColorVar.b = dictionary["finishColorVarianceBlue"].asFloat();
-            _endColorVar.a = dictionary["finishColorVarianceAlpha"].asFloat();
+            _endColorVar.r = dictionary.at("finishColorVarianceRed").asFloat();
+            _endColorVar.g = dictionary.at("finishColorVarianceGreen").asFloat();
+            _endColorVar.b = dictionary.at("finishColorVarianceBlue").asFloat();
+            _endColorVar.a = dictionary.at("finishColorVarianceAlpha").asFloat();
 
             // particle size
-            _startSize = dictionary["startParticleSize"].asFloat();
-            _startSizeVar = dictionary["startParticleSizeVariance"].asFloat();
-            _endSize = dictionary["finishParticleSize"].asFloat();
-            _endSizeVar = dictionary["finishParticleSizeVariance"].asFloat();
+            _startSize = dictionary.at("startParticleSize").asFloat();
+            _startSizeVar = dictionary.at("startParticleSizeVariance").asFloat();
+            _endSize = dictionary.at("finishParticleSize").asFloat();
+            _endSizeVar = dictionary.at("finishParticleSizeVariance").asFloat();
 
             // position
-            float x = dictionary["sourcePositionx"].asFloat();
-            float y = dictionary["sourcePositiony"].asFloat();
+            float x = dictionary.at("sourcePositionx").asFloat();
+            float y = dictionary.at("sourcePositiony").asFloat();
 	    if(!_sourcePositionCompatible) {
                 this->setSourcePosition(Vec2(x, y));
 	    }
             else {
 		this->setPosition(Vec2(x, y));
 	    }
-            _posVar.x = dictionary["sourcePositionVariancex"].asFloat();
-            _posVar.y = dictionary["sourcePositionVariancey"].asFloat();
+            _posVar.x = dictionary.at("sourcePositionVariancex").asFloat();
+            _posVar.y = dictionary.at("sourcePositionVariancey").asFloat();
 
             // Spinning
-            _startSpin = dictionary["rotationStart"].asFloat();
-            _startSpinVar = dictionary["rotationStartVariance"].asFloat();
-            _endSpin= dictionary["rotationEnd"].asFloat();
-            _endSpinVar= dictionary["rotationEndVariance"].asFloat();
+            _startSpin = dictionary.at("rotationStart").asFloat();
+            _startSpinVar = dictionary.at("rotationStartVariance").asFloat();
+            _endSpin= dictionary.at("rotationEnd").asFloat();
+            _endSpinVar= dictionary.at("rotationEndVariance").asFloat();
 
-            _emitterMode = (Mode) dictionary["emitterType"].asInt();
+            _emitterMode = (Mode) dictionary.at("emitterType").asInt();
 
             // Mode A: Gravity + tangential accel + radial accel
             if (_emitterMode == Mode::GRAVITY)
             {
                 // gravity
-                modeA.gravity.x = dictionary["gravityx"].asFloat();
-                modeA.gravity.y = dictionary["gravityy"].asFloat();
+                modeA.gravity.x = dictionary.at("gravityx").asFloat();
+                modeA.gravity.y = dictionary.at("gravityy").asFloat();
 
                 // speed
-                modeA.speed = dictionary["speed"].asFloat();
-                modeA.speedVar = dictionary["speedVariance"].asFloat();
+                modeA.speed = dictionary.at("speed").asFloat();
+                modeA.speedVar = dictionary.at("speedVariance").asFloat();
 
                 // radial acceleration
-                modeA.radialAccel = dictionary["radialAcceleration"].asFloat();
-                modeA.radialAccelVar = dictionary["radialAccelVariance"].asFloat();
+                modeA.radialAccel = dictionary.at("radialAcceleration").asFloat();
+                modeA.radialAccelVar = dictionary.at("radialAccelVariance").asFloat();
 
                 // tangential acceleration
-                modeA.tangentialAccel = dictionary["tangentialAcceleration"].asFloat();
-                modeA.tangentialAccelVar = dictionary["tangentialAccelVariance"].asFloat();
+                modeA.tangentialAccel = dictionary.at("tangentialAcceleration").asFloat();
+                modeA.tangentialAccelVar = dictionary.at("tangentialAccelVariance").asFloat();
                 
                 // rotation is dir
-                modeA.rotationIsDir = dictionary["rotationIsDir"].asBool();
+                modeA.rotationIsDir = dictionary.at("rotationIsDir").asBool();
             }
 
             // or Mode B: radius movement
@@ -419,25 +419,25 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
             {
                 if (!_configName.empty())
                 {
-                    modeB.startRadius = dictionary["maxRadius"].asInt();
+                    modeB.startRadius = dictionary.at("maxRadius").asInt();
                 }
                 else
                 {
-                    modeB.startRadius = dictionary["maxRadius"].asFloat();
+                    modeB.startRadius = dictionary.at("maxRadius").asFloat();
                 }
-                modeB.startRadiusVar = dictionary["maxRadiusVariance"].asFloat();
+                modeB.startRadiusVar = dictionary.at("maxRadiusVariance").asFloat();
                 if (!_configName.empty())
                 {
-                    modeB.endRadius = dictionary["minRadius"].asInt();
+                    modeB.endRadius = dictionary.at("minRadius").asInt();
                 }
                 else
                 {
-                    modeB.endRadius = dictionary["minRadius"].asFloat();
+                    modeB.endRadius = dictionary.at("minRadius").asFloat();
                 }
                 
                 if (dictionary.find("minRadiusVariance") != dictionary.end())
                 {
-                    modeB.endRadiusVar = dictionary["minRadiusVariance"].asFloat();
+                    modeB.endRadiusVar = dictionary.at("minRadiusVariance").asFloat();
                 }
                 else
                 {
@@ -446,13 +446,13 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
                 
                 if (!_configName.empty())
                 {
-                    modeB.rotatePerSecond = dictionary["rotatePerSecond"].asInt();
+                    modeB.rotatePerSecond = dictionary.at("rotatePerSecond").asInt();
                 }
                 else
                 {
-                    modeB.rotatePerSecond = dictionary["rotatePerSecond"].asFloat();
+                    modeB.rotatePerSecond = dictionary.at("rotatePerSecond").asFloat();
                 }
-                modeB.rotatePerSecondVar = dictionary["rotatePerSecondVariance"].asFloat();
+                modeB.rotatePerSecondVar = dictionary.at("rotatePerSecondVariance").asFloat();
 
             } else {
                 CCASSERT( false, "Invalid emitterType in config file");
@@ -460,8 +460,8 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
             }
 
             // life span
-            _life = dictionary["particleLifespan"].asFloat();
-            _lifeVar = dictionary["particleLifespanVariance"].asFloat();
+            _life = dictionary.at("particleLifespan").asFloat();
+            _lifeVar = dictionary.at("particleLifespanVariance").asFloat();
 
             // emission Rate
             _emissionRate = _totalParticles / _life;
@@ -474,7 +474,7 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
 
                 // texture        
                 // Try to get the texture from the cache
-                std::string textureName = dictionary["textureFileName"].asString();
+                std::string textureName = dictionary.at("textureFileName").asString();
                 
                 size_t rPos = textureName.rfind('/');
                

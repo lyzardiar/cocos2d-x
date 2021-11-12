@@ -2835,8 +2835,8 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("setStartColorVar", &ParticleSystem::setStartColorVar)
     .function("setEndSpin", &ParticleSystem::setEndSpin)
     .function("setRadialAccel", &ParticleSystem::setRadialAccel)
-    .function("initWithDictionary", select_overload<bool(std::unordered_map<std::string, Value>&, const std::string&)>(&ParticleSystem::initWithDictionary))
-    .function("initWithDictionary", select_overload<bool(std::unordered_map<std::string, Value>&)>(&ParticleSystem::initWithDictionary))
+    .function("initWithDictionary", select_overload<bool(const std::unordered_map<std::string, Value>&, const std::string&)>(&ParticleSystem::initWithDictionary))
+    .function("initWithDictionary", select_overload<bool(const std::unordered_map<std::string, Value>&)>(&ParticleSystem::initWithDictionary))
     .function("isAutoRemoveOnFinish", &ParticleSystem::isAutoRemoveOnFinish)
     .function("isSourcePositionCompatible", &ParticleSystem::isSourcePositionCompatible)
     .function("getTotalParticles", &ParticleSystem::getTotalParticles)
@@ -2911,7 +2911,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
       [](const val& arg0){
       if (!arg0.isString())
       {
-        return ParticleSystemQuad::create(arg0.as<std::unordered_map<std::string, cocos2d::Value>&>());
+        return ParticleSystemQuad::create(arg0.as<std::unordered_map<std::string, cocos2d::Value>>());
       } else 
       {
         return ParticleSystemQuad::create(arg0.as<std::string>());
