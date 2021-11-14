@@ -36,29 +36,6 @@ namespace cocos2d {
     };
 
     
-    class NodeWrapper : public wrapper<Node> {
-    public:
-        EMSCRIPTEN_WRAPPER(NodeWrapper);
-        void onEnter() {
-            return call<void>("onEnter");
-        };
-
-        void onEnterTransitionDidFinish() {
-            return call<void>("onEnterTransitionDidFinish");
-        };
-
-        void onExit() {
-            return call<void>("onExit");
-        };
-
-        void onExitTransitionDidStart() {
-            return call<void>("onExitTransitionDidStart");
-        };
-
-        void cleanup() {
-            return call<void>("cleanup");
-        };
-    };
 
     // ComponentJS for emscripten
     class ComponentJS : public Component {};

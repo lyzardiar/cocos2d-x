@@ -599,7 +599,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .class_function("create", &Node::create, allow_raw_pointers())
     .class_function("getAttachedNodeCount", &Node::getAttachedNodeCount)
     .property("_className",  optional_override([](const Node& _) -> std::string {return "Node";}))    
-    .allow_subclass<NodeWrapper>("cc.Node._extend")
+    .allow_subclass<wrapper<Node>>("cc.Node._extend")
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     ;
 

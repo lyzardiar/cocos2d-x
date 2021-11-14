@@ -148,9 +148,7 @@ int ScriptEngine::sendEvent(ScriptEvent* evt)
     switch (evt->type)
     {
         case kNodeEvent:
-            {
-                return handleNodeEvent(evt->data);
-            }
+            // Node bindings override event functions and call js functions accordingly
             break;
         case kScriptActionEvent:
             break;
@@ -176,69 +174,6 @@ int ScriptEngine::sendEvent(ScriptEvent* evt)
     }
 
     return 0;
-}
-
-
-int ScriptEngine::handleNodeEvent(void* data)
-{
-    if (NULL == data)
-        return 0;
-    
-    BasicScriptData* basicScriptData = (BasicScriptData*)data;
-    if (NULL == basicScriptData->nativeObject || NULL == basicScriptData->value)
-        return 0;
-    
-    val& handler = *(static_cast<val*>(basicScriptData->nativeObject));
-    
-    if (handler.isUndefined())
-        return 0;
-    
-    int action = *((int*)(basicScriptData->value));
-    switch (action)
-    {
-        case cocos2d::kNodeOnEnter:
-            if(!handler["onEnter"].isUndefined())
-            {
-                handler.call<void>("onEnter");
-                return 1;
-            }
-            return 0;
-            
-        case kNodeOnExit:
-            if(!handler["onExit"].isUndefined())
-            {
-                handler.call<void>("onExit");
-                return 1;
-            }
-            return 0;
-            
-        case kNodeOnEnterTransitionDidFinish:
-            if(!handler["onEnterTransitionDidFinish"].isUndefined())
-            {
-                handler.call<void>("onEnterTransitionDidFinish");
-                return 1;
-            }
-            return 0;
-            
-        case kNodeOnExitTransitionDidStart:
-            if(!handler["onExitTransitionDidStart"].isUndefined())
-            {
-                handler.call<void>("onExitTransitionDidStart");
-                return 1;
-            }
-            return 0;
-            
-        case kNodeOnCleanup:
-            if(!handler["cleanup"].isUndefined())
-            {
-                handler.call<void>("cleanup");
-                return 1;
-            }
-            return 0;
-            
-        default:
-            return 0;
-    }
 }
 
 bool ScriptEngine::handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event, bool& ret)

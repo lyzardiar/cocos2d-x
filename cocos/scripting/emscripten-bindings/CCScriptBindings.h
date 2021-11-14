@@ -30,6 +30,7 @@
 #include "base/ccConfig.h"
 #include "base/CCVector.h"
 #include "base/CCMap.h"
+#include "base/CCScriptSupport.h"
 #include "2d/CCNode.h"
 #include "extensions/GUI/CCControlExtension/CCControl.h"
 #include <functional>
@@ -64,9 +65,107 @@ namespace cocos2d {
     template<typename BaseClass>
       using base = emscripten::base<BaseClass>;
 
+    // NodeWrapper is used by class_::subclass so script can override onEnter, onExit, etc on script side
     template<typename T>
-      using wrapper = emscripten::wrapper<T>;
+    class NodeWrapper : public T, public emscripten::internal::WrapperBase {
+    public:
+        typedef T class_type;
 
+        template<typename... Args>
+        explicit NodeWrapper(emscripten::val&& wrapped, Args&&... args)
+            : T(std::forward<Args>(args)...)
+            , wrapped(std::forward<emscripten::val>(wrapped))
+        {}
+
+        ~NodeWrapper() {
+            if (notifyJSOnDestruction) {
+                call<void>("__destruct");
+            }
+        }
+
+        template<typename ReturnType, typename... Args>
+        ReturnType call(const char* name, Args&&... args) const {
+            return wrapped.call<ReturnType>(name, std::forward<Args>(args)...);
+        }
+        
+        void onEnter() override
+        {
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->T::onEnter();
+            }
+            else
+            {
+                return call<void>("onEnter");
+            }
+        };
+
+        void onEnterTransitionDidFinish() override
+        {
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->T::onEnterTransitionDidFinish();
+            }
+            else
+            {
+                return call<void>("onEnterTransitionDidFinish");
+            }
+        };
+
+        void onExit() override
+        {
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->T::onExit();
+            }
+            else
+            {
+                return call<void>("onExit");
+            }
+        };
+
+        void onExitTransitionDidStart() override
+        {
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->T::onExitTransitionDidStart();
+            }
+            else
+            {
+                return call<void>("onExitTransitionDidStart");
+            }
+        };
+
+        void cleanup() override
+        {
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->T::cleanup();
+            }
+            else
+            {
+                return call<void>("cleanup");
+            }
+        };
+
+    private:
+        emscripten::val wrapped;
+    };
+
+    // Script subclasses NodeWrapper if it is a cocos::Node, otherwise wrapper<T>
+    template<typename T>
+      using wrapper = typename std::conditional<std::is_base_of<Node, T>::value, NodeWrapper<T>, emscripten::wrapper<T>>::type;
+    
     // Generic binding helpers:
     template<int Index>
     struct arg {

@@ -130,7 +130,6 @@ public:
     virtual void setCalledFromScript(bool callFromScript) override { _callFromScript = callFromScript; };
     virtual bool isCalledFromScript() override { return _callFromScript; };
 
-    int handleNodeEvent(void* data);
     bool handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event, bool& jsvalRet);
     bool handleTouchEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, cocos2d::Touch* touch, cocos2d::Event* event);
     bool handleTouchesEvent(void* nativeObj, cocos2d::EventTouch::EventCode eventCode, const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
