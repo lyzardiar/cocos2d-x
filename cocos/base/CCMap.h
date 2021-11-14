@@ -90,7 +90,7 @@ public:
     typedef K key_type;
 
     /** std style value_type */
-    typedef V value_type;
+    typedef V mapped_type;
 
     /** Default constructor */
     Map<K, V>()

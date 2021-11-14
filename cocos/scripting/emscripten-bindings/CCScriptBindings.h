@@ -30,6 +30,7 @@
 #include "base/ccConfig.h"
 #include "base/CCVector.h"
 #include "base/CCMap.h"
+#include "base/CCValue.h"
 #include "base/CCScriptSupport.h"
 #include "2d/CCNode.h"
 #include "extensions/GUI/CCControlExtension/CCControl.h"
@@ -365,13 +366,31 @@ struct BindingType<std::unordered_map<K, V>> {
         std::unordered_map<K, V> map;
         map.reserve(l);
 
-        for (size_t i = 0; i < l; ++i) {
-            const K& key = entries[i].as<K>(allow_raw_pointers());
-            map.insert({key, v[key].template as<V>(allow_raw_pointers())});
+        for (size_t i = 0; i < l; ++i)
+        {
+            const val& entry = entries[i];
+            map.insert({
+                entry[0].as<K>(allow_raw_pointers()),
+                entry[1].as<V>(allow_raw_pointers())
+            });
         }
         
         return map;
     }
+};
+
+template <typename T>
+struct TypeID<T,
+              typename std::enable_if<std::is_same<
+                  typename Canonicalized<T>::type,
+                  std::unordered_map<
+                    typename Canonicalized<T>::type::key_type,
+                    typename Canonicalized<T>::type::mapped_type,
+                    typename Canonicalized<T>::type::hasher,
+                    typename Canonicalized<T>::type::key_equal,
+                    typename Canonicalized<T>::type::allocator_type
+                >>::value>::type> {
+    static constexpr TYPEID get() { return TypeID<val>::get(); }
 };
 
 // CCMap auto binding
@@ -397,8 +416,11 @@ struct BindingType<cocos2d::Map<K, V>> {
         map.reserve(l);
 
         for (size_t i = 0; i < l; ++i) {
-            const K& key = entries[i].as<K>(allow_raw_pointers());
-            map.insert(key, v[key].template as<V>(allow_raw_pointers()));
+            const val& entry = entries[i];
+            map.insert(
+                entry[0].as<K>(allow_raw_pointers()),
+                entry[1].as<V>(allow_raw_pointers())
+            );
         }
         
         return map;
@@ -410,10 +432,75 @@ template <typename T>
 struct TypeID<T,
               typename std::enable_if<std::is_same<
                   typename Canonicalized<T>::type,
-                  cocos2d::Map<typename Canonicalized<T>::type::key_type, typename Canonicalized<T>::type::value_type>>::value>::type> {
+                  cocos2d::Map<typename Canonicalized<T>::type::key_type, typename Canonicalized<T>::type::mapped_type>>::value>::type> {
     static constexpr TYPEID get() { return TypeID<val>::get(); }
 };
 
+// CCValue auto binding
+template <>
+struct BindingType<cocos2d::Value> {
+    using ValBinding = BindingType<val>;
+    using WireType = ValBinding::WireType;
+
+    static WireType toWireType(const cocos2d::Value &obj) {
+        switch (obj.getType())
+        {
+            case cocos2d::Value::Type::BOOLEAN:
+                return ValBinding::toWireType(val(obj.asBool()));
+            case cocos2d::Value::Type::FLOAT:
+            case cocos2d::Value::Type::DOUBLE:
+                return ValBinding::toWireType(val(obj.asDouble()));
+            case cocos2d::Value::Type::INTEGER:
+                return ValBinding::toWireType(val(obj.asInt()));
+            case cocos2d::Value::Type::STRING:
+                return ValBinding::toWireType(val(obj.asString()));
+            case cocos2d::Value::Type::VECTOR:
+                return ValBinding::toWireType(val(obj.asValueVector()));
+            case cocos2d::Value::Type::MAP:
+                return ValBinding::toWireType(val(obj.asValueMap()));
+            case cocos2d::Value::Type::INT_KEY_MAP:
+                return ValBinding::toWireType(val(obj.asIntKeyMap()));
+            default:
+                return ValBinding::toWireType(val::null());
+        }
+    }
+
+    static cocos2d::Value fromWireType(WireType value) {
+        const val& v = ValBinding::fromWireType(value);
+        if (v.isArray())
+        {
+            return cocos2d::Value(v.as<std::vector<cocos2d::Value>>());
+        }
+        else if (v.isString())
+        {
+            return cocos2d::Value(v.as<std::string>());
+        }
+        else if (v.isNumber())
+        {
+            return cocos2d::Value(v.as<double>());
+        }
+        else if (v.isTrue() || v.isFalse())
+        {
+            return cocos2d::Value(v.as<bool>());
+        }
+        else if (v.typeOf().as<std::string>() == "object" && !v.isNull())
+        {
+            return cocos2d::Value(v.as<std::unordered_map<std::string, cocos2d::Value>>());
+        }
+        else
+        {
+            return cocos2d::Value::Null;
+        }
+    }
+};
+
+template <typename T>
+struct TypeID<T,
+              typename std::enable_if<std::is_same<
+                  typename Canonicalized<T>::type,
+                  cocos2d::Value>::value>::type> {
+    static constexpr TYPEID get() { return TypeID<val>::get(); }
+};
 
 // enum to int32_t auto binding
 // NOTE: For now we don't use embind's enum solution. That says it's compatable with latest cocos2d-x, 
