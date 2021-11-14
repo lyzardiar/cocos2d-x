@@ -2855,16 +2855,18 @@ cc.GLProgramState.prototype.setUniformCallback = function (uniform, callback) {
 //
 // Script Component
 //
-cc._ComponentJS = cc.ComponentJS;
-cc._ComponentJS.extend = cc.Class.extend;
-cc.ComponentJS = function (filename) {
-    var comp = cc._ComponentJS.create(filename);
-    var res = comp.getScriptObject();
-    return res;
-};
-cc.ComponentJS.extend = function (prop) {
-    return cc._ComponentJS.extend(prop);
-};
+if (cc.sys.platform != cc.sys.EMSCRIPTEN) {
+    cc._ComponentJS = cc.ComponentJS;
+    cc._ComponentJS.extend = cc.Class.extend;
+    cc.ComponentJS = function (filename) {
+        var comp = cc._ComponentJS.create(filename);
+        var res = comp.getScriptObject();
+        return res;
+    };
+    cc.ComponentJS.extend = function (prop) {
+        return cc._ComponentJS.extend(prop);
+    };
+}
 
 
 //

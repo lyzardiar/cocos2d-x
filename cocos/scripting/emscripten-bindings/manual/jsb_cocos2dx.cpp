@@ -3948,6 +3948,7 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     .function("update", optional_override([](Component& this_, float dt) {
         return this_.Component::update(dt);
     }))
+    .class_function("_allowJSSubclass", &cc_bindings_getTrue)
     .allow_subclass<ComponentJSWrapper>("cc.ComponentJS._extend")
     // end
     .property("_className",  optional_override([](const ComponentJS& _) -> std::string {return "ComponentJS";}))    
