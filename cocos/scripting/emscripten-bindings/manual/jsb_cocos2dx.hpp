@@ -47,17 +47,44 @@ namespace cocos2d {
 
         void onEnter() override
         {
-            return call<void>("onEnter");
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->ComponentJS::onEnter();
+            }
+            else
+            {
+                return call<void>("onEnter");
+            }
         };
 
         void onExit() override
         {
-            return call<void>("onExit");
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->ComponentJS::onExit();
+            }
+            else
+            {
+                return call<void>("onExit");
+            }
         };
 
         void update(float dt) override
         {
-            return call<void>("update", val(dt));
+            ScriptEngineProtocol* engine = ScriptEngineManager::getInstance()->getScriptEngine();
+            if (engine->isCalledFromScript())
+            {
+                engine->setCalledFromScript(false);
+                this->ComponentJS::update(dt);
+            }
+            else
+            {
+                return call<void>("update", val(dt));
+            }
         };
     };
     // end of ComponentJS

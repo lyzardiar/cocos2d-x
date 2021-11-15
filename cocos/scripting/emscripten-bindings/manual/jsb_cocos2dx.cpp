@@ -3940,12 +3940,15 @@ COCOS_BINDINGS(jsb_cocos2dx) {
     // I would say it looks better if it is like 'new ComponentPlayer()' other than 'new ComonentJS("player.js")' in js code.
     .constructor(&cc_bindings_constructor<ComponentJS>, allow_raw_pointers())
     .function("onEnter", optional_override([](Component& this_) {
+        ScriptEngine::getInstance()->setCalledFromScript(true);
         return this_.Component::onEnter();
     }))
     .function("onExit", optional_override([](Component& this_) {
+        ScriptEngine::getInstance()->setCalledFromScript(true);
         return this_.Component::onExit();
     }))
     .function("update", optional_override([](Component& this_, float dt) {
+        ScriptEngine::getInstance()->setCalledFromScript(true);
         return this_.Component::update(dt);
     }))
     .class_function("_allowJSSubclass", &cc_bindings_getTrue)
