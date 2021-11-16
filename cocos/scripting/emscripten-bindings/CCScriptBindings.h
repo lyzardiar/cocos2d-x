@@ -250,8 +250,37 @@ namespace emscripten {                                            \
         template<> void raw_destructor<T>(T* _) {}                \
     }                                                             \
 }
+#define CC_BINDINGS_ALLOW_RAW_POINTERS(T)                                  \
+namespace emscripten {                                            \
+    namespace internal {                                          \
+        template<>                                                \
+        struct TypeID<T*> {                                       \
+            static constexpr TYPEID get() {                       \
+                return LightTypeID<T*>::get();                    \
+            }                                                     \
+        };                                                        \
+    }                                                             \
+}
 
-#define CC_BINDINGS_ALLOW_RAW_POINTERS(T)                         \
+// This macro omit the need to declare allow_raw_pointers policy for raw pointers of type T.
+// Cocos2d-x uses very little smart pointer so we have to declare allow_raw_pointers everywhere without this macro.
+// Some classes might not need to be deleted on script side, e.g: cocos::Ref, singleton, classes has protected/private desctrictor.
+// So we provide an empty destructor in case embind delete them through js FinalizationRegistry.
+// You can use Ref::release to delete a Ref* if you know about cocos2d-x auto release pool.
+#define DECLARE_BINDING_CLASS_WITH_NO_DESTRUCTOR(T)               \
+namespace emscripten {                                            \
+    namespace internal {                                          \
+        template<>                                                \
+        struct TypeID<T*> {                                       \
+            static constexpr TYPEID get() {                       \
+                return LightTypeID<T*>::get();                    \
+            }                                                     \
+        };                                                        \
+        template<> void raw_destructor<T>(T* _) {}                \
+    }                                                             \
+}
+
+#define DECLARE_BINDING_CLASS(T)                                  \
 namespace emscripten {                                            \
     namespace internal {                                          \
         template<>                                                \
