@@ -1,5 +1,4 @@
 #include "scripting/emscripten-bindings/CCScriptBindings.h"
-#include "scripting/emscripten-bindings/manual/jsb_global.h"
 #include "cocos2d.h"
 
 using namespace std;

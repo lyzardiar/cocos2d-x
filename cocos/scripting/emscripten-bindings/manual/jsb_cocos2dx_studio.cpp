@@ -1,5 +1,4 @@
 #include "scripting/emscripten-bindings/CCScriptBindings.h"
-#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_studio.hpp"
 #include "editor-support/cocostudio/CocoStudio.h"
 #include "editor-support/cocostudio/CCComExtensionData.h"
 

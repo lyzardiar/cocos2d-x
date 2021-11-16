@@ -1,5 +1,4 @@
 #include "scripting/emscripten-bindings/CCScriptBindings.h"
-#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_extension.hpp"
 #include "cocos-ext.h"
 #include "renderer/CCTextureCache.h"
 

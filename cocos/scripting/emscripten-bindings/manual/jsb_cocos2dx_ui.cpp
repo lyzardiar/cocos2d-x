@@ -1,5 +1,4 @@
 #include "scripting/emscripten-bindings/CCScriptBindings.h"
-#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_ui.hpp"
 #include "ui/CocosGUI.h"
 #include "ui/UIScrollViewBar.h"
 

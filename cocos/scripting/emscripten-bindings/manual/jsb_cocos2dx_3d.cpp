@@ -1,5 +1,4 @@
 #include "scripting/emscripten-bindings/CCScriptBindings.h"
-#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_3d.hpp"
 #include "cocos2d.h"
 #include "3d/CCBundle3D.h"
 

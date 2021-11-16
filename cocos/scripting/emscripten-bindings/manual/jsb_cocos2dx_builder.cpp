@@ -1,4 +1,5 @@
-#include "scripting/emscripten-bindings/manual/jsb_cocos2dx_builder.hpp"
+#include "scripting/emscripten-bindings/CCScriptBindings.h"
+#include "editor-support/cocosbuilder/CocosBuilder.h"
 
 using namespace std;
 using namespace std::placeholders;
@@ -6,6 +7,124 @@ using namespace cocos2d;
 using namespace cocos2d::bindings;
 using namespace cocos2d::extension;
 using namespace cocosbuilder;
+
+class CCBScriptCallbackProxy:  public cocos2d::Layer
+, public cocosbuilder::CCBSelectorResolver
+, public cocosbuilder::CCBMemberVariableAssigner {
+    
+    std::string callBackProp;
+    cocos2d::bindings::val owner;
+
+public:
+
+
+    CCBScriptCallbackProxy (): owner(cocos2d::bindings::val::undefined()) {}
+    virtual ~CCBScriptCallbackProxy() {}
+
+    CCB_STATIC_NEW_AUTORELEASE_OBJECT_WITH_INIT_METHOD(CCBScriptCallbackProxy, create);
+    virtual cocos2d::SEL_MenuHandler onResolveCCBCCMenuItemSelector(cocos2d::Ref * pTarget,
+                                                                    const char * pSelectorName);
+
+    virtual cocos2d::extension::Control::Handler onResolveCCBCCControlSelector(cocos2d::Ref * pTarget,
+                                                                                   const char * pSelectorName);
+    virtual bool onAssignCCBMemberVariable(cocos2d::Ref * pTarget, const char * pMemberVariableName,
+                                           cocos2d::Node * pNode);
+    virtual void onNodeLoaded(cocos2d::Node * pNode,
+                              cocosbuilder::NodeLoader * pNodeLoader);
+        
+    virtual CCBSelectorResolver * createNew();
+    void menuItemCallback(Ref *pSender);
+    void controlCallback(Ref *pSender, cocos2d::extension::Control::EventType event);
+    void setCallbackProperty(const char *prop);
+    void setJSOwner(cocos2d::bindings::val ownr);
+    cocos2d::bindings::val getJSOwner();
+};
+
+class JSLayerLoader : public cocosbuilder::LayerLoader {
+public:
+    CCB_STATIC_NEW_AUTORELEASE_OBJECT_METHOD(JSLayerLoader, loader);
+    
+protected:
+    CCB_VIRTUAL_NEW_AUTORELEASE_CREATECCNODE_METHOD(CCBScriptCallbackProxy);
+};
+
+class JSCCBAnimationWrapper: public cocos2d::Ref 
+{
+    cocos2d::bindings::val callback;
+    cocos2d::bindings::val caller;
+public:
+    JSCCBAnimationWrapper (const cocos2d::bindings::val& pCaller, const cocos2d::bindings::val& pCallback) 
+    :caller(pCaller),
+    callback(pCallback)
+    {
+    }
+    
+    void animationCompleteCallback()
+    {
+        // NOTE: "call" is JS specific
+        callback.call<void>("call", caller);
+    }
+};
+
+
+static void removeSelector(std::string &str) {
+    size_t found;
+    found = str.find(':');
+    while (found!=std::string::npos){
+        str.replace(found, found+1, "");
+        found = str.find(':');
+    }
+}
+
+SEL_MenuHandler CCBScriptCallbackProxy::onResolveCCBCCMenuItemSelector(cocos2d::Ref * pTarget,
+                                                                       const char * pSelectorName) {
+    this->callBackProp = pSelectorName;
+    removeSelector(this->callBackProp);
+    return menu_selector(CCBScriptCallbackProxy::menuItemCallback);
+}
+
+Control::Handler CCBScriptCallbackProxy::onResolveCCBCCControlSelector(Ref * pTarget,
+                                                                           const char * pSelectorName) {
+    
+    this->callBackProp = pSelectorName;
+    removeSelector(this->callBackProp);
+    return cccontrol_selector(CCBScriptCallbackProxy::controlCallback);
+}
+
+bool CCBScriptCallbackProxy::onAssignCCBMemberVariable(Ref * pTarget,
+                                                       const char * pMemberVariableName,
+                                                       Node * pNode) {
+    return true;
+}
+
+void CCBScriptCallbackProxy::onNodeLoaded(Node * pNode,
+                                          NodeLoader * pNodeLoader) {}
+
+CCBSelectorResolver * CCBScriptCallbackProxy::createNew() {
+    CCBScriptCallbackProxy * ret = new (std::nothrow) CCBScriptCallbackProxy();
+    ret->setJSOwner(this->owner);
+    return dynamic_cast<CCBSelectorResolver *>(ret);
+}
+
+void CCBScriptCallbackProxy::menuItemCallback(Ref *pSender) {
+    owner.call<void>(callBackProp.c_str());
+}
+
+void CCBScriptCallbackProxy::controlCallback(Ref *pSender, Control::EventType event) {
+    owner.call<void>(callBackProp.c_str());
+}
+
+void CCBScriptCallbackProxy::setCallbackProperty(const char *prop) {
+    callBackProp = prop;
+}
+
+void CCBScriptCallbackProxy::setJSOwner(val ownr) {
+    owner = ownr;
+}
+
+val CCBScriptCallbackProxy::getJSOwner() {
+    return owner;
+}
 
 COCOS_BINDINGS(jsb_cocos2dx_builder) {
 
@@ -115,63 +234,4 @@ COCOS_BINDINGS(jsb_cocos2dx_builder) {
     .class_function("setResolutionScale", &CCBReader::setResolutionScale)
     .property("_className",  optional_override([](const CCBReader& _) -> std::string {return "CCBReader";}))
     ;
-}
-
-static void removeSelector(std::string &str) {
-    size_t found;
-    found = str.find(':');
-    while (found!=std::string::npos){
-        str.replace(found, found+1, "");
-        found = str.find(':');
-    }
-}
-
-SEL_MenuHandler CCBScriptCallbackProxy::onResolveCCBCCMenuItemSelector(cocos2d::Ref * pTarget,
-                                                                       const char * pSelectorName) {
-    this->callBackProp = pSelectorName;
-    removeSelector(this->callBackProp);
-    return menu_selector(CCBScriptCallbackProxy::menuItemCallback);
-}
-
-Control::Handler CCBScriptCallbackProxy::onResolveCCBCCControlSelector(Ref * pTarget,
-                                                                           const char * pSelectorName) {
-    
-    this->callBackProp = pSelectorName;
-    removeSelector(this->callBackProp);
-    return cccontrol_selector(CCBScriptCallbackProxy::controlCallback);
-}
-
-bool CCBScriptCallbackProxy::onAssignCCBMemberVariable(Ref * pTarget,
-                                                       const char * pMemberVariableName,
-                                                       Node * pNode) {
-    return true;
-}
-
-void CCBScriptCallbackProxy::onNodeLoaded(Node * pNode,
-                                          NodeLoader * pNodeLoader) {}
-
-CCBSelectorResolver * CCBScriptCallbackProxy::createNew() {
-    CCBScriptCallbackProxy * ret = new (std::nothrow) CCBScriptCallbackProxy();
-    ret->setJSOwner(this->owner);
-    return dynamic_cast<CCBSelectorResolver *>(ret);
-}
-
-void CCBScriptCallbackProxy::menuItemCallback(Ref *pSender) {
-    owner.call<void>(callBackProp.c_str());
-}
-
-void CCBScriptCallbackProxy::controlCallback(Ref *pSender, Control::EventType event) {
-    owner.call<void>(callBackProp.c_str());
-}
-
-void CCBScriptCallbackProxy::setCallbackProperty(const char *prop) {
-    callBackProp = prop;
-}
-
-void CCBScriptCallbackProxy::setJSOwner(val ownr) {
-    owner = ownr;
-}
-
-val CCBScriptCallbackProxy::getJSOwner() {
-    return owner;
 }
