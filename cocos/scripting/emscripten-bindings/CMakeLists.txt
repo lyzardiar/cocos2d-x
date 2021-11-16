@@ -20,22 +20,6 @@ set(bindings_files
     CCScriptEngine.cpp
     )
 set(bindings_headers
-    manual/jsb_cocos2dx.hpp
-    manual/jsb_cocos2dx_3d.hpp
-    manual/jsb_cocos2dx_3d_extension.hpp
-    manual/jsb_cocos2dx_audioengine.hpp
-    manual/jsb_cocos2dx_builder.hpp
-    manual/jsb_cocos2dx_experimental_video.hpp
-    manual/jsb_cocos2dx_experimental_webView.hpp
-    manual/jsb_cocos2dx_extension.hpp
-    manual/jsb_cocos2dx_navmesh.hpp
-    manual/jsb_cocos2dx_network.hpp
-    manual/jsb_cocos2dx_physics3d.hpp
-    manual/jsb_cocos2dx_spine.hpp
-    manual/jsb_cocos2dx_studio.hpp
-    manual/jsb_cocos2dx_ui.hpp
-    manual/jsb_conversions.h
-    manual/jsb_global.h
     CCScriptBindings.h
     CCScriptEngine.h
     )
