@@ -328,7 +328,8 @@ void FUIRichText::handleTextRenderer(HtmlElement* element, const std::string& te
     textRenderer->getTextFormat()->setFormat(element->format);
     textRenderer->applyTextFormat();
     if (element->link) {
-        textRenderer->setUnderlineColor(_parseOptions.linkColor);
+        textRenderer->setColor(_parseOptions.linkColor);
+        textRenderer->enableUnderline();
     }
     textRenderer->setString(text);
     textRenderer->setUserData(element);
@@ -358,7 +359,8 @@ void FUIRichText::handleTextRenderer(HtmlElement* element, const std::string& te
         leftRenderer->getTextFormat()->setFormat(element->format);
         leftRenderer->applyTextFormat();
         if (element->link) {
-            leftRenderer->setUnderlineColor(_parseOptions.linkColor);
+            leftRenderer->setColor(_parseOptions.linkColor);
+            leftRenderer->enableUnderline();
         }
         leftRenderer->setString(getSubStringOfUTF8String(leftWords, 0, leftLength));
         leftRenderer->setUserData(element);

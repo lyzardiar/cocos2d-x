@@ -182,11 +182,11 @@ void FUILabel::updateBMFontScale()
     }
 }
 
-void FUILabel::setUnderlineColor(const cocos2d::Color3B& value)
-{
-    if (_textFormat->underline) {
-        enableUnderline(cocos2d::Color4B(value));
-    }
-}
+// void FUILabel::setUnderlineColor(const cocos2d::Color3B& value)
+// {
+//     if (_textFormat->underline) {
+//         enableUnderline(cocos2d::Color4B(value));
+//     }
+// }
 
 NS_FGUI_END

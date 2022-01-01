@@ -54,6 +54,7 @@ include(storage/CMakeLists.txt)
 option(BUILD_EDITOR_COCOSBUILDER "Build editor support for cocosbuilder" ON)
 option(BUILD_EDITOR_COCOSTUDIO "Build editor support for cocostudio" ON)
 option(BUILD_EDITOR_SPINE "Build editor support for spine" ON)
+option(BUILD_EDITOR_FAIRYGUI "Build editor support for fairygui" ON)
 option(BUILD_EXTENSIONS "Build extension library" ON)
 
 if(BUILD_EDITOR_COCOSBUILDER)
@@ -70,6 +71,11 @@ if(BUILD_EDITOR_SPINE)
     include(editor-support/spine/CMakeLists.txt)
     set(COCOS_EDITOR_SUPPORT_SRC ${COCOS_EDITOR_SUPPORT_SRC} ${COCOS_SPINE_SRC} ${COCOS_SPINE_HEADER})
 endif(BUILD_EDITOR_SPINE)
+
+if(BUILD_EDITOR_FAIRYGUI)
+    include(editor-support/fairygui/CMakeLists.txt)
+    set(COCOS_EDITOR_SUPPORT_SRC ${COCOS_EDITOR_SUPPORT_SRC} ${FAIRYGUI_SRC} ${FAIRYGUI_HEADER})
+endif(BUILD_EDITOR_FAIRYGUI)
 
 if(BUILD_EXTENSIONS)
     include(../extensions/CMakeLists.txt)
@@ -135,6 +141,7 @@ target_include_directories(cocos2d
     PUBLIC ${COCOS2DX_ROOT_PATH}/cocos
     PUBLIC ${COCOS2DX_ROOT_PATH}/extensions
     PUBLIC ${COCOS2DX_ROOT_PATH}/cocos/platform
+    PRIVATE ${COCOS2DX_ROOT_PATH}/cocos/editor-support/fairygui
     INTERFACE ${COCOS2DX_ROOT_PATH}/cocos/base
     INTERFACE ${COCOS2DX_ROOT_PATH}/cocos/editor-support
     INTERFACE ${COCOS2DX_ROOT_PATH}/cocos/audio/include

@@ -72,7 +72,8 @@ public:
 
     CREATE_FUNC(GBasicTextField);
     
-    void setUnderlineColor(const cocos2d::Color3B& color) { _label->setUnderlineColor(color); }
+    // Guess this is added by cocos2d-lua-community
+    // void setUnderlineColor(const cocos2d::Color3B& color) { _label->setUnderlineColor(color); }
 
     virtual void setAutoSize(AutoSizeType value) override;
 

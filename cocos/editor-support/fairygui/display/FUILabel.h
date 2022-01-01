@@ -21,7 +21,9 @@ public:
     TextFormat* getTextFormat() const { return _textFormat; }
     void applyTextFormat();
 
-    void setUnderlineColor(const cocos2d::Color3B& value);
+    // NOTE: cocos2d-x doesn't support setting seperate color to underline,
+    // and I really think what richtext need is to set text color as a whole for links
+    // void setUnderlineColor(const cocos2d::Color3B& value);
 
     virtual bool setBMFontFilePath(const std::string& bmfontFilePath, const cocos2d::Vec2& imageOffset = cocos2d::Vec2::ZERO, float fontSize = 0) override;
 

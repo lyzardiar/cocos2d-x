@@ -12,6 +12,7 @@ set(lua_bindings_manual_headers
     manual/extension/lua_cocos2dx_extension_manual.h
     manual/LuaBasicConversions.h
     manual/spine/LuaSkeletonAnimation.h
+    manual/fairygui/lua_fairygui.hpp
     manual/platform/ios/CCLuaObjcBridge.h
     manual/network/lua_cocos2dx_network_manual.h
     manual/network/lua_xml_http_request.h
@@ -71,6 +72,7 @@ set(lua_bindings_manual_files
     manual/network/lua_downloader.cpp
     manual/spine/lua_cocos2dx_spine_manual.cpp
     manual/spine/LuaSkeletonAnimation.cpp
+    manual/fairygui/lua_fairygui.cpp
     manual/ui/lua_cocos2dx_experimental_video_manual.cpp
     manual/ui/lua_cocos2dx_ui_manual.cpp
     manual/audioengine/lua_cocos2dx_audioengine_manual.cpp
@@ -174,6 +176,7 @@ target_link_libraries(luacocos2d ${lua_ext_depend})
 target_include_directories(luacocos2d
     PRIVATE manual/platform/android
     PRIVATE manual/platform/android/jni
+    PRIVATE ${cocos_root}/cocos/editor-support/fairygui
     INTERFACE ${cocos_root}/cocos/scripting/lua-bindings/auto
     INTERFACE ${cocos_root}/cocos/scripting/lua-bindings/manual
 )

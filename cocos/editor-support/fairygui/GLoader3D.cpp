@@ -235,28 +235,28 @@ void GLoader3D::onChangeSpine()
     if (skeletonAni == nullptr)
         return;
 
-    spine::AnimationState* state = skeletonAni->getState();
+    spAnimationState* state = skeletonAni->getState();
 
-    spine::Animation* aniToUse = !_animationName.empty() ? skeletonAni->findAnimation(_animationName) : nullptr;
+    spAnimation* aniToUse = !_animationName.empty() ? skeletonAni->findAnimation(_animationName) : nullptr;
     if (aniToUse != nullptr)
     {
-        spine::TrackEntry* entry = state->getCurrent(0);
-        if (entry == nullptr || strcmp(entry->getAnimation()->getName().buffer(), _animationName.c_str()) != 0
-            || entry->isComplete() && !entry->getLoop())
-            entry = state->setAnimation(0, aniToUse, _loop);
+        spTrackEntry* entry = spAnimationState_getCurrent(state, 0);
+        if (entry == nullptr || strcmp(entry->animation->name, _animationName.c_str()) != 0
+            || entry->trackTime >= entry->animationEnd - entry->animationStart && !entry->loop)
+            entry = spAnimationState_setAnimation(state, 0, aniToUse, _loop);
         else
-            entry->setLoop(_loop);
+            entry->loop = _loop;
 
         if (_playing)
-            entry->setTimeScale(1);
+            entry->timeScale = 1;
         else
         {
-            entry->setTimeScale(0);
-            entry->setTrackTime(MathUtil::lerp(0, entry->getAnimationEnd() - entry->getAnimationStart(), _frame / 100.0f));
+            entry->timeScale = 0;
+            entry->trackTime = MathUtil::lerp(0, entry->animationEnd - entry->animationStart, _frame / 100.0f);
         }
     }
     else
-        state->clearTrack(0);
+        spAnimationState_clearTrack(state, 0);
 
     skeletonAni->setSkin(_skinName);
 }
