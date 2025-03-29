@@ -37,6 +37,7 @@
 #include "renderer/ccGLStateCache.h"
 #include "renderer/CCFrameBuffer.h"
 #include "renderer/CCRenderState.h"
+#include "base/ccUtils.h"
 
 NS_CC_BEGIN
 
@@ -57,28 +58,17 @@ Camera* Camera::create()
 
 Camera* Camera::createPerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
-    auto ret = new (std::nothrow) Camera();
-    if (ret)
-    {
-        ret->initPerspective(fieldOfView, aspectRatio, nearPlane, farPlane);
-        ret->autorelease();
-        return ret;
-    }
-    CC_SAFE_DELETE(ret);
-    return nullptr;
+    return utils::createHelper(&Camera::initPerspective, fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
 Camera* Camera::createOrthographic(float zoomX, float zoomY, float nearPlane, float farPlane)
 {
-    auto ret = new (std::nothrow) Camera();
-    if (ret)
-    {
-        ret->initOrthographic(zoomX, zoomY, nearPlane, farPlane);
-        ret->autorelease();
-        return ret;
-    }
-    CC_SAFE_DELETE(ret);
-    return nullptr;
+    return utils::createHelper(&Camera::initOrthographic, zoomX, zoomY, nearPlane, farPlane);
+}
+
+Camera* Camera::createOrthographicOffCenter(float left, float right, float bottom, float top, float nearPlane, float farPlane)
+{
+    return utils::createHelper(&Camera::initOrthographicOffCenter, left, right, bottom, top, nearPlane, farPlane);
 }
 
 Camera* Camera::getDefaultCamera()
@@ -248,6 +238,20 @@ bool Camera::initOrthographic(float zoomX, float zoomY, float nearPlane, float f
     return true;
 }
 
+bool Camera::initOrthographicOffCenter(float left, float right, float bottom, float top, float nearPlane, float farPlane)
+{
+    _zoom[0] = right - left;
+    _zoom[1] = top - bottom;
+    _nearPlane = nearPlane;
+    _farPlane = farPlane;
+    Mat4::createOrthographicOffCenter(left, right, bottom, top, _nearPlane, _farPlane, &_projection);
+    _viewProjectionDirty = true;
+    _frustumDirty = true;
+    _type = Type::ORTHOGRAPHIC;
+    
+    return true;
+}
+
 Vec2 Camera::project(const Vec3& src) const
 {
     Vec2 screenPos;
@@ -255,8 +259,10 @@ Vec2 Camera::project(const Vec3& src) const
     auto viewport = Director::getInstance()->getWinSize();
     Vec4 clipPos;
     getViewProjectionMatrix().transformVector(Vec4(src.x, src.y, src.z, 1.0f), &clipPos);
-    
-    CCASSERT(clipPos.w != 0.0f, "clipPos.w can't be 0.0f!");
+
+    if (clipPos.w == 0.0f)
+        CCLOGWARN("Dividing by clipPos.w (0.0f)");
+
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
     
@@ -273,7 +279,9 @@ Vec2 Camera::projectGL(const Vec3& src) const
     Vec4 clipPos;
     getViewProjectionMatrix().transformVector(Vec4(src.x, src.y, src.z, 1.0f), &clipPos);
     
-    CCASSERT(clipPos.w != 0.0f, "clipPos.w can't be 0.0f!");
+    if (clipPos.w == 0.0f)
+        CCLOGWARN("Dividing by clipPos.w (0.0f)");
+
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
     

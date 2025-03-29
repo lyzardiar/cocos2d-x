@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include "renderer/CCRenderer.h"
 #include "renderer/CCFrameBuffer.h"
 #include "platform/CCDataManager.h"
+#include "2d/CCLight.h"
 
 #if CC_USE_PHYSICS
 #include "physics/CCPhysicsWorld.h"
@@ -50,6 +51,14 @@ THE SOFTWARE.
 #endif
 
 NS_CC_BEGIN
+
+namespace
+{
+    static bool lightCompareCastShadow(BaseLight* a, BaseLight* b)
+    {
+        return a->getCastShadow() > b->getCastShadow();
+    }
+}
 
 Scene::Scene()
 : _defaultCamera(Camera::create())
@@ -198,10 +207,82 @@ void Scene::render(Renderer* renderer, const Mat4* eyeTransforms, const Mat4* ey
     Camera* defaultCamera = nullptr;
     const auto& transform = getNodeToParentTransform();
 
+    // start to update lights for this frame
+    if (_lightOrderDirty)
+    {
+        sort(_lights.begin(), _lights.end(), lightCompareCastShadow);
+        _lightOrderDirty = false;
+    }
+
+    for (BaseLight* light : getLights())
+    {
+        switch(light->getLightType())
+        {
+            case LightType::DIRECTIONAL:
+                static_cast<DirectionLight*>(light)->updateShadowCamera();
+                break;
+            case LightType::SPOT:
+                static_cast<SpotLight*>(light)->updateShadowCamera();
+                break;
+            default:
+                break;
+        }
+    }
+    // done updating lights
+
     for (const auto& camera : getCameras())
     {
         if (!camera->isVisible())
             continue;
+
+        for (BaseLight* light : getLights())
+        {
+            if (((unsigned short)camera->getCameraFlag() & light->getCameraMask()) == 0)
+                continue;
+
+            if (!light->isEnabled() || !light->getCastShadow())
+                continue;
+
+            Camera* shadowCamera = nullptr;
+            switch(light->getLightType())
+            {
+                case LightType::DIRECTIONAL:
+					shadowCamera = static_cast<DirectionLight*>(light)->_shadowCamera;
+					break;
+                case LightType::SPOT:
+                    shadowCamera = static_cast<SpotLight*>(light)->_shadowCamera;
+					break;
+                default:
+                    break;
+            }
+            
+            if (shadowCamera)
+            {
+                shadowCamera->setCameraFlag(camera->getCameraFlag());
+                shadowCamera->setNodeToParentTransform(light->getNodeToWorldTransform());
+
+                Camera::_visitingCamera = shadowCamera;
+
+                for (unsigned int i = 0; i < multiViewCount; ++i) {
+                    if (eyeProjections)
+                        shadowCamera->setAdditionalProjection(eyeProjections[i] * shadowCamera->getProjectionMatrix().getInversed());
+                    if (eyeTransforms)
+                        shadowCamera->setAdditionalTransform(eyeTransforms[i].getInversed());
+                    director->pushProjectionMatrix(i);
+                    director->loadProjectionMatrix(shadowCamera->getViewProjectionMatrix(), i);
+                }
+
+                shadowCamera->apply();
+                shadowCamera->clearBackground();
+                visit(renderer, transform, 0);
+
+                renderer->render();
+                shadowCamera->restore();
+
+                for (unsigned int i = 0; i < multiViewCount; ++i)
+                    director->popProjectionMatrix(i);
+            }
+        }
 
         Camera::_visitingCamera = camera;
         if (Camera::_visitingCamera->getCameraFlag() == CameraFlag::DEFAULT)

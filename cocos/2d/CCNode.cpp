@@ -46,10 +46,6 @@ THE SOFTWARE.
 #include "renderer/CCMaterial.h"
 #include "math/TransformUtils.h"
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
-#include "platform/emscripten/devtools-emscripten.h"
-#endif
-
 #if CC_NODE_RENDER_SUBPIXEL
 #define RENDER_IN_SUBPIXEL
 #else
@@ -122,6 +118,8 @@ Node::Node()
 #if CC_USE_PHYSICS
 , _physicsBody(nullptr)
 #endif
+, _castShadow(false)
+, _recieveShadow(false)
 {
     // set default scheduler and actionManager
     _director = Director::getInstance();
@@ -702,10 +700,6 @@ void Node::setName(const std::string& name)
     _name = name;
     std::hash<std::string> h;
     _hashOfName = h(name);
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN) && (COCOS2D_DEBUG >= 1)
-    DevToolsImpl::getInstance()->nodeNameChanged(this);
-#endif
 }
 
 /// userData setter
@@ -1249,9 +1243,21 @@ uint32_t Node::processParentFlags(const Mat4& parentTransform, uint32_t parentFl
 
 bool Node::isVisitableByVisitingCamera() const
 {
-    auto camera = Camera::getVisitingCamera();
-    bool visibleByCamera = camera ? ((unsigned short)camera->getCameraFlag() & _cameraMask) != 0 : true;
-    return visibleByCamera;
+    if (const Camera* camera = Camera::getVisitingCamera())
+    {
+        // Shadow-casting camera is only used to render shadow map
+        if (!getCastShadow() && camera->getCastShadow())
+        {
+            return false;
+        }
+
+        if (((unsigned short)camera->getCameraFlag() & _cameraMask) == 0)
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t parentFlags)
@@ -1320,11 +1326,7 @@ void Node::onEnter()
     {
         ++__attachedNodeCount;
     }
-    
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN) && (COCOS2D_DEBUG >= 1)
-    DevToolsImpl::getInstance()->nodeEntered(this);
-#endif
-    
+
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType == kScriptTypeJavascript)
     {
@@ -1413,10 +1415,6 @@ void Node::onExit()
     {
         --__attachedNodeCount;
     }
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN) && (COCOS2D_DEBUG >= 1)
-    DevToolsImpl::getInstance()->nodeExited(this);
-#endif
 
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType == kScriptTypeJavascript)

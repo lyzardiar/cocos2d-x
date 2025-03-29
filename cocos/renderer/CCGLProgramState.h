@@ -91,6 +91,7 @@ public:
     void setVec4(const Vec4& value);
     void setVec4v(ssize_t size, const Vec4* pointer);
     void setMat4(const Mat4& value);
+    void setMat4v(ssize_t size, const Mat4* pointer);
     /**
      @}
      */
@@ -115,6 +116,11 @@ public:
      @param textureUnit The binding texture unit to be used in shader.
      */
     void setTexture(Texture2D* texture, GLuint textureUnit);
+
+    /**
+     Set textures to uniform value.
+    */
+    void setTexturev(ssize_t size, const GLuint* pointer, GLuint textureUnit);
     
     /**Apply the uniform value to openGL pipeline.*/
     void apply();
@@ -153,6 +159,11 @@ protected:
             Texture2D* texture;
         } tex;
         struct {
+            const GLuint* pointer;
+            GLuint textureUnit;
+            GLsizei size;
+        } texv;
+        struct {
             const float* pointer;
             GLsizei size;
         } floatv;
@@ -168,6 +179,10 @@ protected:
             const float* pointer;
             GLsizei size;
         } v4f;
+        struct {
+            const float* pointer;
+            GLsizei size;
+        } matrixv;
         std::function<void(GLProgram*, Uniform*)> *callback;
 
         U() { memset( this, 0, sizeof(*this) ); }
@@ -262,15 +277,19 @@ public:
 
     /** gets-or-creates an instance of GLProgramState for a given GLProgram */
     static GLProgramState* getOrCreateWithGLProgram(GLProgram* glprogram);
-
+    
     /** gets-or-creates an instance of GLProgramState for a given GLProgramName */
     static GLProgramState* getOrCreateWithGLProgramName(const std::string& glProgramName );
 
     /** gets-or-creates an instance of GLProgramState for the given GLProgramName & texture */
     static GLProgramState* getOrCreateWithGLProgramName(const std::string& glProgramName, Texture2D* texture);
 
-    /** gets-or-creates an instance of GLProgramState for given shaders */
-    static GLProgramState* getOrCreateWithShaders(const std::string& vertexShader, const std::string& fragShader, const std::string& compileTimeDefines);
+    /** creates an instance of GLProgramState for given shaders */
+    static GLProgramState* createWithShaders(const std::string& vertexShader, const std::string& fragShader, const std::string& compileTimeDefines);
+    CC_DEPRECATED_ATTRIBUTE static GLProgramState* getOrCreateWithShaders(const std::string& vertexShader, const std::string& fragShader, const std::string& compileTimeDefines)
+    {
+        return createWithShaders(vertexShader, fragShader, compileTimeDefines);
+    }
 
     /** Returns a new copy of the GLProgramState. The GLProgram is reused */
     GLProgramState* clone() const;
@@ -331,6 +350,7 @@ public:
     void setUniformVec4(const std::string& uniformName, const Vec4& value);
     void setUniformVec4v(const std::string& uniformName, ssize_t size, const Vec4* pointer);
     void setUniformMat4(const std::string& uniformName, const Mat4& value);
+    void setUniformMat4v(const std::string& uniformName, ssize_t size, const Mat4* pointer);
     void setUniformCallback(const std::string& uniformName, const std::function<void(GLProgram*, Uniform*)> &callback);
     void setUniformTexture(const std::string& uniformName, Texture2D *texture);
     /**
@@ -338,6 +358,7 @@ public:
      * Passing a `textureId` may trigger texture lost issue (https://github.com/cocos2d/cocos2d-x/issues/16871).
      */
     CC_DEPRECATED_ATTRIBUTE void setUniformTexture(const std::string& uniformName, GLuint textureId);
+    void setUniformTexturev(const std::string& uniformName, ssize_t size, const GLuint* pointer);
     /**@}*/
     
     /** @{
@@ -353,6 +374,7 @@ public:
     void setUniformVec4(GLint uniformLocation, const Vec4& value);
     void setUniformVec4v(GLint uniformLocation, ssize_t size, const Vec4* pointer);
     void setUniformMat4(GLint uniformLocation, const Mat4& value);
+    void setUniformMat4v(GLint uniformLocation, ssize_t size, const Mat4* pointer);
     void setUniformCallback(GLint uniformLocation, const std::function<void(GLProgram*, Uniform*)> &callback);
     void setUniformTexture(GLint uniformLocation, Texture2D *texture);
     /**
@@ -360,6 +382,7 @@ public:
      * Passing a `textureId` may trigger texture lost issue (https://github.com/cocos2d/cocos2d-x/issues/16871).
      */
     CC_DEPRECATED_ATTRIBUTE void setUniformTexture(GLint uniformLocation, GLuint textureId);
+    void setUniformTexturev(GLint uniformLocation, ssize_t size, const GLuint* pointer);
     /**@}*/
 
     /** 

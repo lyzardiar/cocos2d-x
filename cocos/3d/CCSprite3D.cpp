@@ -247,10 +247,32 @@ bool Sprite3D::loadFromFile(const std::string& path, NodeDatas* nodedatas, MeshD
             return false;
         }
         
-        auto ret = bundle->loadMeshDatas(*meshdatas)
-            && bundle->loadMaterials(*materialdatas) && bundle->loadNodes(*nodedatas);
+        bool ret;
+        do
+        {
+            ret = bundle->loadMeshDatas(*meshdatas);
+            if (!ret)
+            {
+                CCLOGWARN("Failed to load mesh for: %s ", path.c_str());
+                break;
+            }
+
+            ret = bundle->loadMaterials(*materialdatas);
+            if (!ret)
+            {
+                CCLOGWARN("Failed to load material for: %s ", path.c_str());
+                break;
+            }
+
+            ret = bundle->loadNodes(*nodedatas);
+            if (!ret)
+            {
+                CCLOGWARN("Failed to load nodes for: %s ", path.c_str());
+                break;
+            }
+        } while (false);
+
         Bundle3D::destroyBundle(bundle);
-        
         return ret;
     }
     return false;
@@ -797,7 +819,8 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
                    flags,
                    _lightMask,
                    Vec4(color.r, color.g, color.b, color.a),
-                   _forceDepthWrite);
+                   _forceDepthWrite,
+                   _recieveShadow);
 
     }
 }
@@ -882,7 +905,8 @@ Rect Sprite3D::getBoundingBox() const
 void Sprite3D::setCullFace(GLenum cullFace)
 {
     for (auto& it : _meshes) {
-        it->getMaterial()->getStateBlock()->setCullFaceSide((RenderState::CullFaceSide)cullFace);
+        if (Material* material = it->getMaterial())
+            material->getStateBlock()->setCullFaceSide((RenderState::CullFaceSide)cullFace);
 //        it->getMeshCommand().setCullFace(cullFace);
     }
 }
@@ -890,7 +914,8 @@ void Sprite3D::setCullFace(GLenum cullFace)
 void Sprite3D::setCullFaceEnabled(bool enable)
 {
     for (auto& it : _meshes) {
-        it->getMaterial()->getStateBlock()->setCullFace(enable);
+        if (Material* material = it->getMaterial())
+            material->getStateBlock()->setCullFace(enable);
 //        it->getMeshCommand().setCullFaceEnabled(enable);
     }
 }
